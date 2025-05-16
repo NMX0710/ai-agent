@@ -1,9 +1,8 @@
 import os
 import dashscope
-
-print(1)
-print("当前 API Key 是：", os.getenv('DASHSCOPE_API_KEY'))
-
+'''
+sdk方式调用AI
+'''
 messages = [
     {'role': 'system', 'content': 'You are a helpful assistant.'},
     {'role': 'user', 'content': '你是谁？'}
