@@ -44,6 +44,7 @@ class RecipeApp():
         return {"messages": response}
 
     def _build_graph(self):
+        # TODO:没有规定上下文记忆容量
         # Define a new graph
         workflow = StateGraph(state_schema=MessagesState)
         # Define the (single) node in the graph

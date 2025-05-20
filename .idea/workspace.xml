@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8baccd6c-bc71-4ef0-b930-eb514639aa75" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/recipe_app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_recipe_app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/invoke/qwen_langchain_demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/invoke/qwen_langchain_demo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/recipe_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/recipe_app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +109,7 @@
       <workItem from="1747376917610" duration="601000" />
       <workItem from="1747377521570" duration="6326000" />
       <workItem from="1747385230013" duration="3399000" />
-      <workItem from="1747635512711" duration="15055000" />
+      <workItem from="1747635512711" duration="15849000" />
     </task>
     <servers />
   </component>
