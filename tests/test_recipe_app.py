@@ -32,6 +32,7 @@ async def test_memory_across_turns(recipe_app):
 
     assert "鸡胸肉" in response3 or "鸡" in response3
 
+#TODO：为什么就拿到log了？
 @pytest.mark.asyncio
 async def test_logger_output(recipe_app, caplog):
     """
