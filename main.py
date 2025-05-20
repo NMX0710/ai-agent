@@ -1,15 +1,16 @@
 from fastapi import FastAPI
 from routers import sample
+from pydantic import BaseModel
+from app.recipe_app import RecipeApp
 app = FastAPI()
+recipe_app = RecipeApp()
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
-
+# Sample to show how swagger used
 app.include_router(sample.router, prefix="/api")
+
+class ChatRequest(BaseModel):
+    chat_id: str
+    message: str
+@app.post("/chat")
+async def chat(req: ChatRequest):
+    return {"response": await recipe_app.chat(req.chat_id, req.message)}
