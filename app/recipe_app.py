@@ -6,10 +6,10 @@ from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
+from app.wrappers.logger import log_wrapper
 
 #TODO: Add LangSmith to keep track of agents later
 
-logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = (
     "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
@@ -39,17 +39,24 @@ class RecipeApp():
         )
 
     def _call_model(self, state: MessagesState):
+        messages = state["messages"]
         prompt = self.prompt_template.invoke(state)
         response = self.model.invoke(prompt)
-        return {"messages": response}
+        return {"messages": messages + [response]}
+
 
     def _build_graph(self):
         # TODO:没有规定上下文记忆容量
+
         # Define a new graph
         workflow = StateGraph(state_schema=MessagesState)
-        # Define the (single) node in the graph
+
+        # Define the nodes in the graph
+        workflow.add_node("model", log_wrapper(self._call_model))
+
+        # 链接顺序：START → log → model → END
         workflow.add_edge(START, "model")
-        workflow.add_node("model", self._call_model)
+
         # Add memory
         memory = MemorySaver()
         return workflow.compile(checkpointer=memory)

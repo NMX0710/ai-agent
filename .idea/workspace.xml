@@ -5,8 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8baccd6c-bc71-4ef0-b930-eb514639aa75" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/wrappers/logger.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/recipe_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/recipe_app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/invoke/qwen_http_demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/demo/invoke/qwen_http_demo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/invoke/qwen_langchain_demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/demo/invoke/qwen_langchain_demo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/invoke/qwen_sdk_demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/demo/invoke/qwen_sdk_demo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/sample.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/sample.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_recipe_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_recipe_app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +45,8 @@
     "FastAPI.ai-agent.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python tests.Python tests for test_recipe_app.TestRecipeAppMemory.executor": "Run",
+    "Python tests.Python tests for test_recipe_app.TestRecipeAppMemory.test_logger_output.executor": "Run",
+    "Python tests.Python tests for test_recipe_app.test_logger_output.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "multi-turn-dialogue",
@@ -50,7 +59,13 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Python tests.Python tests for test_recipe_app.TestRecipeAppMemory">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/app" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python tests.Python tests for test_recipe_app.test_logger_output">
     <configuration name="ai-agent" type="Python.FastAPI">
       <option name="additionalOptions" value="--reload --port 8123 " />
       <option name="file" value="$PROJECT_DIR$/main.py" />
@@ -68,7 +83,7 @@
       <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_recipe_app.TestRecipeAppMemory" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_recipe_app.test_logger_output" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="ai-agent" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -80,13 +95,47 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_recipe_app.TestRecipeAppMemory&quot;" />
+      <option name="_new_target" value="&quot;test_recipe_app.test_logger_output&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for tests.test_recipe_app.TestRecipeAppMemory" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="ai-agent" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_recipe_app.TestRecipeAppMemory&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for tests.test_recipe_app.TestRecipeAppMemory.test_logger_output" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="ai-agent" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_recipe_app.TestRecipeAppMemory.test_logger_output&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests for test_recipe_app.TestRecipeAppMemory" />
+        <item itemvalue="Python tests.Python tests for test_recipe_app.test_logger_output" />
+        <item itemvalue="Python tests.Python tests for tests.test_recipe_app.TestRecipeAppMemory.test_logger_output" />
+        <item itemvalue="Python tests.Python tests for tests.test_recipe_app.TestRecipeAppMemory" />
       </list>
     </recent_temporary>
   </component>
@@ -118,6 +167,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ai_agent$ai_agent.coverage" NAME="ai-agent Coverage Results" MODIFIED="1747384927652" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/ai_agent$.coverage" NAME=" Coverage Results" MODIFIED="1747725654255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/ai_agent$.coverage" NAME=" Coverage Results" MODIFIED="1747736170485" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>

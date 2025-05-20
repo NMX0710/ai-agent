@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import sample
+from app.routers import sample
 from pydantic import BaseModel
 from app.recipe_app import RecipeApp
 app = FastAPI()
