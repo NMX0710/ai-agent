@@ -3,7 +3,7 @@ import time
 
 logger = logging.getLogger(__name__)
 
-# TODO：学习一下装饰器具体怎么使用的
+# TODO：这样实现是最佳方案吗
 def log_wrapper(func):
     def wrapped(state):
         user_input = state["messages"][-1].content
