@@ -7,8 +7,6 @@
     <list default="true" id="8baccd6c-bc71-4ef0-b930-eb514639aa75" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/recipe_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/recipe_app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/wrappers/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/wrappers/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_recipe_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_recipe_app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -64,7 +62,7 @@
       <recent name="$PROJECT_DIR$/app" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_recipe_app.test_generate_report_structure">
+  <component name="RunManager" selected="Python tests.Python tests for test_recipe_app.test_memory_across_turns">
     <configuration name="ai-agent" type="Python.FastAPI">
       <option name="additionalOptions" value="--reload --port 8123 " />
       <option name="file" value="$PROJECT_DIR$/main.py" />
@@ -164,8 +162,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests for test_recipe_app.test_generate_report_structure" />
         <item itemvalue="Python tests.Python tests for test_recipe_app.test_memory_across_turns" />
+        <item itemvalue="Python tests.Python tests for test_recipe_app.test_generate_report_structure" />
         <item itemvalue="Python tests.Python tests for test_recipe_app.test_rereading_prompt_format" />
         <item itemvalue="Python tests.Python tests for test_recipe_app.test_logger_output" />
         <item itemvalue="Python tests.Python tests for tests.test_recipe_app.TestRecipeAppMemory.test_logger_output" />
@@ -200,6 +198,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ai_agent$ai_agent.coverage" NAME="ai-agent Coverage Results" MODIFIED="1747384927652" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/ai_agent$.coverage" NAME=" Coverage Results" MODIFIED="1747834963601" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/ai_agent$.coverage" NAME=" Coverage Results" MODIFIED="1747838403209" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>

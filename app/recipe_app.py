@@ -3,12 +3,11 @@ import os
 from typing import Dict, List
 from langchain_community.chat_models.tongyi import ChatTongyi
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate, BasePromptTemplate
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
 from pydantic import BaseModel
 from langchain_core.output_parsers import PydanticOutputParser
-
 from app.wrappers.logger import log_wrapper
 
 #TODO: Fix the error and finish structured output
@@ -23,58 +22,44 @@ SYSTEM_PROMPT = (
     "引导用户尽量具体描述需求，你再基于这些信息提供实用、详细、有趣的菜谱推荐。"
 )
 
-report_instr = (
-            '每次对话后都要生成报告，内容为建议列表'
-            '字段包括 "title"（报告标题，字符串）和 "suggestions"（建议列表，字符串数组），'
-        )
 
 class RecipeReport(BaseModel):
     title: str
     suggestions: List[str]
 
-class ReportState(BaseModel):
-    messages: List[BaseMessage]
-    report: RecipeReport
-
 class RecipeApp:
     def __init__(self):
         # Initialize the model
+        self.prompt_template = None
         self.graph = self._build_graph()
         self.model = ChatTongyi(
             model="qwen-plus",
             api_key= os.getenv("DASHSCOPE_API_KEY"),
         )
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
-        full_system = SYSTEM_PROMPT + "\n\n" + report_instr
-        self.prompt_template = ChatPromptTemplate.from_messages([
-            ("system", full_system),
-            MessagesPlaceholder(variable_name="messages"),
-        ])
 
-    def _call_model(self, state: ReportState) -> ReportState:
+    def _call_model(self, state: MessagesState):
         """
         messages 是一个包含对话历史的列表
         每个元素都是一个 BaseMessage 子类的对象，比如：
         HumanMessage(content="你好，我喜欢吃鸡胸肉")
         AIMessage(content="你好！根据你的喜好...")
         """
-        messages = state.messages
+        messages = state["messages"]
         # 将系统 + 历史对话拼到一起
         prompt = self.prompt_template.invoke({"messages": messages})
         # 调用模型
         response = self.model.invoke(prompt)
-        # 解析成 RecipeReport
-        report = self.parser.invoke(response.content)
         # 更新消息历史
         new_messages = messages + [response]
-        return ReportState(messages=new_messages, report=report)
+        return {"messages": new_messages}
 
 
     def _build_graph(self):
         # TODO:没有规定上下文记忆容量
 
         # Define a new graph
-        workflow = StateGraph(state_schema= ReportState)
+        workflow = StateGraph(state_schema= MessagesState)
 
         # Define the nodes in the graph
         workflow.add_node("model", self._call_model)
@@ -87,18 +72,31 @@ class RecipeApp:
         return workflow.compile(checkpointer=memory)
 
     async def chat(self, chat_id: str, message: str) -> str:
-        state = ReportState(messages=[HumanMessage(content=message)], report=RecipeReport(title="", suggestions=[]))
+        # state = ReportState(messages=[HumanMessage(content=message)], report=RecipeReport(title="", suggestions=[]))
+        self.prompt_template = ChatPromptTemplate.from_messages([
+            ("system", SYSTEM_PROMPT),
+            MessagesPlaceholder(variable_name="messages"),
+        ])
+        state = {"messages": [HumanMessage(content=message)]}
         config = {"configurable": {"thread_id": chat_id}}
         out = await self.graph.ainvoke(state, config)
         # 返回原始文本回答
-        # return out["messages"][-1].content
-        return out
+        return out["messages"][-1].content
 
-    async def generate_report(self, chat_id: str, message: str) -> RecipeReport:
-        state = ReportState(messages=[HumanMessage(content=message)], report=RecipeReport(title="", suggestions=[]))
+
+    def generate_report(self, chat_id: str, message: str) -> RecipeReport:
+        parser = PydanticOutputParser(pydantic_object=RecipeReport)
+
+        self.prompt_template = PromptTemplate(
+            template="每次对话后都要生成报告，内容为建议列表\n{format_instructions}\n{query}\n",
+            input_variables=["query"],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
+        prompt_and_model = self.prompt_template | self.model
         config = {"configurable": {"thread_id": chat_id}}
-        out = await self.graph.ainvoke(state, config)
-        return out["report"]
+        out = prompt_and_model.invoke({"query": message}, config)
+        out = parser.invoke(out)
+        return out
 
 
 

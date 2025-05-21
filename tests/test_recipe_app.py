@@ -59,28 +59,17 @@ async def test_logger_output(recipe_app, caplog):
 
 
 @pytest.mark.asyncio
-async def test_generate_report_structure(recipe_app):
+def test_generate_report_structure(recipe_app):
     """
     测试 generate_report() 返回结构化的 RecipeReport，
     并且各字段类型和合理性（只检查 title 和 suggestions）。
     """
     chat_id = "report-test-user"
-    report = await recipe_app.chat(
+    report =  recipe_app.generate_report(
         chat_id,
         "我想吃低脂高蛋白的晚餐，用鸡胸肉和西兰花做简单的菜"
     )
 
-    # # 1. 对象类型
-    # assert isinstance(report, RecipeReport)
-    #
-    # # 2. title 和 suggestions
-    # assert isinstance(report.title, str) and report.title, "title 应该是非空字符串"
-    # assert isinstance(report.suggestions, list) and report.suggestions, "suggestions 应该是非空列表"
-    # assert all(isinstance(s, str) for s in report.suggestions), "suggestions 中每项应为 str"
-    #
-    # # 3. 建议中应包含“鸡胸肉”或“西兰花”
-    # joined = " ".join(report.suggestions)
-    # assert "鸡胸肉" in joined or "西兰花" in joined
-
     #打印看一下
     print(report)
+
