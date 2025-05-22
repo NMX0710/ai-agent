@@ -38,6 +38,13 @@ class RecipeApp:
         )
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
 
+    """
+    Graph 节点: 调用模型
+    - 输入是从graph获取的state
+    - 根据当前 prompt_template 生成 prompt
+    - 调用 LLM 并获取响应
+    - 更新并返回消息历史
+    """
     def _call_model(self, state: MessagesState):
         """
         messages 是一个包含对话历史的列表
@@ -54,7 +61,12 @@ class RecipeApp:
         new_messages = messages + [response]
         return {"messages": new_messages}
 
-
+    """
+    构建对话graph
+    - 使用 MessagesState 作为 state schema
+    - 注册 _call_model 节点
+    - 添加 MemorySaver 持久化上下文
+    """
     def _build_graph(self):
         # TODO:没有规定上下文记忆容量
 
@@ -68,9 +80,12 @@ class RecipeApp:
         workflow.add_edge(START, "model")
 
         # Add memory
+        # TODO：当前的储存器是内存级别的，所以在重启之后之前的对话会丢失，我们希望实现上下文持久化
         memory = MemorySaver()
         return workflow.compile(checkpointer=memory)
-
+    """
+    对话
+    """
     async def chat(self, chat_id: str, message: str) -> str:
         # state = ReportState(messages=[HumanMessage(content=message)], report=RecipeReport(title="", suggestions=[]))
         self.prompt_template = ChatPromptTemplate.from_messages([
@@ -83,8 +98,14 @@ class RecipeApp:
         # 返回原始文本回答
         return out["messages"][-1].content
 
-
+    """
+    生成结构化报告:
+    - 使用 PromptTemplate 注入报告指令
+    - 调用模型并用 parser 解析 JSON
+    - 绕过graph调用模型（缺失上下文信息）
+    """
     def generate_report(self, chat_id: str, message: str) -> RecipeReport:
+
         parser = PydanticOutputParser(pydantic_object=RecipeReport)
 
         self.prompt_template = PromptTemplate(
