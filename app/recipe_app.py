@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from langchain_core.output_parsers import PydanticOutputParser
 from app.wrappers.logger import log_wrapper
 from langgraph.store.memory import InMemoryStore
-#TODO: Fix the error and finish structured output
+#TODO: 是不是不需要class
 
 
 SYSTEM_PROMPT = (

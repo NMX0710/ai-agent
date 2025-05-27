@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8baccd6c-bc71-4ef0-b930-eb514639aa75" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/rag/recipe_app_document_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/rag/recipe_app_document_loader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_recipe_app_document_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_recipe_app_document_loader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/rag/recipe_app_document_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/rag/recipe_app_rag_pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/recipe_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/recipe_app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +65,7 @@
     </key>
   </component>
   <component name="RunManager" selected="Python tests.Python tests for test_recipe_app_document_loader.test_load_documents">
-    <configuration name="recipe_app_document_loader" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="recipe_app_rag_pipeline" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ai-agent" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -79,7 +79,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/rag/recipe_app_document_loader.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/rag/recipe_app_rag_pipeline.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -172,7 +172,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python tests.Python tests for test_recipe_app_document_loader.test_load_documents" />
-        <item itemvalue="Python.recipe_app_document_loader" />
+        <item itemvalue="Python.recipe_app_rag_pipeline" />
         <item itemvalue="Python tests.Python tests for test_recipe_app.test_memory_across_turns" />
         <item itemvalue="Python tests.Python tests for test_recipe_app.test_generate_report_structure" />
         <item itemvalue="Python tests.Python tests for test_recipe_app.test_rereading_prompt_format" />
@@ -199,7 +199,7 @@
       <workItem from="1747377521570" duration="6326000" />
       <workItem from="1747385230013" duration="3399000" />
       <workItem from="1747635512711" duration="15849000" />
-      <workItem from="1747895527825" duration="19789000" />
+      <workItem from="1747895527825" duration="21927000" />
     </task>
     <servers />
   </component>
