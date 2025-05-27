@@ -9,7 +9,7 @@ from langgraph.graph import START, MessagesState, StateGraph
 from pydantic import BaseModel
 from langchain_core.output_parsers import PydanticOutputParser
 from app.wrappers.logger import log_wrapper
-
+from langgraph.store.memory import InMemoryStore
 #TODO: Fix the error and finish structured output
 
 
@@ -80,7 +80,8 @@ class RecipeApp:
         workflow.add_edge(START, "model")
 
         # Add memory
-        # TODO：当前的储存器是内存级别的，所以在重启之后之前的对话会丢失，我们希望实现上下文持久化
+        # 当前的储存器是内存级别的，所以在重启之后之前的对话会丢失，并且不能跨对话实现记忆
+        # 如果想实现长期，跨对话记忆的话，需要引入langchain的store
         memory = MemorySaver()
         return workflow.compile(checkpointer=memory)
     """
@@ -90,6 +91,7 @@ class RecipeApp:
         # state = ReportState(messages=[HumanMessage(content=message)], report=RecipeReport(title="", suggestions=[]))
         self.prompt_template = ChatPromptTemplate.from_messages([
             ("system", SYSTEM_PROMPT),
+            # 把之前的历史对话全部pass in
             MessagesPlaceholder(variable_name="messages"),
         ])
         state = {"messages": [HumanMessage(content=message)]}
