@@ -133,9 +133,8 @@ class RecipeApp:
         """
         logging.info(f"[Report] chat_id={chat_id}, message={message}")
         prompt = self.report_template.invoke({"query": message})
-        logging.info(f"[Report] prompt: {prompt}")
         raw = self.model.invoke(prompt)
-        logging.info(f"[Report] raw: {raw}")
         report = self.parser.invoke(raw)
         logging.info(f"[Report] report: {report}")
         return report
+
