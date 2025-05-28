@@ -1,6 +1,8 @@
 import pytest
 from app.recipe_app import RecipeApp
 from app.recipe_app import RecipeReport
+import logging
+logging.basicConfig(level=logging.INFO)
 
 @pytest.fixture(scope="module")
 def recipe_app():

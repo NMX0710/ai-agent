@@ -1,18 +1,18 @@
 import logging
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional, TypedDict
 from langchain_community.chat_models.tongyi import ChatTongyi
+from langchain_community.embeddings import DashScopeEmbeddings
+from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate, BasePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
+from langchain_core.output_parsers import PydanticOutputParser
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
 from pydantic import BaseModel
-from langchain_core.output_parsers import PydanticOutputParser
-from app.wrappers.logger import log_wrapper
-from langgraph.store.memory import InMemoryStore
-#TODO: 是不是不需要class
+from app.rag.recipe_app_rag_pipeline import RecipeAppRAGPipeline
 
-
+# 系统提示
 SYSTEM_PROMPT = (
     "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
     "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
@@ -22,116 +22,120 @@ SYSTEM_PROMPT = (
     "引导用户尽量具体描述需求，你再基于这些信息提供实用、详细、有趣的菜谱推荐。"
 )
 
-
+# 定义结构化报告模型
 class RecipeReport(BaseModel):
     title: str
     suggestions: List[str]
 
+class RecipeAppState(TypedDict):
+    question: str
+    context: List[Document]           # RAG 检索到的内容
+    messages: List[BaseMessage]       # 历史消息记录（LangGraph 自带）
+    answer: Optional[str]             # 最终答案
+
+
+#如果只是一个小型的project，init参数可以不需要，因为我们只需要一个RecipeApp实例
 class RecipeApp:
     def __init__(self):
-        # Initialize the model
-        self.prompt_template = None
-        self.graph = self._build_graph()
-        self.model = ChatTongyi(
-            model="qwen-plus",
-            api_key= os.getenv("DASHSCOPE_API_KEY"),
-        )
-        self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
+        # 验证并初始化模型
+        api_key = os.getenv("DASHSCOPE_API_KEY")
 
-    """
-    Graph 节点: 调用模型
-    - 输入是从graph获取的state
-    - 根据当前 prompt_template 生成 prompt
-    - 调用 LLM 并获取响应
-    - 更新并返回消息历史
-    """
-    def _call_model(self, state: MessagesState):
+        if not api_key:
+            raise RuntimeError("缺少环境变量 DASHSCOPE_API_KEY，请设置后重试")
+        model = ChatTongyi(model="qwen-plus", api_key=api_key)
+        self.model = model
+
+        # 初始化解析器
+        parser = PydanticOutputParser(pydantic_object=RecipeReport)
+        self.parser = parser
+
+        # 初始化记忆存储
+        self.memory_saver = MemorySaver()
+
+        # 准备 Prompt Templates
+        self.chat_template = ChatPromptTemplate.from_messages([
+            ("system", SYSTEM_PROMPT),
+            MessagesPlaceholder(variable_name="messages"),
+        ])
+        self.report_template = PromptTemplate(
+            template=(
+                "每次对话后都要生成报告，内容为建议列表\n"
+                "{format_instructions}\n{query}\n"
+            ),
+            input_variables=["query"],
+            partial_variables={
+                "format_instructions": self.parser.get_format_instructions()
+            },
+        )
+        # 构建对话图
+        self.graph = self._build_graph()
+
+        # 初始化rag pipeline
+        embedding_model = DashScopeEmbeddings(
+            model="text-embedding-v1",  # 阿里目前推荐的基础 embedding 模型
+            dashscope_api_key=api_key
+        )
+        self.rag_pipeline = RecipeAppRAGPipeline(embedding_model)
+
+    def _build_graph(self) -> StateGraph:
         """
-        messages 是一个包含对话历史的列表
-        每个元素都是一个 BaseMessage 子类的对象，比如：
-        HumanMessage(content="你好，我喜欢吃鸡胸肉")
-        AIMessage(content="你好！根据你的喜好...")
+        构建对话graph
+        - 使用 MessagesState 作为 state schema
+        - 注册 _call_model 节点
+        - 添加 MemorySaver 持久化上下文
+        """
+        workflow = StateGraph(state_schema=MessagesState)
+        workflow.add_node("model", self._call_model)
+        workflow.add_edge(START, "model")
+        return workflow.compile(checkpointer=self.memory_saver)
+
+    def _call_model(self, state: MessagesState) -> Dict[str, List[BaseMessage]]:
+        """
+        Graph 节点: 调用模型
+        - 输入是从graph获取的state
+        - 根据当前 prompt_template 生成 prompt
+        - 调用 LLM 并获取响应
+        - 更新并返回消息历史
         """
         messages = state["messages"]
-        # 将系统 + 历史对话拼到一起
-        prompt = self.prompt_template.invoke({"messages": messages})
-        # 调用模型
+
+        # TODO：RAG 检索补充
+        prompt = self.chat_template.invoke({"messages": messages})
+        logging.info(f"[Model] prompt: {prompt}")
         response = self.model.invoke(prompt)
-        # 更新消息历史
+        logging.info(f"[Model] response: {response.content}")
         new_messages = messages + [response]
         return {"messages": new_messages}
 
-    """
-    构建对话graph
-    - 使用 MessagesState 作为 state schema
-    - 注册 _call_model 节点
-    - 添加 MemorySaver 持久化上下文
-    """
-    def _build_graph(self):
-        # TODO:没有规定上下文记忆容量
 
-        # Define a new graph
-        workflow = StateGraph(state_schema= MessagesState)
-
-        # Define the nodes in the graph
-        workflow.add_node("model", self._call_model)
-
-        # 链接顺序：START → model
-        workflow.add_edge(START, "model")
-
-        # Add memory
-        # 当前的储存器是内存级别的，所以在重启之后之前的对话会丢失，并且不能跨对话实现记忆
-        # 如果想实现长期，跨对话记忆的话，需要引入langchain的store
-        memory = MemorySaver()
-        return workflow.compile(checkpointer=memory)
-    """
-    对话
-    """
     async def chat(self, chat_id: str, message: str) -> str:
-        # state = ReportState(messages=[HumanMessage(content=message)], report=RecipeReport(title="", suggestions=[]))
-        self.prompt_template = ChatPromptTemplate.from_messages([
-            ("system", SYSTEM_PROMPT),
-            # 把之前的历史对话全部pass in
-            MessagesPlaceholder(variable_name="messages"),
-        ])
+        """
+        对话接口（异步）
+        """
+        logging.info(f"[Chat] chat_id={chat_id}, message={message}")
         state = {"messages": [HumanMessage(content=message)]}
         config = {"configurable": {"thread_id": chat_id}}
-        out = await self.graph.ainvoke(state, config)
-        # 返回原始文本回答
-        return out["messages"][-1].content
+        try:
+            out = await self.graph.ainvoke(state, config)
+            answer = out["messages"][-1].content
+            logging.info(f"[Chat] response={answer}")
+            return answer
+        except Exception:
+            logging.exception("chat 调用失败")
+            raise
 
-    """
-    生成结构化报告:
-    - 使用 PromptTemplate 注入报告指令
-    - 调用模型并用 parser 解析 JSON
-    - 绕过graph调用模型（缺失上下文信息）
-    """
     def generate_report(self, chat_id: str, message: str) -> RecipeReport:
-
-        parser = PydanticOutputParser(pydantic_object=RecipeReport)
-
-        self.prompt_template = PromptTemplate(
-            template="每次对话后都要生成报告，内容为建议列表\n{format_instructions}\n{query}\n",
-            input_variables=["query"],
-            partial_variables={"format_instructions": parser.get_format_instructions()},
-        )
-        prompt_and_model = self.prompt_template | self.model
-        config = {"configurable": {"thread_id": chat_id}}
-        out = prompt_and_model.invoke({"query": message}, config)
-        out = parser.invoke(out)
-        return out
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        """
+        生成结构化报告（同步）
+        - 使用 report_template 注入格式指令和查询
+        - 同步调用 LLM
+        - 用 parser 解析 JSON 输出
+        """
+        logging.info(f"[Report] chat_id={chat_id}, message={message}")
+        prompt = self.report_template.invoke({"query": message})
+        logging.info(f"[Report] prompt: {prompt}")
+        raw = self.model.invoke(prompt)
+        logging.info(f"[Report] raw: {raw}")
+        report = self.parser.invoke(raw)
+        logging.info(f"[Report] report: {report}")
+        return report

@@ -12,14 +12,13 @@ class RecipeAppRAGPipeline:
         """
         初始化：加载文档，创建向量索引，初始化 LLM 与 Prompt
         """
-
         folder_path = Path(__file__).parent.parent.parent / "resources" / "documents"
         if not folder_path.exists() or not folder_path.is_dir():
             raise ValueError(f"路径无效: {folder_path}")
         self.vector_store = self.indexing(folder_path, embeddings)
 
     @staticmethod
-    def indexing(self, folder_path: Path, embeddings: Embeddings = None) -> InMemoryVectorStore:
+    def indexing(folder_path: Path, embeddings: Embeddings = None) -> InMemoryVectorStore:
         """
         Loading Documents
         批量加载本地 Markdown 文档并返回 LangChain Document 对象列表
@@ -52,19 +51,13 @@ class RecipeAppRAGPipeline:
 
 
     # TODO：完成retrieve，然后传递到recipe_app里使用
-    # Define state for application
-    class State(TypedDict):
-        question: str
-        context: List[Document]
-        answer: str
+    def retrieve(self, question: str, top_k: int = 4) -> List[Document]:
+        """
+        根据问题进行语义检索，返回相关文档块
+        """
+        return self.vector_store.similarity_search(question, k=top_k)
 
-
-    # Define application steps
-    def retrieve(self, state: State) -> List[Document]:
-        vector_store = self.vector_store
-        retrieved_docs = vector_store.similarity_search(state["question"])
-        return {"context": retrieved_docs}
-
+    #Generate logic is in recipe_app
 
 
 
