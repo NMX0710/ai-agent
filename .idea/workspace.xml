@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="8baccd6c-bc71-4ef0-b930-eb514639aa75" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/rag/recipe_app_rag_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/rag/recipe_app_rag_pipeline.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/recipe_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/recipe_app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_recipe_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_recipe_app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,35 +33,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "FastAPI.ai-agent.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python tests.Python tests for test_recipe_app.TestRecipeAppMemory.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.TestRecipeAppMemory.test_logger_output.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.test_call_model_with_context.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.test_graph_includes_retrieve_node.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.test_init_with_rag.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.test_retrieve_context_node.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.test_generate_report_structure.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.test_logger_output.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.test_memory_across_turns.executor": "Run",
-    "Python tests.Python tests for test_recipe_app.test_rereading_prompt_format.executor": "Run",
-    "Python tests.Python tests for test_recipe_app_document_loader.test_load_documents.executor": "Debug",
-    "Python.recipe_app_document_loader.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "rag",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "configurable.group.appearance",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;FastAPI.ai-agent.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.TestRecipeAppMemory.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.TestRecipeAppMemory.test_logger_output.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.test_call_model_with_context.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.test_graph_includes_retrieve_node.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.test_init_with_rag.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.TestRecipeAppRAGIntegration.test_retrieve_context_node.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.test_generate_report_structure.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.test_logger_output.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.test_memory_across_turns.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app.test_rereading_prompt_format.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_recipe_app_document_loader.test_load_documents.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.recipe_app_document_loader.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.appearance&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app" />
@@ -199,6 +197,7 @@
       <workItem from="1747385230013" duration="3399000" />
       <workItem from="1747635512711" duration="15849000" />
       <workItem from="1747895527825" duration="36218000" />
+      <workItem from="1748442029493" duration="2520000" />
     </task>
     <servers />
   </component>

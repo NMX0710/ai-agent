@@ -95,7 +95,7 @@ class RecipeApp:
         workflow = StateGraph(state_schema=RecipeAppState)
 
         # 添加节点
-        workflow.add_node("retrieve", self._retrieve_context)
+        workflow.add_node("retrieve", self.rag_pipeline.retrieve)
         workflow.add_node("model", self._call_model)
 
         # 添加边
@@ -105,23 +105,6 @@ class RecipeApp:
 
         return workflow.compile(checkpointer=self.memory_saver)
 
-    def _retrieve_context(self, state: RecipeAppState) -> Dict[str, Any]:
-        """
-        Graph 节点: 调用 RAG pipeline 进行检索
-        """
-        # 如果 state 中没有 question，从最新的消息中提取
-        if not state.get("question"):
-            messages = state.get("messages", [])
-            if messages:
-                # 获取最新的用户消息作为问题
-                for msg in reversed(messages):
-                    if isinstance(msg, HumanMessage):
-                        state["question"] = msg.content
-                        break
-
-        # 调用 RAG pipeline 的 retrieve 方法
-        result = self.rag_pipeline.retrieve(state, top_k=4)
-        return result
 
     def _call_model(self, state: RecipeAppState) -> Dict[str, Any]:
         """
@@ -153,7 +136,7 @@ class RecipeApp:
         return {
             "messages": new_messages,
             "answer": response.content
-        }
+        } # 节点返回的字典会直接合并到 state 中。
 
     async def chat(self, chat_id: str, message: str) -> str:
         """
