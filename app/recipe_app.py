@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, TypedDict, Any
 from langchain_community.chat_models.tongyi import ChatTongyi
 from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_core.documents import Document
-from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
+from langchain_core.messages import HumanMessage, AIMessage, BaseMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from langgraph.checkpoint.memory import MemorySaver
@@ -47,20 +47,23 @@ class RecipeApp:
              "若用户提到特定食材（如鸡肉、番茄等），请结合食材特点推荐合适做法。"
              "\n\n以下是相关的菜谱信息，请基于这些信息回答用户问题：\n{context}"),
             MessagesPlaceholder(variable_name="messages"),
-            ("human", "{input}")
+
         ])
 
         # 初始化 LLM
         self.model = ChatTongyi(model="qwen-plus", api_key=api_key)
-
-        # 初始化 Agent
-        self.agent_executor = create_react_agent(self.model, ALL_TOOLS)
 
         # 初始化解析器
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
 
         # 初始化记忆存储
         self.memory_saver = MemorySaver()
+
+        # 初始化 Agent
+        self.agent_executor = create_react_agent(
+            self.model, ALL_TOOLS,
+            checkpointer=self.memory_saver,
+        )
 
         # 初始化 embeddings
         embedding_model = DashScopeEmbeddings(
@@ -113,7 +116,7 @@ class RecipeApp:
         return workflow.compile(checkpointer=self.memory_saver)
 
 
-    def _call_model(self, state: RecipeAppState) -> Dict[str, Any]:
+    def _call_model(self, state: RecipeAppState, config: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """
         Graph 节点: 调用模型
         - 使用 RAG 检索到的上下文
@@ -121,28 +124,43 @@ class RecipeApp:
         """
         messages = state.get("messages", [])
         context = state.get("context", [])
-        docs_content = "\n\n".join(d.page_content for d in context) if context else "暂无相关菜谱信息"
+        rag_context = "\n\n".join(d.page_content for d in context) if context else "暂无相关菜谱信息"
 
-        # 使用 RAG template
-        prompt = self.rag_template.invoke({
-            "messages": messages,
-            "context": docs_content
-        })
+        # # 使用 RAG template
+        # prompt = self.rag_template.invoke({
+        #     "messages": messages,
+        #     "context": docs_content
+        # })
 
-        logging.info(f"[Model] prompt: {prompt}")
-        response = self.model.invoke(prompt)
-        for message in response["messages"]:
-            message.pretty_print()
-        # print(f"Message content: {response.text()}\n")
-        # print(f"Tool calls: {response.tool_calls}")
-        logging.info(f"[Model] response: {response.content}")
+        # 关键：把 RAG 上下文变成系统消息，合并到 messages 里
+        system_with_ctx = SystemMessage(
+            content=(
+                    "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
+                    "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
+                    "如果用户是减脂人群，推荐低热量高蛋白；若提到特定食材，请结合特点给做法。"
+                    "\n\n以下是检索到的菜谱信息（可能为空）：\n" + rag_context
+            )
+        )
+        messages_with_ctx: list[BaseMessage] = [system_with_ctx] + messages
 
-        # 更新消息和答案
-        new_messages = messages + [response]
-        return {
-            "messages": new_messages,
-            "answer": response.content
-        } # 节点返回的字典会直接合并到 state 中。
+        # response = self.model.invoke(prompt)
+        response = self.agent_executor.invoke(
+            {"messages": messages_with_ctx},
+            config=config  # 关键：把 thread_id 等透传，以启用 checkpointer
+        )
+        returned_messages: List[BaseMessage] = response["messages"]
+        # （可选）调试：打印每步
+        for m in returned_messages:
+            try:
+                m.pretty_print()
+            except Exception:
+                pass
+
+        # 取最后一条 AIMessage 作为最终答案
+        last_ai = next((m for m in reversed(returned_messages) if isinstance(m, AIMessage)), None)
+        answer = last_ai.content if last_ai else ""
+
+        return {"messages": returned_messages, "answer": answer}
 
     async def chat(self, chat_id: str, message: str) -> str:
         """
