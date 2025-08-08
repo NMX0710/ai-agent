@@ -11,6 +11,8 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, END, StateGraph
 from pydantic import BaseModel
 from app.rag.recipe_app_rag_pipeline import RecipeAppRAGPipeline, RecipeAppState
+from app.tools.tool_registry import ALL_TOOLS
+from langgraph.prebuilt import create_react_agent
 
 # 系统提示
 SYSTEM_PROMPT = (
@@ -37,14 +39,34 @@ class RecipeApp:
         if not api_key:
             raise RuntimeError("缺少环境变量 DASHSCOPE_API_KEY，请设置后重试")
 
+        self.rag_template = ChatPromptTemplate.from_messages([
+            ("system",
+             "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
+             "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
+             "如果用户是减脂人群，推荐低热量高蛋白的清淡菜式；如果用户想改善家庭饮食质量，可推荐易做营养的家常菜；"
+             "若用户提到特定食材（如鸡肉、番茄等），请结合食材特点推荐合适做法。"
+             "\n\n以下是相关的菜谱信息，请基于这些信息回答用户问题：\n{context}"),
+            MessagesPlaceholder(variable_name="messages"),
+            ("human", "{input}")
+        ])
+
         # 初始化 LLM
         self.model = ChatTongyi(model="qwen-plus", api_key=api_key)
+
+        # 初始化 Agent
+        self.agent_executor = create_react_agent(self.model, ALL_TOOLS)
 
         # 初始化解析器
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
 
         # 初始化记忆存储
         self.memory_saver = MemorySaver()
+
+        # 初始化 embeddings
+        embedding_model = DashScopeEmbeddings(
+            model="text-embedding-v1",  # 阿里目前推荐的基础 embedding 模型
+            dashscope_api_key=api_key
+        )
 
         # 准备 Prompt Templates
         self.chat_template = ChatPromptTemplate.from_messages([
@@ -63,21 +85,6 @@ class RecipeApp:
             },
         )
 
-        self.rag_template = ChatPromptTemplate.from_messages([
-            ("system",
-             "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
-             "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
-             "如果用户是减脂人群，推荐低热量高蛋白的清淡菜式；如果用户想改善家庭饮食质量，可推荐易做营养的家常菜；"
-             "若用户提到特定食材（如鸡肉、番茄等），请结合食材特点推荐合适做法。"
-             "\n\n以下是相关的菜谱信息，请基于这些信息回答用户问题：\n{context}"),
-            MessagesPlaceholder(variable_name="messages"),
-        ])
-
-        # 初始化 embeddings
-        embedding_model = DashScopeEmbeddings(
-            model="text-embedding-v1",  # 阿里目前推荐的基础 embedding 模型
-            dashscope_api_key=api_key
-        )
 
         # 初始化 RAG pipeline，传入 model
         self.rag_pipeline = RecipeAppRAGPipeline(embedding_model, self.model)
@@ -114,12 +121,7 @@ class RecipeApp:
         """
         messages = state.get("messages", [])
         context = state.get("context", [])
-
-        # 构建上下文内容
-        if context:
-            docs_content = "\n\n".join(doc.page_content for doc in context)
-        else:
-            docs_content = "暂无相关菜谱信息"
+        docs_content = "\n\n".join(d.page_content for d in context) if context else "暂无相关菜谱信息"
 
         # 使用 RAG template
         prompt = self.rag_template.invoke({
@@ -129,6 +131,10 @@ class RecipeApp:
 
         logging.info(f"[Model] prompt: {prompt}")
         response = self.model.invoke(prompt)
+        for message in response["messages"]:
+            message.pretty_print()
+        # print(f"Message content: {response.text()}\n")
+        # print(f"Tool calls: {response.tool_calls}")
         logging.info(f"[Model] response: {response.content}")
 
         # 更新消息和答案
