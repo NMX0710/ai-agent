@@ -11,7 +11,8 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, END, StateGraph
 from pydantic import BaseModel
 from app.rag.recipe_app_rag_pipeline import RecipeAppRAGPipeline, RecipeAppState
-from app.tools.tool_registry import ALL_TOOLS
+from app.tools.tool_registry import BASE_TOOLS
+from app.tools.tool_registry import load_all_tools_with_mcp
 from langgraph.prebuilt import create_react_agent
 
 # 系统提示
@@ -59,9 +60,11 @@ class RecipeApp:
         # 初始化记忆存储
         self.memory_saver = MemorySaver()
 
+        tools, self._mcp_handle = load_all_tools_with_mcp()
         # 初始化 Agent
         self.agent_executor = create_react_agent(
-            self.model, ALL_TOOLS,
+            self.model,
+            tools,
             checkpointer=self.memory_saver,
         )
 
