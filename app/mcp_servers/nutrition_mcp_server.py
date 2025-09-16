@@ -18,8 +18,8 @@ def search_recipe(q: str, diet: str | None = None, intolerances: str | None = No
     返回字段:
       results: [{id,title,image,calories,protein,carbs,fat,url}]
     """
-    # api_key = os.getenv("SPOONACULAR_API_KEY")
-    api_key = "1b387737bdc84d05af660c6e612a767f"
+    api_key = os.getenv("SPOONACULAR_API_KEY")
+
     if not api_key:
         return {"error": "missing SPOONACULAR_API_KEY"}
 
