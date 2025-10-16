@@ -1,0 +1,142 @@
+:root {
+    color-scheme: light dark;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: #f5f7fa;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #eef2f3 0%, #d9e4f5 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 18px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
+    max-width: 720px;
+    width: 90%;
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 2.5rem;
+    color: #1e293b;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+form {
+    display: grid;
+    gap: 1rem;
+}
+
+label {
+    font-weight: 600;
+    color: #334155;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #cbd5f5;
+    font-size: 1rem;
+    background: #f8fafc;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    outline: none;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+button {
+    padding: 0.85rem 1.5rem;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 20px rgba(99, 102, 241, 0.3);
+}
+
+#responses {
+    margin-top: 2rem;
+    display: grid;
+    gap: 1.25rem;
+}
+
+.response-item {
+    background: white;
+    border-radius: 14px;
+    padding: 1.25rem;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
+    transition: border-color 0.2s ease;
+}
+
+.response-item.pending {
+    border-color: #fbbf24;
+}
+
+.response-item.error {
+    border-color: #ef4444;
+}
+
+.response-item header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    color: #475569;
+    font-size: 0.95rem;
+}
+
+.response-item p {
+    margin: 0.5rem 0 0;
+    color: #0f172a;
+    line-height: 1.6;
+}
+
+.status {
+    margin-top: 0.75rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.status.success {
+    color: #10b981;
+}
+
+.status.error {
+    color: #ef4444;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}
