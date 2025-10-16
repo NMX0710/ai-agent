@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Recipe Chat</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AI Recipe Chat</h1>
+        <form id="chat-form">
+            <label for="chat-id">Chat ID</label>
+            <input type="text" id="chat-id" name="chat_id" placeholder="请输入聊天 ID" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="请输入想咨询的内容" required></textarea>
+
+            <button type="submit">发送</button>
+        </form>
+
+        <section id="responses" aria-live="polite"></section>
+    </div>
+
+    <script>
+        const form = document.getElementById('chat-form');
+        const responses = document.getElementById('responses');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const chatId = document.getElementById('chat-id').value;
+            const message = document.getElementById('message').value;
+
+            const responseItem = document.createElement('article');
+            responseItem.className = 'response-item pending';
+            responseItem.innerHTML = `
+                <header>
+                    <strong>请求</strong>
+                    <span>${new Date().toLocaleTimeString()}</span>
+                </header>
+                <p>${message}</p>
+                <div class="status">等待响应...</div>
+            `;
+            responses.prepend(responseItem);
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ chat_id: chatId, message })
+                });
+
+                if (!res.ok) {
+                    throw new Error(`服务器返回状态: ${res.status}`);
+                }
+
+                const data = await res.json();
+
+                responseItem.classList.remove('pending');
+                responseItem.innerHTML += `
+                    <div class="status success">响应成功</div>
+                    <section>
+                        <header>回复</header>
+                        <p>${data.response}</p>
+                    </section>
+                `;
+            } catch (error) {
+                responseItem.classList.remove('pending');
+                responseItem.classList.add('error');
+                responseItem.innerHTML += `
+                    <div class="status error">出错了: ${error.message}</div>
+                `;
+            }
+
+            form.reset();
+            document.getElementById('chat-id').focus();
+        });
+    </script>
+</body>
+</html>

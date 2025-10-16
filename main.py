@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from app.routers import sample
 from pydantic import BaseModel
 from app.recipe_app import RecipeApp
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 import logging
 logging.basicConfig(
@@ -12,6 +15,9 @@ logging.basicConfig(
 
 app = FastAPI()
 recipe_app = RecipeApp()
+templates = Jinja2Templates(directory="app/templates")
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Sample to show how swagger used
 app.include_router(sample.router, prefix="/api")
@@ -19,6 +25,14 @@ app.include_router(sample.router, prefix="/api")
 class ChatRequest(BaseModel):
     chat_id: str
     message: str
+
+
 @app.post("/chat")
 async def chat(req: ChatRequest):
     return {"response": await recipe_app.chat(req.chat_id, req.message)}
+
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    """Render the interactive chat console."""
+    return templates.TemplateResponse("index.html", {"request": request})
