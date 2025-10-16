@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, TypedDict, Any
 from langchain_community.chat_models.tongyi import ChatTongyi
 from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_core.documents import Document
-from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
+from langchain_core.messages import HumanMessage, BaseMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from langgraph.checkpoint.memory import MemorySaver
@@ -45,6 +45,9 @@ class RecipeApp:
 
         # 初始化记忆存储
         self.memory_saver = MemorySaver()
+
+        # 维护会话历史，保证多轮对话能够记住上下文
+        self._chat_histories: Dict[str, List[BaseMessage]] = {}
 
         # 准备 Prompt Templates
         self.chat_template = ChatPromptTemplate.from_messages([
@@ -146,10 +149,14 @@ class RecipeApp:
         """
         logging.info(f"[Chat] chat_id={chat_id}, message={message}")
 
+        # 读取历史消息，追加最新的人类消息
+        history = self._chat_histories.get(chat_id, [])
+        messages = [*history, HumanMessage(content=message)]
+
         # 初始化 state，包含所有必要的字段
         state = {
             "question": message,
-            "messages": [HumanMessage(content=message)],
+            "messages": messages,
             "context": [],
             "answer": None
         }
@@ -158,7 +165,13 @@ class RecipeApp:
 
         try:
             out = await self.graph.ainvoke(state, config)
-            answer = out.get("answer") or out["messages"][-1].content
+            # LangGraph 会把最新的消息列表返回在 state 中
+            updated_messages: List[BaseMessage] = out.get("messages", messages)
+
+            # 保存本轮对话历史，供下一次调用使用
+            self._chat_histories[chat_id] = updated_messages
+
+            answer = out.get("answer") or updated_messages[-1].content
             logging.info(f"[Chat] response={answer}")
             return answer
         except Exception:

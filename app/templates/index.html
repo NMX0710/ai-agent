@@ -9,39 +9,96 @@
 <body>
     <div class="container">
         <h1>AI Recipe Chat</h1>
-        <form id="chat-form">
-            <label for="chat-id">Chat ID</label>
-            <input type="text" id="chat-id" name="chat_id" placeholder="请输入聊天 ID" required>
+        <div class="layout">
+            <form id="chat-form" novalidate>
+                <label for="chat-id">Chat ID</label>
+                <input type="text" id="chat-id" name="chat_id" placeholder="请输入聊天 ID" required>
 
-            <label for="message">Message</label>
-            <textarea id="message" name="message" placeholder="请输入想咨询的内容" required></textarea>
+                <label for="message">Message</label>
+                <textarea id="message" name="message" placeholder="请输入想咨询的内容" required></textarea>
 
-            <button type="submit">发送</button>
-        </form>
+                <button type="submit">发送</button>
+            </form>
 
-        <section id="responses" aria-live="polite"></section>
+            <section class="chat-window" aria-live="polite" aria-label="对话内容">
+                <div id="chat-log" class="chat-log"></div>
+            </section>
+        </div>
     </div>
 
     <script>
         const form = document.getElementById('chat-form');
-        const responses = document.getElementById('responses');
+        const chatLog = document.getElementById('chat-log');
+        const submitButton = form.querySelector('button[type="submit"]');
+        const chatIdField = document.getElementById('chat-id');
+        const messageField = document.getElementById('message');
+
+        const roleLabels = {
+            user: '我',
+            assistant: 'AI 厨师'
+        };
+
+        function renderMultilineText(container, text) {
+            container.innerHTML = '';
+            const lines = text.split(/\n+/);
+            lines.forEach((line, index) => {
+                if (index > 0) {
+                    container.appendChild(document.createElement('br'));
+                }
+                container.appendChild(document.createTextNode(line));
+            });
+        }
+
+        function appendMessage(role, content, { pending = false, timestamp = new Date() } = {}) {
+            const article = document.createElement('article');
+            article.className = `message ${role}`;
+            if (pending) {
+                article.classList.add('pending');
+            }
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+
+            const meta = document.createElement('div');
+            meta.className = 'meta';
+
+            const roleEl = document.createElement('span');
+            roleEl.className = 'role';
+            roleEl.textContent = roleLabels[role] ?? role;
+
+            const timeEl = document.createElement('time');
+            timeEl.dateTime = timestamp.toISOString();
+            timeEl.textContent = timestamp.toLocaleTimeString();
+
+            meta.append(roleEl, timeEl);
+
+            const contentEl = document.createElement('p');
+            renderMultilineText(contentEl, content);
+
+            bubble.append(meta, contentEl);
+            article.append(bubble);
+            chatLog.append(article);
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            return { article, contentEl };
+        }
 
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
-            const chatId = document.getElementById('chat-id').value;
-            const message = document.getElementById('message').value;
 
-            const responseItem = document.createElement('article');
-            responseItem.className = 'response-item pending';
-            responseItem.innerHTML = `
-                <header>
-                    <strong>请求</strong>
-                    <span>${new Date().toLocaleTimeString()}</span>
-                </header>
-                <p>${message}</p>
-                <div class="status">等待响应...</div>
-            `;
-            responses.prepend(responseItem);
+            const chatId = chatIdField.value.trim();
+            const message = messageField.value.trim();
+
+            if (!chatId || !message) {
+                return;
+            }
+
+            const timestamp = new Date();
+
+            appendMessage('user', message, { timestamp });
+            const assistantMessage = appendMessage('assistant', '正在思考...', { pending: true, timestamp });
+
+            submitButton.disabled = true;
 
             try {
                 const res = await fetch('/chat', {
@@ -58,24 +115,17 @@
 
                 const data = await res.json();
 
-                responseItem.classList.remove('pending');
-                responseItem.innerHTML += `
-                    <div class="status success">响应成功</div>
-                    <section>
-                        <header>回复</header>
-                        <p>${data.response}</p>
-                    </section>
-                `;
+                assistantMessage.article.classList.remove('pending');
+                renderMultilineText(assistantMessage.contentEl, data.response);
             } catch (error) {
-                responseItem.classList.remove('pending');
-                responseItem.classList.add('error');
-                responseItem.innerHTML += `
-                    <div class="status error">出错了: ${error.message}</div>
-                `;
+                assistantMessage.article.classList.remove('pending');
+                assistantMessage.article.classList.add('error');
+                renderMultilineText(assistantMessage.contentEl, `出错了: ${error.message}`);
+            } finally {
+                submitButton.disabled = false;
+                messageField.value = '';
+                messageField.focus();
             }
-
-            form.reset();
-            document.getElementById('chat-id').focus();
         });
     </script>
 </body>
