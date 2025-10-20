@@ -10,15 +10,19 @@
     <div class="container">
         <h1>AI Recipe Chat</h1>
         <div class="layout">
-            <form id="chat-form" novalidate>
-                <label for="chat-id">Chat ID</label>
-                <input type="text" id="chat-id" name="chat_id" placeholder="请输入聊天 ID" required>
+           <form id="chat-form" novalidate>
+              <!-- 不再让用户手输；需要的话可保留一个隐藏域传给后端 -->
+              <input type="hidden" id="chat-id" name="chat_id">
 
-                <label for="message">Message</label>
-                <textarea id="message" name="message" placeholder="请输入想咨询的内容" required></textarea>
+              <label for="message">Message</label>
+              <textarea id="message" name="message"
+                  class="message-input"
+                  placeholder="请输入想咨询的内容" required></textarea>
 
-                <button type="submit">发送</button>
+
+              <button type="submit">发送</button>
             </form>
+
 
             <section class="chat-window" aria-live="polite" aria-label="对话内容">
                 <div id="chat-log" class="chat-log"></div>
@@ -27,106 +31,114 @@
     </div>
 
     <script>
-        const form = document.getElementById('chat-form');
-        const chatLog = document.getElementById('chat-log');
-        const submitButton = form.querySelector('button[type="submit"]');
-        const chatIdField = document.getElementById('chat-id');
-        const messageField = document.getElementById('message');
+      const form = document.getElementById('chat-form');
+      const chatLog = document.getElementById('chat-log');
+      const submitButton = form.querySelector('button[type="submit"]');
+      const chatIdField = document.getElementById('chat-id');   // 现在是隐藏域
+      const messageField = document.getElementById('message');
 
-        const roleLabels = {
-            user: '我',
-            assistant: 'AI 厨师'
-        };
+      const roleLabels = { user: '我', assistant: 'AI 厨师' };
 
-        function renderMultilineText(container, text) {
-            container.innerHTML = '';
-            const lines = text.split(/\n+/);
-            lines.forEach((line, index) => {
-                if (index > 0) {
-                    container.appendChild(document.createElement('br'));
-                }
-                container.appendChild(document.createTextNode(line));
-            });
+      // —— 1) 生成/读取持久化 chatId（localStorage） ——
+      function uuidv4() {
+        if (crypto?.randomUUID) return crypto.randomUUID();
+        // 兼容旧环境
+        const buf = new Uint8Array(16);
+        (crypto?.getRandomValues ?? function(b){ for (let i=0;i<b.length;i++) b[i]=Math.random()*256|0; })(buf);
+        buf[6] = (buf[6] & 0x0f) | 0x40; // version 4
+        buf[8] = (buf[8] & 0x3f) | 0x80; // variant
+        const h = [...buf].map(b => b.toString(16).padStart(2,'0'));
+        return `${h[0]}${h[1]}${h[2]}${h[3]}-${h[4]}${h[5]}-${h[6]}${h[7]}-${h[8]}${h[9]}-${h[10]}${h[11]}${h[12]}${h[13]}${h[14]}${h[15]}`;
+      }
+
+      function getOrCreateChatId() {
+        const KEY = 'recipe_chat_id';
+        let id = localStorage.getItem(KEY);
+        if (!id) {
+          id = uuidv4();
+          localStorage.setItem(KEY, id);
         }
+        return id;
+      }
 
-        function appendMessage(role, content, { pending = false, timestamp = new Date() } = {}) {
-            const article = document.createElement('article');
-            article.className = `message ${role}`;
-            if (pending) {
-                article.classList.add('pending');
-            }
+      const CHAT_ID = getOrCreateChatId();
+      chatIdField.value = CHAT_ID; // 让后端也能拿到同一个 chat_id
 
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-
-            const meta = document.createElement('div');
-            meta.className = 'meta';
-
-            const roleEl = document.createElement('span');
-            roleEl.className = 'role';
-            roleEl.textContent = roleLabels[role] ?? role;
-
-            const timeEl = document.createElement('time');
-            timeEl.dateTime = timestamp.toISOString();
-            timeEl.textContent = timestamp.toLocaleTimeString();
-
-            meta.append(roleEl, timeEl);
-
-            const contentEl = document.createElement('p');
-            renderMultilineText(contentEl, content);
-
-            bubble.append(meta, contentEl);
-            article.append(bubble);
-            chatLog.append(article);
-            chatLog.scrollTop = chatLog.scrollHeight;
-
-            return { article, contentEl };
-        }
-
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const chatId = chatIdField.value.trim();
-            const message = messageField.value.trim();
-
-            if (!chatId || !message) {
-                return;
-            }
-
-            const timestamp = new Date();
-
-            appendMessage('user', message, { timestamp });
-            const assistantMessage = appendMessage('assistant', '正在思考...', { pending: true, timestamp });
-
-            submitButton.disabled = true;
-
-            try {
-                const res = await fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ chat_id: chatId, message })
-                });
-
-                if (!res.ok) {
-                    throw new Error(`服务器返回状态: ${res.status}`);
-                }
-
-                const data = await res.json();
-
-                assistantMessage.article.classList.remove('pending');
-                renderMultilineText(assistantMessage.contentEl, data.response);
-            } catch (error) {
-                assistantMessage.article.classList.remove('pending');
-                assistantMessage.article.classList.add('error');
-                renderMultilineText(assistantMessage.contentEl, `出错了: ${error.message}`);
-            } finally {
-                submitButton.disabled = false;
-                messageField.value = '';
-                messageField.focus();
-            }
+      // —— 2) 渲染 & 发送逻辑（原样保留） ——
+      function renderMultilineText(container, text) {
+        container.innerHTML = '';
+        const lines = (text ?? '').split(/\n+/);
+        lines.forEach((line, index) => {
+          if (index > 0) container.appendChild(document.createElement('br'));
+          container.appendChild(document.createTextNode(line));
         });
+      }
+
+      function appendMessage(role, content, { pending = false, timestamp = new Date() } = {}) {
+        const article = document.createElement('article');
+        article.className = `message ${role}`;
+        if (pending) article.classList.add('pending');
+
+        const bubble = document.createElement('div'); bubble.className = 'bubble';
+        const meta = document.createElement('div'); meta.className = 'meta';
+
+        const roleEl = document.createElement('span'); roleEl.className = 'role'; roleEl.textContent = roleLabels[role] ?? role;
+        const timeEl = document.createElement('time'); timeEl.dateTime = timestamp.toISOString(); timeEl.textContent = timestamp.toLocaleTimeString();
+        meta.append(roleEl, timeEl);
+
+        const contentEl = document.createElement('p'); renderMultilineText(contentEl, content);
+        bubble.append(meta, contentEl); article.append(bubble); chatLog.append(article);
+        chatLog.scrollTop = chatLog.scrollHeight;
+        return { article, contentEl };
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const message = messageField.value.trim();
+        if (!message) return;
+
+        const timestamp = new Date();
+        appendMessage('user', message, { timestamp });
+        const assistantMessage = appendMessage('assistant', '正在思考...', { pending: true, timestamp });
+
+        submitButton.disabled = true;
+        try {
+          const res = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: CHAT_ID, message })
+          });
+          if (!res.ok) throw new Error(`服务器返回状态: ${res.status}`);
+          const data = await res.json();
+
+          assistantMessage.article.classList.remove('pending');
+          renderMultilineText(assistantMessage.contentEl, data.response);
+        } catch (error) {
+          assistantMessage.article.classList.remove('pending');
+          assistantMessage.article.classList.add('error');
+          renderMultilineText(assistantMessage.contentEl, `出错了: ${error.message}`);
+        } finally {
+          submitButton.disabled = false;
+          messageField.value = '';
+          messageField.focus();
+        }
+      });
+
+      // --- 自动增高：输入时根据内容调整高度 ---
+        function autoResize(el){
+          // 先重置到最小高度再测 scrollHeight，避免只增不减
+          const style = window.getComputedStyle(el);
+          const border = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+          el.style.height = 'auto';
+          const newH = Math.min(el.scrollHeight + border, parseFloat(style.maxHeight) || 9999);
+          el.style.height = Math.max(newH, parseFloat(style.minHeight) || 0) + 'px';
+        }
+
+        // 初始时和每次输入时都执行
+        messageField.addEventListener('input', () => autoResize(messageField));
+        window.addEventListener('load', () => autoResize(messageField));
+
     </script>
 </body>
 </html>

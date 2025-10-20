@@ -14,7 +14,6 @@ body {
     justify-content: center;
 }
 
-
 .container {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 18px;
@@ -70,9 +69,24 @@ textarea:focus {
     outline: none;
 }
 
-textarea {
-    min-height: 140px;
+/* —— 输入框更紧凑：默认更短，并限制最大高度 —— */
+textarea,
+#message {
+    min-height: 140px;   /* 原来 140px -> 现在更短 */
+    height: 120px;       /* 默认高度 */
+    max-height: 220px;   /* 防止撑太高 */
+    resize: vertical;    /* 只允许纵向拖拽 */
+    line-height: 1.5;
+    width: 95%;
+}
+
+/* 如果你在 HTML 上给 textarea 加了 class="message-input"，这条会生效覆盖 */
+.message-input {
+    min-height: 100px;
+    height: 120px;
+    max-height: 220px;
     resize: vertical;
+    line-height: 1.5;
 }
 
 button {
@@ -200,6 +214,15 @@ button:disabled {
 
     .chat-window {
         min-height: 260px;
+    }
+
+    /* 移动端输入再短一点 */
+    textarea,
+    #message,
+    .message-input {
+        min-height: 90px;
+        height: 100px;
+        max-height: 200px;
     }
 }
 
