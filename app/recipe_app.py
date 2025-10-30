@@ -1,16 +1,19 @@
 import logging
 import os
-from typing import Dict, List, Optional, TypedDict, Any
+from typing import Dict, List, Any
 from langchain_community.chat_models.tongyi import ChatTongyi
 from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_core.documents import Document
-from langchain_core.messages import HumanMessage, BaseMessage
+from langchain_core.messages import HumanMessage, AIMessage, BaseMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, END, StateGraph
 from pydantic import BaseModel
 from app.rag.recipe_app_rag_pipeline import RecipeAppRAGPipeline, RecipeAppState
+from app.tools.tool_registry import BASE_TOOLS
+from app.tools.tool_registry import load_all_tools_with_mcp
+from langgraph.prebuilt import create_react_agent
 
 # 系统提示
 SYSTEM_PROMPT = (
@@ -22,34 +25,53 @@ SYSTEM_PROMPT = (
     "引导用户尽量具体描述需求，你再基于这些信息提供实用、详细、有趣的菜谱推荐。"
 )
 
-
 # 定义结构化报告模型
 class RecipeReport(BaseModel):
     title: str
     suggestions: List[str]
 
-
 class RecipeApp:
     def __init__(self):
         # 验证并初始化模型
         api_key = os.getenv("DASHSCOPE_API_KEY")
-
         if not api_key:
             raise RuntimeError("缺少环境变量 DASHSCOPE_API_KEY，请设置后重试")
 
-        # 初始化 LLM
+        # 模型
         self.model = ChatTongyi(model="qwen-plus", api_key=api_key)
 
-        # 初始化解析器
+        # 解析器
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
 
-        # 初始化记忆存储
+        # 记忆存储
         self.memory_saver = MemorySaver()
 
-        # 维护会话历史，保证多轮对话能够记住上下文
-        self._chat_histories: Dict[str, List[BaseMessage]] = {}
+        # RAG 用模板（可选）
+        self.rag_template = ChatPromptTemplate.from_messages([
+            ("system",
+             "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
+             "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
+             "如果用户是减脂人群，推荐低热量高蛋白的清淡菜式；如果用户想改善家庭饮食质量，可推荐易做营养的家常菜；"
+             "若用户提到特定食材（如鸡肉、番茄等），请结合食材特点推荐合适做法。"
+             "\n\n以下是相关的菜谱信息，请基于这些信息回答用户问题：\n{context}"),
+            MessagesPlaceholder(variable_name="messages"),
+        ])
 
-        # 准备 Prompt Templates
+        # 工具 & MCP（Agent）
+        tools, self._mcp_handle = load_all_tools_with_mcp()
+        self.agent_executor = create_react_agent(
+            self.model,
+            tools,
+            checkpointer=self.memory_saver,
+        )
+
+        # Embeddings（RAG）
+        embedding_model = DashScopeEmbeddings(
+            model="text-embedding-v1",
+            dashscope_api_key=api_key
+        )
+
+        # Prompt 模板（普通聊天）
         self.chat_template = ChatPromptTemplate.from_messages([
             ("system", SYSTEM_PROMPT),
             MessagesPlaceholder(variable_name="messages"),
@@ -66,23 +88,10 @@ class RecipeApp:
             },
         )
 
-        self.rag_template = ChatPromptTemplate.from_messages([
-            ("system",
-             "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
-             "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
-             "如果用户是减脂人群，推荐低热量高蛋白的清淡菜式；如果用户想改善家庭饮食质量，可推荐易做营养的家常菜；"
-             "若用户提到特定食材（如鸡肉、番茄等），请结合食材特点推荐合适做法。"
-             "\n\n以下是相关的菜谱信息，请基于这些信息回答用户问题：\n{context}"),
-            MessagesPlaceholder(variable_name="messages"),
-        ])
+        # 会话历史，保证多轮对话上下文
+        self._chat_histories: Dict[str, List[BaseMessage]] = {}
 
-        # 初始化 embeddings
-        embedding_model = DashScopeEmbeddings(
-            model="text-embedding-v1",  # 阿里目前推荐的基础 embedding 模型
-            dashscope_api_key=api_key
-        )
-
-        # 初始化 RAG pipeline，传入 model
+        # RAG pipeline
         self.rag_pipeline = RecipeAppRAGPipeline(embedding_model, self.model)
 
         # 构建对话图
@@ -96,50 +105,48 @@ class RecipeApp:
         - 添加 MemorySaver 持久化上下文
         """
         workflow = StateGraph(state_schema=RecipeAppState)
-
-        # 添加节点
         workflow.add_node("retrieve", self.rag_pipeline.retrieve)
         workflow.add_node("model", self._call_model)
 
-        # 添加边
         workflow.add_edge(START, "retrieve")
         workflow.add_edge("retrieve", "model")
         workflow.add_edge("model", END)
 
         return workflow.compile(checkpointer=self.memory_saver)
 
-
-    def _call_model(self, state: RecipeAppState) -> Dict[str, Any]:
+    def _call_model(self, state: RecipeAppState, config: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """
-        Graph 节点: 调用模型
+        Graph 节点: 调用模型（Agent + RAG）
         - 使用 RAG 检索到的上下文
-        - 生成回复并更新状态
+        - 以 SystemMessage 注入上下文并交给 ReAct Agent
         """
         messages = state.get("messages", [])
         context = state.get("context", [])
+        rag_context = "\n\n".join(d.page_content for d in context) if context else "暂无相关菜谱信息"
 
-        # 构建上下文内容
-        if context:
-            docs_content = "\n\n".join(doc.page_content for doc in context)
-        else:
-            docs_content = "暂无相关菜谱信息"
+        # 将 RAG 上下文注入为系统消息
+        system_with_ctx = SystemMessage(
+            content=(
+                "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
+                "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
+                "如果用户是减脂人群，推荐低热量高蛋白；若提到特定食材，请结合特点给做法。"
+                "\n\n以下是检索到的菜谱信息（可能为空）：\n" + rag_context
+            )
+        )
+        messages_with_ctx: List[BaseMessage] = [system_with_ctx] + list(messages)
 
-        # 使用 RAG template
-        prompt = self.rag_template.invoke({
-            "messages": messages,
-            "context": docs_content
-        })
+        # 交给 Agent 执行（保留 checkpointer 上下文）
+        response = self.agent_executor.invoke(
+            {"messages": messages_with_ctx},
+            config=config
+        )
+        returned_messages: List[BaseMessage] = response["messages"]
 
-        logging.info(f"[Model] prompt: {prompt}")
-        response = self.model.invoke(prompt)
-        logging.info(f"[Model] response: {response.content}")
+        # 取最后一条 AIMessage 作为最终答案
+        last_ai = next((m for m in reversed(returned_messages) if isinstance(m, AIMessage)), None)
+        answer = last_ai.content if last_ai else ""
 
-        # 更新消息和答案
-        new_messages = messages + [response]
-        return {
-            "messages": new_messages,
-            "answer": response.content
-        } # 节点返回的字典会直接合并到 state 中。
+        return {"messages": returned_messages, "answer": answer}
 
     async def chat(self, chat_id: str, message: str) -> str:
         """
@@ -153,8 +160,8 @@ class RecipeApp:
         history = self._chat_histories.get(chat_id, [])
         messages = [*history, HumanMessage(content=message)]
 
-        # 初始化 state，包含所有必要的字段
-        state = {
+        # 初始化 state
+        state: Dict[str, Any] = {
             "question": message,
             "messages": messages,
             "context": [],
@@ -165,13 +172,12 @@ class RecipeApp:
 
         try:
             out = await self.graph.ainvoke(state, config)
-            # LangGraph 会把最新的消息列表返回在 state 中
             updated_messages: List[BaseMessage] = out.get("messages", messages)
 
-            # 保存本轮对话历史，供下一次调用使用
+            # 保存本轮对话历史
             self._chat_histories[chat_id] = updated_messages
 
-            answer = out.get("answer") or updated_messages[-1].content
+            answer = out.get("answer") or (updated_messages[-1].content if updated_messages else "")
             logging.info(f"[Chat] response={answer}")
             return answer
         except Exception:
