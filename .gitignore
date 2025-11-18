@@ -7,5 +7,6 @@ __pycache__/
 .DS_Store
 node_modules/
 .idea/workspace.xml
-
-
+tmp/
+*.log
+.env
