@@ -9,7 +9,7 @@ from langchain_core.embeddings import Embeddings
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.vectorstores import InMemoryVectorStore
-from langchain import hub
+
 
 class RecipeAppState(TypedDict):
     question: str
@@ -54,7 +54,7 @@ class RecipeAppRAGPipeline:
         logging.info(f"总共加载了 {len(all_documents)} 个文档片段")
 
         """
-        Split Documents(Optional)
+        Split Documents(Optional) 
         Split documents if the size of each document is too large
         """
         # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)

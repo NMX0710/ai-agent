@@ -3,7 +3,11 @@ import os
 from typing import Dict, List, Any
 from langchain_community.chat_models.tongyi import ChatTongyi
 from langchain_community.embeddings import DashScopeEmbeddings
+import boto3
+from langchain_aws import ChatBedrock, BedrockEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.documents import Document
+from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
@@ -15,6 +19,7 @@ from app.tools.tool_registry import BASE_TOOLS
 from app.tools.tool_registry import load_all_tools_with_mcp
 from langgraph.prebuilt import create_react_agent
 
+load_dotenv()
 # 系统提示
 SYSTEM_PROMPT = (
     "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
@@ -33,14 +38,28 @@ class RecipeReport(BaseModel):
 class RecipeApp:
     def __init__(self):
         # 验证并初始化模型
-        api_key = os.getenv("DASHSCOPE_API_KEY")
+        # api_key = os.getenv("DASHSCOPE_API_KEY")
+        # if not api_key:
+        #     raise RuntimeError("缺少环境变量 DASHSCOPE_API_KEY，请设置后重试")
+        #
+        # # 模型
+        # self.model = ChatTongyi(model="qwen-plus", api_key=api_key)
+        #
+        # # 解析器
+        # self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
+        # ========= 1. OpenAI Chat 模型 =========
+        api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
-            raise RuntimeError("缺少环境变量 DASHSCOPE_API_KEY，请设置后重试")
+            raise RuntimeError("缺少环境变量 OPENAI_API_KEY，请在 .env 中配置")
 
-        # 模型
-        self.model = ChatTongyi(model="qwen-plus", api_key=api_key)
+        # 你可以换成 gpt-4.1 / gpt-4o-mini 等
+        self.model = ChatOpenAI(
+            model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
+            api_key=api_key,
+            temperature=0.5,
+        )
 
-        # 解析器
+        # ========= 3. 解析器 =========
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
 
         # 记忆存储
@@ -66,9 +85,9 @@ class RecipeApp:
         )
 
         # Embeddings（RAG）
-        embedding_model = DashScopeEmbeddings(
-            model="text-embedding-v1",
-            dashscope_api_key=api_key
+        embedding_model = OpenAIEmbeddings(
+            model=os.getenv("OPENAI_EMBED_MODEL", "text-embedding-3-small"),
+            api_key=api_key,
         )
 
         # Prompt 模板（普通聊天）
