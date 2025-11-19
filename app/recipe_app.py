@@ -1,8 +1,8 @@
 import logging
 import os
 from typing import Dict, List, Any
-from langchain_community.chat_models.tongyi import ChatTongyi
-from langchain_community.embeddings import DashScopeEmbeddings
+# from langchain_community.chat_models.tongyi import ChatTongyi
+# from langchain_community.embeddings import DashScopeEmbeddings
 import boto3
 from langchain_aws import ChatBedrock, BedrockEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings

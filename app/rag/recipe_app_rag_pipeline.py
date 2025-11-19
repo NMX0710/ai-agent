@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 from typing import List, TypedDict, Dict, Any, Optional
 from langchain_core.language_models import BaseChatModel
-from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_core.messages import BaseMessage, HumanMessage
@@ -43,13 +42,7 @@ class RecipeAppRAGPipeline:
         if not folder_path.exists() or not folder_path.is_dir():
             raise ValueError(f"指定路径无效: {folder_path}")
 
-        all_documents = []
-        for file in folder_path.glob("*.md"):
-            loader = UnstructuredMarkdownLoader(str(file), mode="elements")
-            # 因为我们的mode用的是element，md file里面每一个元素都会是一个Document
-            docs = loader.load()
-            all_documents.extend(docs)
-            logging.info(f"加载文档: {file.name}, 共 {len(docs)} 个元素")
+        all_documents = load_markdown_docs(folder_path)
 
         logging.info(f"总共加载了 {len(all_documents)} 个文档片段")
 
@@ -82,3 +75,10 @@ class RecipeAppRAGPipeline:
             logging.error(f"[RAG Retrieve] 检索失败: {e}")
             return {"context": []}  # 返回空列表而不是 None
 
+
+def load_markdown_docs(folder_path: Path) -> list[Document]:
+    docs: list[Document] = []
+    for file in folder_path.glob("*.md"):
+        text = file.read_text(encoding="utf-8")
+        docs.append(Document(page_content=text, metadata={"source": str(file)}))
+    return docs
