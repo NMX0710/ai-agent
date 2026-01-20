@@ -1,0 +1,125 @@
+# 🍳 AI Recipe Agent
+
+*A LangGraph + MCP powered AI agent for recipe recommendation, nutrition reasoning, and tool-augmented cooking assistance.*
+
+---
+
+## Overview
+
+**AI Recipe Agent** is a production-oriented AI agent system that integrates:
+
+- **LangGraph-based agent workflows**
+- **Retrieval-Augmented Generation (RAG)**
+- **MCP (Model Context Protocol) tool servers**
+- **FastAPI runtime**
+- **AWS Bedrock AgentCore deployment**
+
+The agent supports **multi-turn memory**, **tool calling**, **recipe and nutrition retrieval**, and **structured reasoning**, and can run both **locally (Web UI / API)** and **in the cloud (AgentCore Runtime)**.
+
+---
+
+## Key Features
+
+- 🧠 Multi-turn memory via LangGraph Checkpointer
+- 🔍 RAG pipeline over local Markdown recipe documents
+- 🛠️ Tool-augmented reasoning (web search, scraping, terminal, PDF, download, MCP nutrition API)
+- 🔗 MCP integration (stdio-based tool servers)
+- 🌐 FastAPI Web UI & JSON API
+- ☁️ AWS Bedrock AgentCore compatible runtime
+- 🧪 Extensive test & debug scripts (memory, tools, MCP, end-to-end)
+
+---
+
+## Architecture
+┌────────────────────┐
+│   Web / API Client │
+│ (Browser / cURL)   │
+└─────────┬──────────┘
+          │
+          ▼
+┌───────────────────────────┐
+│        FastAPI App        │
+│  /chat  /invocations      │
+│  /ping  Web UI (Jinja)    │
+└─────────┬─────────────────┘
+          │
+          ▼
+┌───────────────────────────┐
+│       RecipeApp           │
+│  - LangGraph workflow     │
+│  - Memory (Checkpointer)  │
+│  - ReAct Agent            │
+└───────┬─────────┬─────────┘
+        │         │
+        │         ▼
+        │   ┌────────────────┐
+        │   │ MCP Tool Client│
+        │   │ (stdio)        │
+        │   └────────────────┘
+        │
+        ▼
+┌───────────────────────────┐
+│    RAG Pipeline           │
+│  - OpenAI Embeddings      │
+│  - InMemoryVectorStore    │
+│  - Markdown Documents     │
+└───────────────────────────┘
+---
+
+## Project Structure
+
+app/
+├── recipe_app.py              # Core agent logic (LangGraph + Tools + RAG)
+├── rag/
+│   └── recipe_app_rag_pipeline.py
+├── tools/
+│   ├── tool_registry.py
+│   ├── mcp_client_tools.py
+│   ├── web_search_tool.py
+│   ├── web_scraping_tool.py
+│   ├── terminal_operation_tool.py
+│   ├── resource_download_tool.py
+│   └── pdf_generation_tool.py
+├── mcp_servers/
+│   └── nutrition_mcp_server.py
+├── templates/
+│   └── index.html             # Web chat UI
+├── static/
+│   └── css/
+└── routers/
+    └── sample.py
+
+tests/
+├── memory_test_runner.py
+├── tool_test_runner.py
+├── test_mcp_server.py
+└── test_recipe_app_rag.py
+
+main.py                         # FastAPI entrypoint
+requirements.txt
+
+---
+
+## Tooling Capabilities
+
+The agent can dynamically decide to call tools, including:
+
+- 🔍 Web Search
+- 🕷️ Web Scraping
+- 📥 Resource Download
+- 💻 Terminal Command Execution
+- 📄 PDF Generation
+- 🧾 File Read / Write
+- 🍽️ Nutrition & Recipe Search (via MCP + Spoonacular)
+
+MCP tools are automatically discovered and wrapped as LangChain tools at runtime.
+
+---
+
+## Local Setup
+
+### 1. Install dependencies
+
+```bash
+pip install -r requirements.txt
+
