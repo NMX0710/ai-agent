@@ -3,244 +3,260 @@ import sys
 import asyncio
 from pathlib import Path
 
-# 添加项目路径
-project_root = Path(__file__).parent.parent if Path(__file__).parent.name == "tests" else Path(__file__).parent
+# ------------------------------------------------------------
+# Add project root to sys.path so "app.*" imports work
+# ------------------------------------------------------------
+project_root = (
+    Path(__file__).parent.parent
+    if Path(__file__).parent.name == "tests"
+    else Path(__file__).parent
+)
 sys.path.append(str(project_root))
 
-print("=== 开始测试工具 ===")
+print("=== Starting Tool Tests ===")
 
 
-# 测试1: Web搜索工具
-def test_web_search():
-    print("\n🔍 测试Web搜索工具...")
+# ------------------------------------------------------------
+# Test 1: Web Search Tool
+# ------------------------------------------------------------
+def test_web_search() -> bool:
+    print("\n🔍 Testing Web Search tool...")
     try:
         from app.tools.web_search_tool import web_search
 
-        print("✅ 从web_search_tool成功导入web_search")
+        print("✅ Successfully imported web_search from web_search_tool")
 
-        query = "程序员鱼皮编程导航 codefather.cn"
-        print(f"🔍 搜索查询: {query}")
+        query = "codefather.cn programming navigation"
+        print(f"🔍 Search query: {query}")
 
         result = web_search.invoke(query)
 
-        print(f"📄 搜索结果类型: {type(result)}")
-        if isinstance(result, dict) and 'results' in result:
-            print(f"📊 找到 {len(result['results'])} 条结果")
-            if result['results']:
-                first_result = result['results'][0]
-                print(f"第一条结果: {first_result.get('title', 'No title')}")
+        print(f"📄 Result type: {type(result)}")
+        if isinstance(result, dict) and "results" in result:
+            print(f"📊 Found {len(result['results'])} results")
+            if result["results"]:
+                first_result = result["results"][0]
+                print(f"First result title: {first_result.get('title', 'No title')}")
         else:
-            print(f"📊 搜索结果: {str(result)[:200]}...")
+            print(f"📊 Result preview: {str(result)[:200]}...")
 
         return True
 
     except Exception as e:
-        print(f"❌ Web搜索测试失败: {e}")
+        print(f"❌ Web Search test failed: {e}")
         return False
 
 
-# 测试2: 网页抓取工具
-def test_web_scraping():
-    print("\n🕷️ 测试网页抓取工具...")
+# ------------------------------------------------------------
+# Test 2: Web Scraping Tool
+# ------------------------------------------------------------
+def test_web_scraping() -> bool:
+    print("\n🕷️ Testing Web Scraping tool...")
     try:
         from app.tools.web_scraping_tool import scrape_web_page
 
-        print("✅ 从web_scraping_tool成功导入scrape_web_page")
+        print("✅ Successfully imported scrape_web_page from web_scraping_tool")
 
-        # 测试抓取一个简单的网页
-        test_url = "https://httpbin.org/html"  # 这是一个测试网站，返回简单HTML
-        print(f"🌐 抓取URL: {test_url}")
+        # Fetch a simple HTML page from httpbin (great for testing)
+        test_url = "https://httpbin.org/html"
+        print(f"🌐 Scraping URL: {test_url}")
 
         result = scrape_web_page.invoke(test_url)
 
-        print(f"📄 抓取结果类型: {type(result)}")
-        print(f"📄 内容长度: {len(result)} 字符")
+        print(f"📄 Result type: {type(result)}")
+        print(f"📄 Content length: {len(result)} characters")
 
-        # 检查是否包含HTML标签
         if "<html" in result.lower() and "</html>" in result.lower():
-            print("✅ 成功抓取到HTML内容")
-            # 显示前200个字符
-            print(f"📊 内容预览: {result[:200]}...")
+            print("✅ Successfully scraped HTML content")
+            print(f"📊 Preview: {result[:200]}...")
         elif "error" in result.lower():
-            print(f"⚠️ 抓取出现错误: {result}")
+            print(f"⚠️ Scraping returned an error: {result}")
         else:
-            print(f"📊 抓取结果: {result[:200]}...")
+            print(f"📊 Preview: {result[:200]}...")
 
         return True
 
     except ImportError as e:
-        print(f"❌ 导入失败: {e}")
-        print("请确保已安装: pip install requests beautifulsoup4")
+        print(f"❌ Import failed: {e}")
+        print("Please ensure dependencies are installed: pip install requests beautifulsoup4")
         return False
     except Exception as e:
-        print(f"❌ 网页抓取测试失败: {e}")
+        print(f"❌ Web Scraping test failed: {e}")
         return False
 
 
-# 测试3: 抓取编程导航网站
-def test_scrape_codefather():
-    print("\n🐟 测试抓取编程导航网站...")
+# ------------------------------------------------------------
+# Test 3: Scrape CodeFather website (optional, may be blocked)
+# ------------------------------------------------------------
+def test_scrape_codefather() -> bool:
+    print("\n🐟 Testing scraping CodeFather website...")
     try:
         from app.tools.web_scraping_tool import scrape_web_page
 
         test_url = "https://www.codefather.cn"
-        print(f"🌐 抓取URL: {test_url}")
+        print(f"🌐 Scraping URL: {test_url}")
 
         result = scrape_web_page.invoke(test_url)
 
-        print(f"📄 抓取结果类型: {type(result)}")
-        print(f"📄 内容长度: {len(result)} 字符")
+        print(f"📄 Result type: {type(result)}")
+        print(f"📄 Content length: {len(result)} characters")
 
-        # 检查是否包含编程导航相关内容
-        if "编程导航" in result or "codefather" in result.lower():
-            print("✅ 成功抓取到编程导航网站内容")
+        if "codefather" in result.lower():
+            print("✅ Successfully scraped CodeFather content")
         elif "error" in result.lower():
-            print(f"⚠️ 抓取出现错误: {result}")
+            print(f"⚠️ Scraping returned an error: {result}")
         else:
-            print("✅ 抓取完成")
+            print("✅ Scrape completed (content may be dynamic)")
 
-        print(f"📊 内容预览: {result[:300]}...")
+        print(f"📊 Preview: {result[:300]}...")
         return True
 
     except Exception as e:
-        print(f"❌ 抓取编程导航失败: {e}")
+        print(f"❌ Failed to scrape CodeFather: {e}")
         return False
 
 
-# 测试4: 终端操作工具
-def test_terminal_operations():
-    print("\n💻 测试终端操作工具...")
+# ------------------------------------------------------------
+# Test 4: Terminal Operation Tool
+# ------------------------------------------------------------
+def test_terminal_operations() -> bool:
+    print("\n💻 Testing Terminal Operation tool...")
     try:
         from app.tools.terminal_operation_tool import execute_terminal_command
 
-        print("✅ 从terminal_operation_tool成功导入execute_terminal_command")
+        print("✅ Successfully imported execute_terminal_command from terminal_operation_tool")
 
-        # 测试基础命令
         test_commands = [
-            ("pwd", "获取当前目录"),
-            ("whoami", "获取当前用户"),
-            ("date", "获取当前时间"),
-            ("echo 'Hello from terminal tool!'", "测试echo命令"),
-            ("ls -la | head -5", "测试管道命令")
+            ("pwd", "Get current directory"),
+            ("whoami", "Get current user"),
+            ("date", "Get current time"),
+            ("echo 'Hello from terminal tool!'", "Test echo"),
+            ("ls -la | head -5", "Test piping"),
         ]
 
         success_count = 0
 
         for command, description in test_commands:
             print(f"\n🔨 {description}: {command}")
-
             try:
                 result = execute_terminal_command.invoke(command)
 
                 if "error" in result.lower():
-                    print(f"⚠️ 命令执行有问题: {result[:100]}...")
+                    print(f"⚠️ Command returned an error: {result[:120]}...")
                 else:
-                    print(f"✅ 执行成功")
-                    print(f"📄 输出: {result[:100]}...")
+                    print("✅ Command executed successfully")
+                    print(f"📄 Output preview: {result[:120]}...")
                     success_count += 1
 
             except Exception as cmd_error:
-                print(f"❌ 命令执行失败: {cmd_error}")
+                print(f"❌ Command execution failed: {cmd_error}")
 
-        print(f"\n📊 终端测试汇总: {success_count}/{len(test_commands)} 个命令成功执行")
+        print(f"\n📊 Terminal test summary: {success_count}/{len(test_commands)} commands succeeded")
         return success_count > 0
 
     except ImportError as e:
-        print(f"❌ 导入失败: {e}")
+        print(f"❌ Import failed: {e}")
         return False
     except Exception as e:
-        print(f"❌ 终端操作测试失败: {e}")
+        print(f"❌ Terminal operation test failed: {e}")
         return False
 
 
-# 测试6: 资源下载工具
-def test_resource_download():
-    print("\n📥 测试资源下载工具...")
+# ------------------------------------------------------------
+# Test 5: Resource Download Tool
+# ------------------------------------------------------------
+def test_resource_download() -> bool:
+    print("\n📥 Testing Resource Download tool...")
     try:
         from app.tools.resource_download_tool import download_resource
 
-        print("✅ 从resource_download_tool成功导入download_resource")
+        print("✅ Successfully imported download_resource from resource_download_tool")
 
-        # 测试图片下载
         test_urls = [
-            ("https://en.wikipedia.org/wiki/File:Chiikawa_volume_1_cover.jpg", "test_image.png", "下载测试图片"),
-            ("https://jsonplaceholder.typicode.com/posts/1", "sample.json", "下载JSON数据"),
-            ("https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore", "Python.gitignore",
-             "下载文本文件")
+            (
+                "https://jsonplaceholder.typicode.com/posts/1",
+                "sample.json",
+                "Download a JSON sample",
+            ),
+            (
+                "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore",
+                "Python.gitignore",
+                "Download a text file",
+            ),
         ]
 
         success_count = 0
 
         for test_url, file_name, description in test_urls:
             print(f"\n📋 {description}")
-            print(f"🌐 下载URL: {test_url}")
-            print(f"📁 文件名: {file_name}")
+            print(f"🌐 URL: {test_url}")
+            print(f"📁 File name: {file_name}")
 
             try:
+                # NOTE: This tool expects a dict payload based on your implementation
                 result = download_resource.invoke({"url": test_url, "file_name": file_name})
+                print(f"📄 Result: {result}")
 
-                print(f"📄 下载结果: {result}")
-
-                # 检查是否下载成功
-                if "successfully" in result.lower():
-                    print("✅ 文件下载成功")
-                elif "error" in result.lower():
-                    print(f"⚠️ 下载出现错误: {result}")
-                else:
-                    print(f"📊 下载结果: {result}")
+                if "successfully" in str(result).lower():
+                    print("✅ Download succeeded")
                     success_count += 1
+                elif "error" in str(result).lower():
+                    print(f"⚠️ Download error: {result}")
+                else:
+                    print(f"ℹ️ Unexpected response: {result}")
 
             except Exception as download_error:
-                print(f"❌ 下载失败: {download_error}")
+                print(f"❌ Download failed: {download_error}")
 
-        print(f"\n📊 下载测试汇总: {success_count}/{len(test_urls)} 个文件成功下载")
+        print(f"\n📊 Download test summary: {success_count}/{len(test_urls)} files downloaded")
         return success_count > 0
 
     except ImportError as e:
-        print(f"❌ 导入失败: {e}")
-        print("请确保已安装: pip install requests")
+        print(f"❌ Import failed: {e}")
+        print("Please ensure dependency is installed: pip install requests")
         return False
     except Exception as e:
-        print(f"❌ 资源下载测试失败: {e}")
+        print(f"❌ Resource download test failed: {e}")
         return False
 
-# 测试7: PDF 生成工具
-def test_pdf_generation():
-    print("\n📄 测试PDF生成工具...")
+
+# ------------------------------------------------------------
+# Test 6: PDF Generation Tool
+# ------------------------------------------------------------
+def test_pdf_generation() -> bool:
+    print("\n📄 Testing PDF Generation tool...")
     try:
         from app.tools.pdf_generation_tool import generate_pdf
 
-        print("✅ 从pdf_generation_tool成功导入generate_pdf")
+        print("✅ Successfully imported generate_pdf from pdf_generation_tool")
 
         file_name = "test_output.pdf"
-        content = "Hello, this is a test PDF generated by AI Agent!"
+        content = "Hello, this is a test PDF generated by the agent tool!"
 
-        print(f"📁 文件名: {file_name}")
-        print(f"📝 内容: {content}")
+        print(f"📁 File name: {file_name}")
+        print(f"📝 Content: {content}")
 
         result = generate_pdf.invoke({"file_name": file_name, "content": content})
+        print(f"📄 Result: {result}")
 
-        print(f"📄 返回结果: {result}")
-
-        # 检查文件是否生成成功
         if "successfully" in str(result).lower() and file_name in str(result):
-            print("✅ PDF文件生成成功")
+            print("✅ PDF generated successfully")
             return True
-        else:
-            print("⚠️ PDF生成结果异常")
-            return False
 
-    except Exception as e:
-        print(f"❌ PDF生成测试失败: {e}")
+        print("⚠️ PDF generation returned an unexpected result")
         return False
 
-# 添加项目路径
-project_root = Path(__file__).parent.parent if Path(__file__).parent.name == "tests" else Path(__file__).parent
-sys.path.append(str(project_root))
+    except Exception as e:
+        print(f"❌ PDF generation test failed: {e}")
+        return False
 
+
+# ------------------------------------------------------------
+# Agent-level tool triggering tests (via RecipeApp chat)
+# ------------------------------------------------------------
 from app.recipe_app import RecipeApp
 
-# 要测试的英文 message（每条都应触发某个工具）
+# Each message below is intended to encourage the agent to use a specific tool.
 TEST_MESSAGES = [
     # Web Search Tool
     "Use the web search tool to find trending low-carb meal plans for weight loss. Please perform the search.",
@@ -248,32 +264,31 @@ TEST_MESSAGES = [
     # Web Scraping Tool
     "Use the web scraping tool to extract content from https://codefather.cn about healthy recipes.",
 
-    # Resource Download Tool
+    # Resource Download Tool (note: example.com is not a real file source; may fail by design)
     "Please download a sample meal plan PDF from https://example.com/sample.pdf and save it as diet_plan.pdf.",
 
     # Terminal Operation Tool
     "Run the terminal command: echo 'Daily calorie intake: 2100 kcal'.",
 
-    # File Operation Tool
+    # File Operation Tool (depends on how your read/write tools are implemented)
     "Save the following preferences into a file: I avoid gluten and prefer plant-based protein.",
 
     # PDF Generation Tool
-    "Generate a PDF titled 'Weekly Vegan Meal Plan' with content: Breakfast - oats, Lunch - tofu salad, Dinner - lentil soup."
+    "Generate a PDF titled 'Weekly Vegan Meal Plan' with content: Breakfast - oats, Lunch - tofu salad, Dinner - lentil soup.",
 ]
 
 
-
 async def tool_message_runner(message: str) -> bool:
-    from app.recipe_app import RecipeApp  # 避免循环引用
+    # Lazy import to avoid potential circular imports in some setups
     app = RecipeApp()
 
-    print(f"\n🔍 Testing tool with message:\n   \"{message}\"")
+    print(f'\n🔍 Testing agent tool usage with message:\n   "{message}"')
 
     try:
         result = await app.chat(chat_id="debug-chat", message=message)
-        print(f"🧠 Model Response:\n   {result}")
+        print(f"🧠 Model response:\n   {result}")
 
-        # 工具触发关键词 → 工具名称映射
+        # Heuristic keyword mapping: detect likely tool usage from the response text
         tool_keywords = {
             "search": "🔍 Web Search Tool",
             "scrape": "🕷️ Web Scraping Tool",
@@ -281,60 +296,66 @@ async def tool_message_runner(message: str) -> bool:
             "terminal": "💻 Terminal Operation Tool",
             "shell": "💻 Terminal Operation Tool",
             "file": "📝 File Operation Tool",
-            "pdf": "📄 PDF Generation Tool"
+            "pdf": "📄 PDF Generation Tool",
         }
 
-        # 工具命中标记
-        triggered_tools = [name for keyword, name in tool_keywords.items() if keyword in result.lower()]
+        triggered_tools = [
+            name for keyword, name in tool_keywords.items()
+            if keyword in str(result).lower()
+        ]
+
         if triggered_tools:
-            print("✅ Triggered Tools:", "、".join(triggered_tools))
+            print("✅ Detected tool usage (heuristic):", " / ".join(triggered_tools))
             return True
-        else:
-            print("❌ No tools triggered based on response content.")
-            return False
+
+        print("❌ No tool usage detected based on response text.")
+        return False
 
     except Exception as e:
         print(f"❌ Error while testing message: {e}")
         return False
 
 
-
 def run_all_tool_tests():
-    print("=== 开始测试工具调用能力 ===")
+    print("=== Starting agent tool invocation tests ===")
+
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
+
     results = []
     for msg in TEST_MESSAGES:
-        result = loop.run_until_complete(tool_message_runner(msg))
-        results.append((msg, result))
+        ok = loop.run_until_complete(tool_message_runner(msg))
+        results.append((msg, ok))
 
-    print("\n📊 测试结果汇总:")
+    print("\n📊 Summary:")
     for i, (msg, success) in enumerate(results):
-        status = "✅ 成功" if success else "❌ 失败"
-        print(f"{i+1}. {msg[:40]}... -> {status}")
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{i + 1}. {msg[:50]}... -> {status}")
 
     passed = sum(1 for _, success in results if success)
-    print(f"\n总计: {passed}/{len(TEST_MESSAGES)} 个测试通过")
-    print("=== 测试结束 ===")
+    print(f"\nTotal: {passed}/{len(TEST_MESSAGES)} tests passed")
+    print("=== Done ===")
 
-# 运行所有测试
+
 if __name__ == "__main__":
+    # You can optionally run the direct tool tests first:
+    #
     # results = []
+    # results.append(("Web Search", test_web_search()))
+    # results.append(("Web Scraping", test_web_scraping()))
+    # results.append(("Scrape CodeFather", test_scrape_codefather()))
+    # results.append(("Terminal Operations", test_terminal_operations()))
+    # results.append(("Resource Download", test_resource_download()))
+    # results.append(("PDF Generation", test_pdf_generation()))
     #
-    # # 运行测试
-    # results.append(("Web搜索", test_web_search()))
-    # results.append(("网页抓取", test_web_scraping()))
-    # results.append(("抓取编程导航", test_scrape_codefather()))
-    # results.append(("终端操作", test_terminal_operations()))
-    #
-    # # 显示测试结果汇总
-    # print("\n" + "=" * 50)
-    # print("📊 测试结果汇总:")
+    # print("\n" + "=" * 60)
+    # print("📊 Direct tool test summary:")
     # for test_name, success in results:
-    #     status = "✅ 成功" if success else "❌ 失败"
+    #     status = "✅ PASS" if success else "❌ FAIL"
     #     print(f"{test_name}: {status}")
     #
     # successful_tests = sum(1 for _, success in results if success)
-    # print(f"\n总计: {successful_tests}/{len(results)} 个测试通过")
-    # print("=== 测试结束 ===")
+    # print(f"\nTotal: {successful_tests}/{len(results)} tests passed")
+    # print("=== Done ===")
+
     run_all_tool_tests()

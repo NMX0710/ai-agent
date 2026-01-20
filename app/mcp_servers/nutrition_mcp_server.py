@@ -1,55 +1,109 @@
 # nutrition_mcp_server.py
-# MCP 服务：食谱/营养检索（本地 stdio 传输）
-# 环境变量：SPOONACULAR_API_KEY
-from fastmcp import FastMCP
-import os, httpx
+# MCP server for recipe and nutrition retrieval (local stdio transport)
+#
+# Environment variable required:
+#   SPOONACULAR_API_KEY
 
+from fastmcp import FastMCP
+import os
+import httpx
+
+# Initialize MCP server
 mcp = FastMCP("nutrition-mcp")
 
-@mcp.tool()
-def search_recipe(q: str, diet: str | None = None, intolerances: str | None = None, number: int = 3) -> dict:
-    """
-    按关键词检索食谱，并抽取热量等营养摘要。
-    参数:
-      q: 关键词，如 "high protein chicken salad"
-      diet: 可选饮食模式 ("vegetarian", "keto"...)
-      intolerances: 过敏原逗号分隔，如 "peanut,shellfish"
-      number: 返回条数
-    返回字段:
-      results: [{id,title,image,calories,protein,carbs,fat,url}]
-    """
-    api_key = os.getenv("SPOONACULAR_API_KEY")
 
+@mcp.tool()
+def search_recipe(
+    q: str,
+    diet: str | None = None,
+    intolerances: str | None = None,
+    number: int = 3
+) -> dict:
+    """
+    Search recipes by keyword and extract basic nutrition summaries.
+
+    Args:
+        q: Search keyword, e.g. "high protein chicken salad"
+        diet: Optional dietary preference ("vegetarian", "keto", etc.)
+        intolerances: Optional comma-separated food intolerances,
+                       e.g. "peanut,shellfish"
+        number: Number of recipes to return
+
+    Returns:
+        A dictionary with the following structure:
+        {
+            "results": [
+                {
+                    "id": int,
+                    "title": str,
+                    "image": str,
+                    "calories": float | None,
+                    "protein": float | None,
+                    "carbs": float | None,
+                    "fat": float | None,
+                    "url": str
+                }
+            ]
+        }
+    """
+
+    # Read API key from environment variables
+    api_key = os.getenv("SPOONACULAR_API_KEY")
     if not api_key:
         return {"error": "missing SPOONACULAR_API_KEY"}
 
-    # 示例：Spoonacular（可替换为你的 API）
-    base = "https://api.spoonacular.com/recipes/complexSearch"
+    # Spoonacular API endpoint (can be replaced with another provider)
+    base_url = "https://api.spoonacular.com/recipes/complexSearch"
+
+    # Query parameters
     params = {
-        "query": q, "diet": diet, "intolerances": intolerances,
-        "addRecipeNutrition": True, "number": number, "apiKey": api_key
+        "query": q,
+        "diet": diet,
+        "intolerances": intolerances,
+        "addRecipeNutrition": True,
+        "number": number,
+        "apiKey": api_key,
     }
-    r = httpx.get(base, params=params, timeout=30)
-    data = r.json()
+
+    # Send HTTP request
+    response = httpx.get(base_url, params=params, timeout=30)
+    data = response.json()
+
     results = []
-    for it in data.get("results", []):
-        # 简化提取：第一项一般是 calories，后续粗分三大营养素
-        nutrients = {n["name"].lower(): n for n in it.get("nutrition", {}).get("nutrients", [])}
-        def val(name, default=None):
-            n = nutrients.get(name.lower())
-            return n.get("amount") if n else default
+
+    for item in data.get("results", []):
+        # Build a nutrient lookup table by name (lowercased)
+        nutrients = {
+            n["name"].lower(): n
+            for n in item.get("nutrition", {}).get("nutrients", [])
+        }
+
+        # Helper function to safely extract nutrient values
+        def get_value(name: str, default=None):
+            nutrient = nutrients.get(name.lower())
+            return nutrient.get("amount") if nutrient else default
+
+        # Assemble simplified recipe output
         results.append({
-            "id": it.get("id"),
-            "title": it.get("title"),
-            "image": it.get("image"),
-            "calories": val("calories"),
-            "protein": val("protein"),
-            "carbs": val("carbohydrates"),
-            "fat": val("fat"),
-            "url": f'https://spoonacular.com/recipes/{it.get("title","recipe").replace(" ","-")}-{it.get("id")}'
+            "id": item.get("id"),
+            "title": item.get("title"),
+            "image": item.get("image"),
+            "calories": get_value("calories"),
+            "protein": get_value("protein"),
+            "carbs": get_value("carbohydrates"),
+            "fat": get_value("fat"),
+            "url": (
+                f"https://spoonacular.com/recipes/"
+                f"{item.get('title', 'recipe').replace(' ', '-')}-"
+                f"{item.get('id')}"
+            ),
         })
+
     return {"results": results}
 
+
 if __name__ == "__main__":
-    # 本地开发优先 stdio（鱼皮也推荐：本地/小项目优先 stdio；SSE 适合多人共享）:contentReference[oaicite:1]{index=1}
+    # For local development, stdio transport is preferred.
+    # (Recommended for local tools and small projects;
+    # SSE is more suitable for shared or multi-user setups.)
     mcp.run(transport="stdio")

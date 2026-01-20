@@ -1,9 +1,7 @@
 from ..settings import FILE_SAVE_DIR
 from langchain_core.tools import tool
 
-"""
-文件操作类工具（提供文件读写功能）
-"""
+
 @tool(description="Read content from a file")
 def read_file(file_name: str) -> str:
     file_path = FILE_SAVE_DIR / file_name

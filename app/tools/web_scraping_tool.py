@@ -6,28 +6,32 @@ from langchain_core.tools import tool
 @tool(description="Scrape the content of a web page")
 def scrape_web_page(url: str) -> str:
     """
-    抓取网页内容
+    Fetch and parse the HTML content of a web page.
 
     Args:
-        url: 要抓取的网页URL
+        url: The URL of the web page to scrape
 
     Returns:
-        网页HTML内容或错误信息
+        The full HTML content of the page, or an error message
     """
     try:
-        # 设置请求头，模拟浏览器访问
+        # Set request headers to mimic a real browser
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/91.0.4472.124 Safari/537.36"
+            )
         }
 
-        # 发送GET请求
+        # Send HTTP GET request
         response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()  # 如果状态码不是200会抛出异常
+        response.raise_for_status()  # Raise an exception for non-200 responses
 
-        # 解析HTML
-        soup = BeautifulSoup(response.content, 'html.parser')
+        # Parse the HTML content
+        soup = BeautifulSoup(response.content, "html.parser")
 
-        # 返回完整的HTML内容，对应鱼皮的document.html()
+        # Return the full HTML document (equivalent to document.html())
         return str(soup)
 
     except requests.exceptions.RequestException as e:

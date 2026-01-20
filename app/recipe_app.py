@@ -1,8 +1,10 @@
 import logging
 import os
 from typing import Dict, List, Any
+
 # from langchain_community.chat_models.tongyi import ChatTongyi
 # from langchain_community.embeddings import DashScopeEmbeddings
+
 import boto3
 from langchain_aws import ChatBedrock, BedrockEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
@@ -14,69 +16,83 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, END, StateGraph
 from pydantic import BaseModel
+
 from app.rag.recipe_app_rag_pipeline import RecipeAppRAGPipeline, RecipeAppState
 from app.tools.tool_registry import BASE_TOOLS
 from app.tools.tool_registry import load_all_tools_with_mcp
 from langgraph.prebuilt import create_react_agent
 
 load_dotenv()
-# 系统提示
+
+# System prompt
 SYSTEM_PROMPT = (
-    "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
-    "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
-    "在开场时，向用户表明你的厨师身份，并邀请他们描述自己的需求。"
-    "如果用户是减脂人群，推荐低热量高蛋白的清淡菜式；如果用户想改善家庭饮食质量，可推荐易做营养的家常菜；"
-    "若用户提到特定食材（如鸡肉、番茄等），请结合食材特点推荐合适做法。"
-    "引导用户尽量具体描述需求，你再基于这些信息提供实用、详细、有趣的菜谱推荐。"
+    "You are a professional chef knowledgeable in both Chinese and Western cuisine, "
+    "with strong cooking experience and nutrition expertise. "
+    "Your job is to recommend suitable recipes or practical cooking advice based on the user's "
+    "diet preferences, taste, available ingredients, and health needs. "
+    "At the start, introduce yourself as a chef and invite the user to describe their needs. "
+    "If the user is trying to lose fat, recommend low-calorie, high-protein, light dishes. "
+    "If the user wants to improve everyday family meals, suggest easy-to-cook, nutritious home-style dishes. "
+    "If the user mentions specific ingredients (e.g., chicken, tomatoes), recommend appropriate techniques "
+    "based on the ingredient characteristics. "
+    "Encourage the user to be as specific as possible so you can provide practical, detailed, and fun recommendations. "
+    "Reply in Chinese unless the user explicitly requests English."
 )
 
-# 定义结构化报告模型
+# Structured report schema
 class RecipeReport(BaseModel):
     title: str
     suggestions: List[str]
 
+
 class RecipeApp:
     def __init__(self):
-        # 验证并初始化模型
+        # Validate and initialize the model
+
         # api_key = os.getenv("DASHSCOPE_API_KEY")
         # if not api_key:
-        #     raise RuntimeError("缺少环境变量 DASHSCOPE_API_KEY，请设置后重试")
+        #     raise RuntimeError("Missing env var DASHSCOPE_API_KEY. Please set it and try again.")
         #
-        # # 模型
         # self.model = ChatTongyi(model="qwen-plus", api_key=api_key)
         #
-        # # 解析器
         # self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
-        # ========= 1. OpenAI Chat 模型 =========
+
+        # ========= 1) OpenAI Chat model =========
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
-            raise RuntimeError("缺少环境变量 OPENAI_API_KEY，请在 .env 中配置")
+            raise RuntimeError("Missing environment variable OPENAI_API_KEY. Please configure it in your .env file.")
 
-        # 你可以换成 gpt-4.1 / gpt-4o-mini 等
+        # You may switch to gpt-4.1 / gpt-4o-mini, etc.
         self.model = ChatOpenAI(
             model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
             api_key=api_key,
             temperature=0.5,
         )
 
-        # ========= 3. 解析器 =========
+        # ========= 2) Output parser =========
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
 
-        # 记忆存储
+        # Memory store (LangGraph checkpointing)
         self.memory_saver = MemorySaver()
 
-        # RAG 用模板（可选）
+        # Optional RAG prompt template
         self.rag_template = ChatPromptTemplate.from_messages([
             ("system",
-             "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
-             "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
-             "如果用户是减脂人群，推荐低热量高蛋白的清淡菜式；如果用户想改善家庭饮食质量，可推荐易做营养的家常菜；"
-             "若用户提到特定食材（如鸡肉、番茄等），请结合食材特点推荐合适做法。"
-             "\n\n以下是相关的菜谱信息，请基于这些信息回答用户问题：\n{context}"),
+             "You are a professional chef knowledgeable in both Chinese and Western cuisine, "
+             "with strong cooking experience and nutrition expertise. "
+             "Your job is to recommend suitable recipes or practical cooking advice based on the user's "
+             "diet preferences, taste, available ingredients, and health needs. "
+             "If the user is trying to lose fat, recommend low-calorie, high-protein, light dishes. "
+             "If the user wants to improve everyday family meals, suggest easy-to-cook, nutritious home-style dishes. "
+             "If the user mentions specific ingredients (e.g., chicken, tomatoes), recommend appropriate techniques "
+             "based on the ingredient characteristics. "
+             "\n\nBelow is relevant recipe information. Use it to answer the user:\n{context}\n\n"
+             "Reply in Chinese unless the user explicitly requests English."
+            ),
             MessagesPlaceholder(variable_name="messages"),
         ])
 
-        # 工具 & MCP（Agent）
+        # Tools & MCP (Agent)
         tools, self._mcp_handle = load_all_tools_with_mcp()
         self.agent_executor = create_react_agent(
             self.model,
@@ -84,22 +100,24 @@ class RecipeApp:
             checkpointer=self.memory_saver,
         )
 
-        # Embeddings（RAG）
+        # Embeddings (RAG)
         embedding_model = OpenAIEmbeddings(
             model=os.getenv("OPENAI_EMBED_MODEL", "text-embedding-3-small"),
             api_key=api_key,
         )
 
-        # Prompt 模板（普通聊天）
+        # Prompt template (normal chat)
         self.chat_template = ChatPromptTemplate.from_messages([
             ("system", SYSTEM_PROMPT),
             MessagesPlaceholder(variable_name="messages"),
         ])
 
+        # Report template
         self.report_template = PromptTemplate(
             template=(
-                "每次对话后都要生成报告，内容为建议列表\n"
-                "{format_instructions}\n{query}\n"
+                "After each conversation, generate a short report consisting of a list of suggestions.\n"
+                "{format_instructions}\n"
+                "{query}\n"
             ),
             input_variables=["query"],
             partial_variables={
@@ -107,21 +125,21 @@ class RecipeApp:
             },
         )
 
-        # 会话历史，保证多轮对话上下文
+        # In-memory chat histories (per chat_id)
         self._chat_histories: Dict[str, List[BaseMessage]] = {}
 
         # RAG pipeline
         self.rag_pipeline = RecipeAppRAGPipeline(embedding_model, self.model)
 
-        # 构建对话图
+        # Build the conversation graph
         self.graph = self._build_graph()
 
     def _build_graph(self) -> StateGraph:
         """
-        构建对话graph
-        - 使用 RecipeAppState 作为 state schema
-        - 添加 retrieve 和 model 节点
-        - 添加 MemorySaver 持久化上下文
+        Build the conversation graph:
+          - Use RecipeAppState as the state schema
+          - Add 'retrieve' and 'model' nodes
+          - Enable MemorySaver for checkpoint-based persistence
         """
         workflow = StateGraph(state_schema=RecipeAppState)
         workflow.add_node("retrieve", self.rag_pipeline.retrieve)
@@ -135,33 +153,37 @@ class RecipeApp:
 
     def _call_model(self, state: RecipeAppState, config: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """
-        Graph 节点: 调用模型（Agent + RAG）
-        - 使用 RAG 检索到的上下文
-        - 以 SystemMessage 注入上下文并交给 ReAct Agent
+        Graph node: call the model (Agent + RAG)
+          - Use retrieved RAG context
+          - Inject context via a SystemMessage and delegate to the ReAct agent
         """
         messages = state.get("messages", [])
         context = state.get("context", [])
-        rag_context = "\n\n".join(d.page_content for d in context) if context else "暂无相关菜谱信息"
+        rag_context = "\n\n".join(d.page_content for d in context) if context else "No relevant recipe information found."
 
-        # 将 RAG 上下文注入为系统消息
+        # Inject RAG context as a system message
         system_with_ctx = SystemMessage(
             content=(
-                "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
-                "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
-                "如果用户是减脂人群，推荐低热量高蛋白；若提到特定食材，请结合特点给做法。"
-                "\n\n以下是检索到的菜谱信息（可能为空）：\n" + rag_context
+                "You are a professional chef knowledgeable in both Chinese and Western cuisine, "
+                "with strong cooking experience and nutrition expertise. "
+                "Your job is to recommend suitable recipes or practical cooking advice based on the user's "
+                "diet preferences, taste, available ingredients, and health needs. "
+                "If the user is trying to lose fat, recommend low-calorie, high-protein dishes. "
+                "If specific ingredients are mentioned, propose methods based on ingredient characteristics. "
+                "\n\nRetrieved recipe information (may be empty):\n" + rag_context + "\n\n"
+                "Reply in Chinese unless the user explicitly requests English."
             )
         )
         messages_with_ctx: List[BaseMessage] = [system_with_ctx] + list(messages)
 
-        # 交给 Agent 执行（保留 checkpointer 上下文）
+        # Delegate to the agent (preserving checkpointer context)
         response = self.agent_executor.invoke(
             {"messages": messages_with_ctx},
             config=config
         )
         returned_messages: List[BaseMessage] = response["messages"]
 
-        # 取最后一条 AIMessage 作为最终答案
+        # Use the last AIMessage as the final answer
         last_ai = next((m for m in reversed(returned_messages) if isinstance(m, AIMessage)), None)
         answer = last_ai.content if last_ai else ""
 
@@ -169,17 +191,17 @@ class RecipeApp:
 
     async def chat(self, chat_id: str, message: str) -> str:
         """
-        对话接口（异步）
-        - 使用完整的 RecipeAppState
-        - 包含 RAG 检索
+        Chat interface (async):
+          - Use the full RecipeAppState
+          - Include RAG retrieval
         """
-        logging.info(f"[Chat] chat_id={chat_id}, message={message}")
+        logging.info("[Chat] chat_id=%s, message=%s", chat_id, message)
 
-        # 读取历史消息，追加最新的人类消息
+        # Load previous history and append the latest user message
         history = self._chat_histories.get(chat_id, [])
         messages = [*history, HumanMessage(content=message)]
 
-        # 初始化 state
+        # Initialize state
         state: Dict[str, Any] = {
             "question": message,
             "messages": messages,
@@ -193,26 +215,28 @@ class RecipeApp:
             out = await self.graph.ainvoke(state, config)
             updated_messages: List[BaseMessage] = out.get("messages", messages)
 
-            # 保存本轮对话历史
+            # Persist updated chat history
             self._chat_histories[chat_id] = updated_messages
 
             answer = out.get("answer") or (updated_messages[-1].content if updated_messages else "")
-            logging.info(f"[Chat] response={answer}")
+            logging.info("[Chat] response=%s", answer)
             return answer
         except Exception:
-            logging.exception("chat 调用失败")
+            logging.exception("[Chat] Invocation failed.")
             raise
 
     def generate_report(self, chat_id: str, message: str) -> RecipeReport:
         """
-        生成结构化报告（同步）
-        - 使用 report_template 注入格式指令和查询
-        - 同步调用 LLM
-        - 用 parser 解析 JSON 输出
+        Generate a structured report (sync):
+          - Inject format instructions and query via report_template
+          - Call the LLM synchronously
+          - Parse JSON output via the Pydantic parser
         """
-        logging.info(f"[Report] chat_id={chat_id}, message={message}")
+        logging.info("[Report] chat_id=%s, message=%s", chat_id, message)
+
         prompt = self.report_template.invoke({"query": message})
         raw = self.model.invoke(prompt)
         report = self.parser.invoke(raw)
-        logging.info(f"[Report] report: {report}")
+
+        logging.info("[Report] report=%s", report)
         return report
