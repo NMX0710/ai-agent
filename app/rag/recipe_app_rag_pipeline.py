@@ -11,12 +11,13 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.vectorstores import InMemoryVectorStore
 
 
-class RecipeAppState(TypedDict):
+class RecipeAppState(TypedDict, total=False):
     question: str
     context: List[Document]          # Retrieved chunks from the RAG retriever
     messages: List[BaseMessage]      # Conversation history managed by LangGraph
     answer: Optional[str]            # Final answer produced by the pipeline
 
+    plan: Optional[Dict[str, Any]]
 
 class RecipeAppRAGPipeline:
     def __init__(self, embeddings: Embeddings, model: BaseChatModel):

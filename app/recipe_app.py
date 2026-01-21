@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from typing import Dict, List, Any
@@ -36,13 +37,31 @@ SYSTEM_PROMPT = (
     "If the user mentions specific ingredients (e.g., chicken, tomatoes), recommend appropriate techniques "
     "based on the ingredient characteristics. "
     "Encourage the user to be as specific as possible so you can provide practical, detailed, and fun recommendations. "
-    "Reply in Chinese unless the user explicitly requests English."
 )
 
 # Structured report schema
 class RecipeReport(BaseModel):
     title: str
     suggestions: List[str]
+
+class MealPlanPlan(BaseModel):
+    need_plan: bool
+    # Whether this request requires a plan-first workflow.
+    # true  -> produce a structured plan before execution
+    # false -> answer directly without a multi-day plan
+
+    constraints: List[str] = []
+    # User constraints: time, budget, dietary restrictions, goals, preferences
+
+    weekly_structure: List[str] = []
+    # High-level weekly or meal structure (ONLY when need_plan = true)
+    # Do NOT include concrete recipes here
+
+    prep_strategy: List[str] = []
+    # Meal prep / batching / time-saving strategies
+
+    next_questions: List[str] = []
+    # Missing critical information to clarify (max 3)
 
 
 class RecipeApp:
@@ -69,8 +88,10 @@ class RecipeApp:
             temperature=0.5,
         )
 
-        # ========= 2) Output parser =========
+        # ========= Parsers =========
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
+
+        self.plan_parser = PydanticOutputParser(pydantic_object=MealPlanPlan)
 
         # Memory store (LangGraph checkpointing)
         self.memory_saver = MemorySaver()
@@ -87,7 +108,7 @@ class RecipeApp:
              "If the user mentions specific ingredients (e.g., chicken, tomatoes), recommend appropriate techniques "
              "based on the ingredient characteristics. "
              "\n\nBelow is relevant recipe information. Use it to answer the user:\n{context}\n\n"
-             "Reply in Chinese unless the user explicitly requests English."
+
             ),
             MessagesPlaceholder(variable_name="messages"),
         ])
@@ -136,16 +157,20 @@ class RecipeApp:
 
     def _build_graph(self) -> StateGraph:
         """
-        Build the conversation graph:
-          - Use RecipeAppState as the state schema
-          - Add 'retrieve' and 'model' nodes
-          - Enable MemorySaver for checkpoint-based persistence
+        Graph structure:
+          START -> plan (no tools)
+                -> retrieve (RAG)
+                -> model (ReAct agent with tools)
+                -> END
         """
         workflow = StateGraph(state_schema=RecipeAppState)
+
+        workflow.add_node("plan", self._plan_node)
         workflow.add_node("retrieve", self.rag_pipeline.retrieve)
         workflow.add_node("model", self._call_model)
 
-        workflow.add_edge(START, "retrieve")
+        workflow.add_edge(START, "plan")
+        workflow.add_edge("plan", "retrieve")
         workflow.add_edge("retrieve", "model")
         workflow.add_edge("model", END)
 
@@ -157,23 +182,40 @@ class RecipeApp:
           - Use retrieved RAG context
           - Inject context via a SystemMessage and delegate to the ReAct agent
         """
+
+        plan = state.get("plan", None)
+        plan_json = json.dumps(plan, ensure_ascii=False) if plan else "null"
         messages = state.get("messages", [])
         context = state.get("context", [])
-        rag_context = "\n\n".join(d.page_content for d in context) if context else "No relevant recipe information found."
+
+        def _truncate(text: str, max_chars: int = 1200) -> str:
+            return text[:max_chars] + ("..." if len(text) > max_chars else "")
+
+        rag_context = "\n\n".join(
+            _truncate(d.page_content) for d in context) if context else "No relevant recipe information found."
 
         # Inject RAG context as a system message
         system_with_ctx = SystemMessage(
             content=(
-                "You are a professional chef knowledgeable in both Chinese and Western cuisine, "
-                "with strong cooking experience and nutrition expertise. "
-                "Your job is to recommend suitable recipes or practical cooking advice based on the user's "
-                "diet preferences, taste, available ingredients, and health needs. "
-                "If the user is trying to lose fat, recommend low-calorie, high-protein dishes. "
-                "If specific ingredients are mentioned, propose methods based on ingredient characteristics. "
-                "\n\nRetrieved recipe information (may be empty):\n" + rag_context + "\n\n"
-                "Reply in Chinese unless the user explicitly requests English."
+                "You are a professional chef with strong nutrition and cooking expertise.\n"
+                "Your job is to answer the user by FOLLOWING the approved plan below.\n\n"
+                "=== APPROVED PLAN (JSON) ===\n"
+                f"{plan_json}\n\n"
+                "Execution rules:\n"
+                "- If need_plan = true:\n"
+                "  1) First output a brief summary under 【PLAN】 (human-readable, concise).\n"
+                "  2) Then output the actionable result under 【EXECUTE】 "
+                "(recipes, 7-day meals, shopping list, etc.).\n"
+                "- If need_plan = false:\n"
+                "  - Do NOT output a weekly plan.\n"
+                "  - Answer directly under 【EXECUTE】.\n"
+                "  - You may ask ONE clarification question if absolutely necessary.\n\n"
+                "You may use tools ONLY during EXECUTE if helpful.\n"
+                "Retrieved recipe context:\n"
+                f"{rag_context}\n"
             )
         )
+
         messages_with_ctx: List[BaseMessage] = [system_with_ctx] + list(messages)
 
         # Delegate to the agent (preserving checkpointer context)
@@ -206,7 +248,8 @@ class RecipeApp:
             "question": message,
             "messages": messages,
             "context": [],
-            "answer": None
+            "answer": None,
+            "plan": None,  # Plan-first state placeholder
         }
 
         config = {"configurable": {"thread_id": chat_id}}
@@ -240,3 +283,44 @@ class RecipeApp:
 
         logging.info("[Report] report=%s", report)
         return report
+
+    def _plan_node(
+            self,
+            state: RecipeAppState,
+            config: Dict[str, Any] | None = None
+    ) -> Dict[str, Any]:
+        messages = state.get("messages", [])
+        question = state.get("question", "")
+
+        plan_prompt = ChatPromptTemplate.from_messages([
+            ("system",
+             "You are a diet-planning agent.\n"
+             "Your task is to decide whether the user's request requires a plan-first approach.\n\n"
+             "Rules:\n"
+             "1) If the user asks for multi-day, goal-oriented, or multi-constraint planning "
+             "(e.g. '7-day meal plan', 'fat loss plan', 'weekly diet'), set need_plan = true "
+             "and produce a structured plan.\n"
+             "2) If the user asks a single factual or simple question "
+             "(e.g. calories of a food, simple substitution, how to cook one dish), "
+             "set need_plan = false and DO NOT produce a weekly plan.\n"
+             "3) Do NOT call any tools.\n"
+             "4) Do NOT output concrete recipes.\n"
+             "5) Ask at most 3 clarification questions.\n"
+             "6) Output MUST strictly follow the given JSON schema.\n\n"
+             "{format_instructions}\n"
+             ),
+            MessagesPlaceholder(variable_name="messages"),
+            ("human", "User request: {question}")
+        ])
+
+        prompt = plan_prompt.invoke({
+            "messages": messages,
+            "question": question,
+            "format_instructions": self.plan_parser.get_format_instructions()
+        })
+
+        raw = self.model.invoke(prompt)
+        plan_obj = self.plan_parser.invoke(raw)
+        plan_dict = plan_obj.model_dump()  # Pydantic v2
+        return {"plan": plan_dict}
+
