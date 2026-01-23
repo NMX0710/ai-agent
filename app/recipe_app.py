@@ -17,13 +17,71 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, END, StateGraph
 from pydantic import BaseModel
-
+import re
 from app.rag.recipe_app_rag_pipeline import RecipeAppRAGPipeline, RecipeAppState
 from app.tools.tool_registry import BASE_TOOLS
 from app.tools.tool_registry import load_all_tools_with_mcp
 from langgraph.prebuilt import create_react_agent
 
 load_dotenv()
+
+PLAN_TAG = "[PLAN]"
+EXEC_TAG = "[EXECUTE]"
+
+
+def strip_tags(text: str, plan_tag: str = "[PLAN]", exec_tag: str = "[EXECUTE]") -> str:
+    """
+    Remove internal section tags from user-visible output.
+    Removes standalone tag lines like:
+      [PLAN]
+      [EXECUTE]
+    and trims surrounding blank lines.
+    """
+    if not text:
+        return text
+
+    # escape in case tags contain regex chars
+    plan = re.escape(plan_tag)
+    exe = re.escape(exec_tag)
+
+    # remove lines that are exactly the tag (allow surrounding whitespace)
+    pattern = rf"(?m)^\s*(?:{plan}|{exe})\s*$\n?"
+    cleaned = re.sub(pattern, "", text)
+
+    # remove extra leading blank lines introduced by stripping
+    cleaned = cleaned.lstrip("\n").rstrip()
+    return cleaned
+
+
+def render_plan_only(plan: dict) -> str:
+    """
+    Render a human-readable PLAN-only response (NO EXECUTE).
+    """
+    constraints = plan.get("constraints", []) or []
+    weekly_structure = plan.get("weekly_structure", []) or []
+    prep_strategy = plan.get("prep_strategy", []) or []
+    questions = plan.get("next_questions", []) or []
+
+    lines = [PLAN_TAG, ""]
+    if constraints:
+        lines.append("Constraints Summary:")
+        lines += [f"- {c}" for c in constraints]
+        lines.append("")
+    if weekly_structure:
+        lines.append("High-Level Weekly Structure:")
+        lines += [f"- {s}" for s in weekly_structure]
+        lines.append("")
+    if prep_strategy:
+        lines.append("Prep / Time-Saving Strategy:")
+        lines += [f"- {s}" for s in prep_strategy]
+        lines.append("")
+    if questions:
+        lines.append("Clarification Questions:")
+        for i, q in enumerate(questions[:3], 1):
+            lines.append(f"{i}. {q}")
+
+    return "\n".join(lines).strip()
+
 
 # System prompt
 SYSTEM_PROMPT = (
@@ -158,10 +216,9 @@ class RecipeApp:
     def _build_graph(self) -> StateGraph:
         """
         Graph structure:
-          START -> plan (no tools)
-                -> retrieve (RAG)
-                -> model (ReAct agent with tools)
-                -> END
+          START -> plan
+              -> (plan_only_turn) END
+              -> retrieve -> model -> END
         """
         workflow = StateGraph(state_schema=RecipeAppState)
 
@@ -170,7 +227,19 @@ class RecipeApp:
         workflow.add_node("model", self._call_model)
 
         workflow.add_edge(START, "plan")
-        workflow.add_edge("plan", "retrieve")
+
+        def route_after_plan(state: RecipeAppState) -> str:
+            return "end" if state.get("plan_only_turn") else "retrieve"
+
+        workflow.add_conditional_edges(
+            "plan",
+            route_after_plan,
+            {
+                "end": END,
+                "retrieve": "retrieve",
+            },
+        )
+
         workflow.add_edge("retrieve", "model")
         workflow.add_edge("model", END)
 
@@ -203,12 +272,12 @@ class RecipeApp:
                 f"{plan_json}\n\n"
                 "Execution rules:\n"
                 "- If need_plan = true:\n"
-                "  1) First output a brief summary under 【PLAN】 (human-readable, concise).\n"
-                "  2) Then output the actionable result under 【EXECUTE】 "
+                f"  1) First output a brief summary under {PLAN_TAG} (human-readable, concise).\n"
+                f"  2) Then output the actionable result under {EXEC_TAG} "
                 "(recipes, 7-day meals, shopping list, etc.).\n"
                 "- If need_plan = false:\n"
                 "  - Do NOT output a weekly plan.\n"
-                "  - Answer directly under 【EXECUTE】.\n"
+                f"  - Answer directly under {EXEC_TAG}.\n"
                 "  - You may ask ONE clarification question if absolutely necessary.\n\n"
                 "You may use tools ONLY during EXECUTE if helpful.\n"
                 "Retrieved recipe context:\n"
@@ -227,7 +296,14 @@ class RecipeApp:
 
         # Use the last AIMessage as the final answer
         last_ai = next((m for m in reversed(returned_messages) if isinstance(m, AIMessage)), None)
-        answer = last_ai.content if last_ai else ""
+        raw_answer = last_ai.content if last_ai else ""
+
+        # ✅ strip tags for user + future turns (keep internal protocol but don't show it)
+        answer = strip_tags(raw_answer, plan_tag=PLAN_TAG, exec_tag=EXEC_TAG)
+
+        # ✅ write back to the actual stored message so history stays clean
+        if last_ai is not None:
+            last_ai.content = answer
 
         return {"messages": returned_messages, "answer": answer}
 
@@ -249,7 +325,7 @@ class RecipeApp:
             "messages": messages,
             "context": [],
             "answer": None,
-            "plan": None,  # Plan-first state placeholder
+            "plan_only_turn": False,
         }
 
         config = {"configurable": {"thread_id": chat_id}}
@@ -321,6 +397,24 @@ class RecipeApp:
 
         raw = self.model.invoke(prompt)
         plan_obj = self.plan_parser.invoke(raw)
-        plan_dict = plan_obj.model_dump()  # Pydantic v2
-        return {"plan": plan_dict}
+        plan_dict = plan_obj.model_dump()
 
+        need_plan = bool(plan_dict.get("need_plan"))
+        next_qs = plan_dict.get("next_questions", []) or []
+
+        # ✅ PLAN-ONLY TURN: ask questions first, end graph early
+        if need_plan and len(next_qs) > 0:
+            plan_text = render_plan_only(plan_dict)
+            updated_messages = list(messages) + [AIMessage(content=plan_text)]
+            return {
+                "plan": plan_dict,
+                "messages": updated_messages,
+                "answer": plan_text,
+                "plan_only_turn": True,
+            }
+
+        # Otherwise continue to retrieve/model
+        return {
+            "plan": plan_dict,
+            "plan_only_turn": False,
+        }
