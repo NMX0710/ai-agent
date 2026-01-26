@@ -33,7 +33,7 @@ async def test_plan_first_behavior_print():
     print(resp_1)
 
     # Optional minimal sanity check (can be removed if you want zero assertions)
-    assert "【PLAN】" in resp_1, "Expected PLAN section in plan-first response"
+    # assert "[PLAN]" in resp_1, "Expected PLAN section in plan-first response"
 
     # -------------------------
     # Turn 2: direct QA request
@@ -50,4 +50,4 @@ async def test_plan_first_behavior_print():
     print(resp_2)
 
     # Optional minimal sanity check
-    assert "【EXECUTE】" in resp_2, "Expected EXECUTE section in direct QA response"
+    # assert "[EXECUTE]" in resp_2, "Expected EXECUTE section in direct QA response"

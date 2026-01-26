@@ -22,6 +22,8 @@ from app.rag.recipe_app_rag_pipeline import RecipeAppRAGPipeline, RecipeAppState
 from app.tools.tool_registry import BASE_TOOLS
 from app.tools.tool_registry import load_all_tools_with_mcp
 from langgraph.prebuilt import create_react_agent
+from app.models.plan_model import LocalPlanModel
+
 
 load_dotenv()
 
@@ -150,6 +152,19 @@ class RecipeApp:
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
 
         self.plan_parser = PydanticOutputParser(pydantic_object=MealPlanPlan)
+
+        # ======== Plan Node Local Model (Qwen DPO+LoRA) ========
+        plan_model_dir = os.getenv("PLAN_MODEL_DIR", "")  # e.g. ./models/plan_qwen_dpo_lora
+        plan_base_model = os.getenv("PLAN_BASE_MODEL", "")  # e.g. Qwen/Qwen2.5-7B-Instruct
+
+        self.plan_local_model = None
+        if plan_model_dir:
+            self.plan_local_model = LocalPlanModel(
+                model_dir=plan_model_dir,
+                base_model=plan_base_model or None,
+                max_new_tokens=int(os.getenv("PLAN_MAX_NEW_TOKENS", "512")),
+                temperature=float(os.getenv("PLAN_TEMPERATURE", "0.0")),
+            )
 
         # Memory store (LangGraph checkpointing)
         self.memory_saver = MemorySaver()
@@ -368,41 +383,81 @@ class RecipeApp:
         messages = state.get("messages", [])
         question = state.get("question", "")
 
-        plan_prompt = ChatPromptTemplate.from_messages([
-            ("system",
-             "You are a diet-planning agent.\n"
-             "Your task is to decide whether the user's request requires a plan-first approach.\n\n"
-             "Rules:\n"
-             "1) If the user asks for multi-day, goal-oriented, or multi-constraint planning "
-             "(e.g. '7-day meal plan', 'fat loss plan', 'weekly diet'), set need_plan = true "
-             "and produce a structured plan.\n"
-             "2) If the user asks a single factual or simple question "
-             "(e.g. calories of a food, simple substitution, how to cook one dish), "
-             "set need_plan = false and DO NOT produce a weekly plan.\n"
-             "3) Do NOT call any tools.\n"
-             "4) Do NOT output concrete recipes.\n"
-             "5) Ask at most 3 clarification questions.\n"
-             "6) Output MUST strictly follow the given JSON schema.\n\n"
-             "{format_instructions}\n"
-             ),
-            MessagesPlaceholder(variable_name="messages"),
-            ("human", "User request: {question}")
-        ])
+        # 保留你原本的 schema instructions（确保输出结构一致）
+        format_instructions = self.plan_parser.get_format_instructions()
 
-        prompt = plan_prompt.invoke({
-            "messages": messages,
-            "question": question,
-            "format_instructions": self.plan_parser.get_format_instructions()
-        })
+        # ---- 1) 如果本地 plan 模型存在，优先用它 ----
+        if self.plan_local_model is not None:
+            history_text = self._format_messages_for_plan(messages)
 
-        raw = self.model.invoke(prompt)
-        plan_obj = self.plan_parser.invoke(raw)
+            local_prompt = (
+                "SYSTEM:\n"
+                "You are a diet-planning agent.\n"
+                "Your task is to decide whether the user's request requires a plan-first approach.\n\n"
+                "Rules:\n"
+                "1) If the user asks for multi-day, goal-oriented, or multi-constraint planning "
+                "(e.g. '7-day meal plan', 'fat loss plan', 'weekly diet'), set need_plan = true.\n"
+                "2) If the user asks a single factual or simple question "
+                "(e.g. calories of a food, simple substitution, how to cook one dish), "
+                "set need_plan = false.\n"
+                "3) Do NOT call any tools.\n"
+                "4) Do NOT output concrete recipes.\n"
+                "5) Ask at most 3 clarification questions.\n"
+                "6) Output MUST strictly follow the given JSON schema.\n\n"
+                f"{format_instructions}\n\n"
+                f"CHAT HISTORY:\n{history_text}\n\n"
+                f"USER REQUEST:\n{question}\n\n"
+                "OUTPUT JSON ONLY:\n"
+            )
+
+            raw_text = self.plan_local_model.generate(local_prompt)
+
+            # 解析：先直接 parse；失败则抽取 JSON 再 parse
+            try:
+                plan_obj = self.plan_parser.parse(raw_text)
+            except Exception:
+                m = re.search(r"\{.*\}", raw_text, flags=re.S)
+                if not m:
+                    raise
+                plan_obj = self.plan_parser.parse(m.group(0))
+
+        # ---- 2) 否则 fallback 到 OpenAI（你原本逻辑）----
+        else:
+            plan_prompt = ChatPromptTemplate.from_messages([
+                ("system",
+                 "You are a diet-planning agent.\n"
+                 "Your task is to decide whether the user's request requires a plan-first approach.\n\n"
+                 "Rules:\n"
+                 "1) If the user asks for multi-day, goal-oriented, or multi-constraint planning "
+                 "(e.g. '7-day meal plan', 'fat loss plan', 'weekly diet'), set need_plan = true "
+                 "and produce a structured plan.\n"
+                 "2) If the user asks a single factual or simple question "
+                 "(e.g. calories of a food, simple substitution, how to cook one dish), "
+                 "set need_plan = false and DO NOT produce a weekly plan.\n"
+                 "3) Do NOT call any tools.\n"
+                 "4) Do NOT output concrete recipes.\n"
+                 "5) Ask at most 3 clarification questions.\n"
+                 "6) Output MUST strictly follow the given JSON schema.\n\n"
+                 "{format_instructions}\n"
+                 ),
+                MessagesPlaceholder(variable_name="messages"),
+                ("human", "User request: {question}")
+            ])
+
+            prompt = plan_prompt.invoke({
+                "messages": messages,
+                "question": question,
+                "format_instructions": format_instructions
+            })
+
+            raw = self.model.invoke(prompt)
+            plan_obj = self.plan_parser.invoke(raw)
+
         plan_dict = plan_obj.model_dump()
-
         need_plan = bool(plan_dict.get("need_plan"))
         next_qs = plan_dict.get("next_questions", []) or []
 
-        # ✅ PLAN-ONLY TURN: ask questions first, end graph early
+        # ✅ PLAN-ONLY TURN: need_plan 且有澄清问题 => 直接结束
         if need_plan and len(next_qs) > 0:
             plan_text = render_plan_only(plan_dict)
             updated_messages = list(messages) + [AIMessage(content=plan_text)]
@@ -413,8 +468,15 @@ class RecipeApp:
                 "plan_only_turn": True,
             }
 
-        # Otherwise continue to retrieve/model
         return {
             "plan": plan_dict,
             "plan_only_turn": False,
         }
+
+    def _format_messages_for_plan(self, messages: List[BaseMessage], max_turns: int = 6) -> str:
+        recent = messages[-max_turns:] if len(messages) > max_turns else messages
+        lines = []
+        for m in recent:
+            role = "User" if isinstance(m, HumanMessage) else "Assistant"
+            lines.append(f"{role}: {m.content}")
+        return "\n".join(lines).strip()
