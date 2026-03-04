@@ -15,6 +15,7 @@ class RecipeAppState(TypedDict, total=False):
     question: str
     context: List[Document]          # Retrieved chunks from the RAG retriever
     messages: List[BaseMessage]      # Conversation history managed by LangGraph
+    memory: List[str]                # Retrieved long-term user memory snippets
     answer: Optional[str]            # Final answer produced by the pipeline
 
     plan: Optional[Dict[str, Any]]

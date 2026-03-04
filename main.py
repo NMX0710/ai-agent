@@ -37,12 +37,13 @@ app.include_router(sample.router, prefix="/api")
 class ChatRequest(BaseModel):
     chat_id: str
     message: str
+    user_id: str
 
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
     """Internal endpoint for local/Web chat usage."""
-    return {"response": await recipe_app.chat(req.chat_id, req.message)}
+    return {"response": await recipe_app.chat(req.chat_id, req.message, user_id=req.user_id)}
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -73,11 +74,15 @@ async def invocations(req: Request):
     logging.info("[AgentCore] Received request payload: %s", body)
 
     prompt = (body.get("input") or {}).get("prompt", "")
+    input_obj = body.get("input") or {}
+    user_id = input_obj.get("user_id") or "agentcore-user"
+    conversation_id = input_obj.get("conversation_id") or "agentcore-session"
 
     # Reuse the same chat logic as the local/Web endpoint.
     response_text = await recipe_app.chat(
-        chat_id="agentcore_session",
+        chat_id=conversation_id,
         message=prompt,
+        user_id=user_id,
     )
 
     # Standardize the response schema for AgentCore.

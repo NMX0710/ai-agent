@@ -16,6 +16,7 @@
 
                 <!-- Persisted chat ID (shared with backend) -->
                 <input type="hidden" id="chat-id" name="chat_id">
+                <input type="hidden" id="user-id" name="user_id">
 
                 <label for="message">Message</label>
                 <textarea
@@ -43,6 +44,7 @@
       const chatLog = document.getElementById('chat-log');
       const submitButton = form.querySelector('button[type="submit"]');
       const chatIdField = document.getElementById('chat-id');
+      const userIdField = document.getElementById('user-id');
       const messageField = document.getElementById('message');
 
       // Display labels for each role
@@ -84,6 +86,19 @@
 
       const CHAT_ID = getOrCreateChatId();
       chatIdField.value = CHAT_ID; // Ensure backend receives the same chat_id
+
+      function getOrCreateUserId() {
+        const KEY = 'recipe_user_id';
+        let id = localStorage.getItem(KEY);
+        if (!id) {
+          id = uuidv4();
+          localStorage.setItem(KEY, id);
+        }
+        return id;
+      }
+
+      const USER_ID = getOrCreateUserId();
+      userIdField.value = USER_ID;
 
       // ------------------------------------------------------------------
       // 2) Rendering and message sending logic
@@ -158,6 +173,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               chat_id: CHAT_ID,
+              user_id: USER_ID,
               message
             })
           });

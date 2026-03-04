@@ -129,6 +129,43 @@ Start the FastAPI server:`uvicorn main:app --reload`
 After startup:
 - Web UI: http://localhost:8000
 - API Endpoint: `POST /chat`
+- `/chat` payload now requires:
+  - `user_id`: stable system-generated user identifier
+  - `chat_id`: conversation identifier
+  - `message`: user input
+
+## Local Postgres (Docker Compose)
+
+Start a local Postgres instance for persistent memory work:
+
+```bash
+docker compose up -d postgres
+```
+
+Connection details created by default:
+- Host: `localhost`
+- Port: `5432`
+- Database: `ai_agent`
+- Username: `ai_agent`
+- Password: `ai_agent_dev`
+
+Example app connection string:
+
+```bash
+DATABASE_URL=postgresql://ai_agent:ai_agent_dev@localhost:5432/ai_agent
+```
+
+Long-term memory defaults:
+- `LONG_TERM_MEMORY_ENABLED=1`
+- `MEMORY_RETENTION_DAYS=90`
+- `MEMORY_MAX_RECORDS_PER_USER=200`
+- `MEMORY_RETRIEVE_TOP_K=5`
+
+Stop and remove container:
+
+```bash
+docker compose down
+```
 
 
 ## AWS Bedrock AgentCore Deployment
@@ -151,5 +188,3 @@ client.invoke_agent_runtime(
     }).encode("utf-8"),
 )
 ```
-
-

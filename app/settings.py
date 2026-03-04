@@ -4,3 +4,13 @@ from pathlib import Path
 # root dir
 PROJECT_ROOT = Path(__file__).parent.parent
 FILE_SAVE_DIR = PROJECT_ROOT / "tmp" / "files"
+
+# Long-term memory settings
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://ai_agent:ai_agent_dev@localhost:5432/ai_agent",
+)
+LONG_TERM_MEMORY_ENABLED = os.getenv("LONG_TERM_MEMORY_ENABLED", "1") == "1"
+MEMORY_RETENTION_DAYS = int(os.getenv("MEMORY_RETENTION_DAYS", "90"))
+MEMORY_MAX_RECORDS_PER_USER = int(os.getenv("MEMORY_MAX_RECORDS_PER_USER", "200"))
+MEMORY_RETRIEVE_TOP_K = int(os.getenv("MEMORY_RETRIEVE_TOP_K", "5"))

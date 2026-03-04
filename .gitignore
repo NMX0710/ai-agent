@@ -13,3 +13,4 @@ tmp/
 data/
 *.jsonl
 models/
+*.pem
