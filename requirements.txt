@@ -10,14 +10,13 @@ jinja2
 # ============================================================
 # LangChain / LangGraph Ecosystem (Agents, Graphs, Memory)
 # ============================================================
-langchain==1.0.7
+langchain==1.2.10
 langchain-aws==1.0.0
 langchain-openai==1.0.3
-langchain-tavily
-langgraph==1.0.3
+langgraph==1.0.10
 langgraph-checkpoint==3.0.1
-langgraph-prebuilt==1.0.4
-langgraph-sdk==0.2.9
+langgraph-prebuilt==1.0.8
+langgraph-sdk==0.3.9
 langsmith==0.4.43
 
 
@@ -72,6 +71,7 @@ pillow==11.3.0
 # ============================================================
 mcp==1.13.1
 fastmcp==2.12.2
+deepagents>=0.0.14
 
 
 # ============================================================

@@ -1,84 +1,56 @@
-# 🍳 AI Recipe Agent
+# AI Diet Assistant (Deep Agent Baseline)
 
-A **LangGraph + MCP powered AI agent** for recipe recommendation, nutrition reasoning, and tool-augmented cooking assistance.
+This repository is currently in a **baseline architecture phase**.
 
-This project is designed as a **production-oriented agent system** that supports:
-- multi-turn memory
-- retrieval-augmented generation (RAG)
-- dynamic tool calling (including MCP tool servers)
-- local development (Web UI / API) and cloud deployment (AWS Bedrock AgentCore)
+The app runs a **minimal Deep Agent pipeline** behind FastAPI, with no RAG and no external tools yet.  
+Goal: stabilize the core chat, memory, and runtime interfaces first, then add capabilities incrementally.
 
+## Current Status
 
-## Overview
+### What is enabled
+- Deep Agents-based chat pipeline
+- FastAPI Web UI + API endpoints
+- Session memory via LangGraph checkpointer
+- In-memory long-term memory filesystem route (`/memories/`)
+- AgentCore-compatible endpoints (`/ping`, `/invocations`)
 
-**AI Recipe Agent** combines:
-- **LangGraph** workflows for controllable agent execution
-- **ReAct-style tool calling** for tool-augmented reasoning
-- **RAG** over local Markdown recipe documents
-- **MCP (Model Context Protocol)** for stdio-based tool servers
-- **FastAPI** runtime with Web UI & API endpoints
-- **AWS Bedrock AgentCore** compatible runtime interface
+### What is intentionally disabled (for now)
+- RAG retrieval pipeline
+- Tool registry / MCP tools
+- Report generation flow
+- Postgres-backed persistent memory
 
-At runtime, the agent can decide whether to:
-1. answer directly,
-2. retrieve relevant recipe context via RAG,
-3. call one or more tools (including MCP tools),
-4. use memory to stay consistent across turns,
-5. return structured, explainable results.
+## Architecture (Current)
 
-## Key Features
+### 1) Runtime Layer
+- `main.py` exposes:
+  - `GET /` web chat UI
+  - `POST /chat` local chat API
+  - `GET /ping` health check
+  - `POST /invocations` AgentCore runtime entrypoint
 
-- 🧠 **Multi-turn memory** via LangGraph Checkpointer
-- 🔍 **RAG pipeline** over local Markdown recipe documents
-- 🛠️ **Tool-augmented reasoning**
-  - Web search
-  - Web scraping
-  - Terminal command execution
-  - Resource download
-  - PDF generation
-  - File read / write
-- 🔗 **MCP integration** (stdio-based tool servers)
-- 🌐 **FastAPI Web UI & REST API**
-- ☁️ **AWS Bedrock AgentCore compatible runtime**
-- 🧪 **Test & debug scripts** for memory, tools, MCP, and end-to-end flows
+### 2) Agent Layer
+- `app/recipe_app.py` builds a minimal Deep Agent:
+  - `create_deep_agent(...)`
+  - `tools=[]` (empty by design in baseline)
+  - chef-oriented `system_prompt`
 
+### 3) Memory Layer
+- `MemorySaver()` for thread/session state
+- `InMemoryStore()` for store-backed paths
+- `CompositeBackend` routing:
+  - default: `StateBackend`
+  - `/memories/`: `StoreBackend`
 
-## How It Works (High-Level Flow)
-
-The system is composed of three layers:
-
-### 1) FastAPI Runtime Layer
-- Provides Web UI (Jinja template) and REST API endpoints
-- Exposes cloud-friendly endpoints used by AgentCore runtime
-
-### 2) Agent Orchestration Layer (LangGraph)
-- Defines the multi-step agent workflow
-- Maintains multi-turn memory using a checkpointer
-- Runs a ReAct-style agent that can decide when to call tools
-
-### 3) Retrieval + Tools Layer
-- **RAG pipeline** retrieves relevant recipe context from local Markdown documents
-- **Tool registry** provides callable tools (web, scraping, terminal, pdf, download, file IO)
-- **MCP client** discovers and wraps stdio-based MCP tools at runtime (e.g., nutrition / recipe search)
-
+This gives:
+- short-term memory in-thread
+- long-term memory semantics through `/memories/` (currently in-memory only)
 
 ## Project Structure
 
 ```text
 app/
-├── recipe_app.py              # Core agent logic (LangGraph + Tools + RAG)
-├── rag/
-│   └── recipe_app_rag_pipeline.py
-├── tools/
-│   ├── tool_registry.py
-│   ├── mcp_client_tools.py
-│   ├── web_search_tool.py
-│   ├── web_scraping_tool.py
-│   ├── terminal_operation_tool.py
-│   ├── resource_download_tool.py
-│   └── pdf_generation_tool.py
-├── mcp_servers/
-│   └── nutrition_mcp_server.py
+├── recipe_app.py              # Minimal Deep Agent pipeline
 ├── templates/
 │   └── index.html             # Web chat UI
 ├── static/
@@ -86,105 +58,79 @@ app/
 └── routers/
     └── sample.py
 
-tests/
-├── memory_test_runner.py
-├── tool_test_runner.py
-├── test_mcp_server.py
-└── test_recipe_app_rag.py
-
-main.py                         # FastAPI entrypoint
+main.py                        # FastAPI entrypoint
 requirements.txt
+tests/
 ```
-## Tooling Capabilities
-
-The agent can dynamically decide to call tools based on user intent and intermediate reasoning steps.
-
-Supported tools include:
-
-- 🔍 **Web Search** – query external information sources
-- 🕷️ **Web Scraping** – extract structured data from web pages
-- 📥 **Resource Download** – download external files and assets
-- 💻 **Terminal Command Execution** – run safe, sandboxed shell commands
-- 📄 **PDF Generation** – generate structured PDF reports
-- 🧾 **File Read / Write** – persist intermediate artifacts
-- 🍽️ **Nutrition & Recipe Search** – via MCP + Spoonacular API
-
-MCP tools are automatically discovered and wrapped as LangChain-compatible tools at runtime.
-
 
 ## Local Setup
 
-### Install Dependencies
+### 1) Install dependencies
+```bash
+pip install -r requirements.txt
+```
 
-```pip install -r requirements.txt```
+### 2) Configure environment
+Create/update `.env` in project root:
 
-### Configure Environment Variables
+```env
+OPENAI_API_KEY=your_key_here
+OPENAI_MODEL=gpt-4.1-mini
+```
 
-Create a .env file in the project root for all your API keys
-
-## Run Locally
-
-Start the FastAPI server:`uvicorn main:app --reload`
+### 3) Run locally
+```bash
+uvicorn main:app --reload
+```
 
 After startup:
-- Web UI: http://localhost:8000
-- API Endpoint: `POST /chat`
-- `/chat` payload now requires:
-  - `user_id`: stable system-generated user identifier
-  - `chat_id`: conversation identifier
-  - `message`: user input
+- Web UI: `http://127.0.0.1:8000`
+- Chat API: `POST /chat`
 
-## Local Postgres (Docker Compose)
+`/chat` request body:
+- `user_id`: stable user id
+- `chat_id`: conversation id
+- `message`: user input
 
-Start a local Postgres instance for persistent memory work:
-
+Example:
 ```bash
-docker compose up -d postgres
+curl -X POST http://127.0.0.1:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chat_id":"manual-chat-1",
+    "user_id":"manual-user-1",
+    "message":"Give me a high-protein low-fat dinner idea."
+  }'
 ```
 
-Connection details created by default:
-- Host: `localhost`
-- Port: `5432`
-- Database: `ai_agent`
-- Username: `ai_agent`
-- Password: `ai_agent_dev`
+## Product Roadmap (Planned)
 
-Example app connection string:
+### Phase 1: Core Assistant (now)
+- Keep architecture minimal and stable
+- Validate chat quality and memory behavior
+- Keep API contracts fixed
 
-```bash
-DATABASE_URL=postgresql://ai_agent:ai_agent_dev@localhost:5432/ai_agent
-```
+### Phase 2: Channel Integration (SMS first)
+- Connect iPhone SMS user flow through a messaging gateway webhook
+- Let users chat with the diet assistant through SMS
 
-Long-term memory defaults:
-- `LONG_TERM_MEMORY_ENABLED=1`
-- `MEMORY_RETENTION_DAYS=90`
-- `MEMORY_MAX_RECORDS_PER_USER=200`
-- `MEMORY_RETRIEVE_TOP_K=5`
+### Phase 3: Meal Photo Nutrition
+- Accept user meal photos
+- Estimate calories and macro nutrients
+- Return structured nutrition summary with confidence
 
-Stop and remove container:
+### Phase 4: Apple Health App Sync
+- Add iOS companion app for HealthKit authorization/write
+- Sync confirmed nutrition entries into Apple Health
+- Extend to additional health/productivity apps later
 
-```bash
-docker compose down
-```
+### Phase 5: Skills-based Tooling
+- Replace flat tools with Skills-managed capability packs
+- Progressive loading of skills by task
+- Add governance/audit and high-risk action controls
 
+## Notes
 
-## AWS Bedrock AgentCore Deployment
-
-This project is compatible with **AWS Bedrock AgentCore Runtime**.
-
-Required Endpoints
-
-- GET /ping – health check endpoint
-
-- POST /invocations – unified agent runtime entrypoint
-
-Example Invocation (boto3):
-```
-client.invoke_agent_runtime(
-    agentRuntimeArn=RUNTIME_ARN,
-    runtimeSessionId=str(uuid.uuid4()),
-    payload=json.dumps({
-        "input": {"prompt": "Plan a high-protein dinner"}
-    }).encode("utf-8"),
-)
-```
+- Current memory store is **InMemoryStore** for development speed.
+- Persistent store (e.g., Postgres-backed store) will be added later after baseline stabilization.
+- Tests that depend on older RAG/tools pipeline will be migrated in subsequent iterations.
