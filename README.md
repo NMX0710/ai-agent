@@ -12,6 +12,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - FastAPI Web UI + API endpoints
 - Session memory via LangGraph checkpointer
 - In-memory long-term memory filesystem route (`/memories/`)
+- Telegram webhook channel (`/webhooks/telegram`) with allowlist + update dedup
 - AgentCore-compatible endpoints (`/ping`, `/invocations`)
 
 ### What is intentionally disabled (for now)
@@ -26,6 +27,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - `main.py` exposes:
   - `GET /` web chat UI
   - `POST /chat` local chat API
+  - `POST /webhooks/telegram` Telegram inbound webhook
   - `GET /ping` health check
   - `POST /invocations` AgentCore runtime entrypoint
 
@@ -76,6 +78,11 @@ Create/update `.env` in project root:
 ```env
 OPENAI_API_KEY=your_key_here
 OPENAI_MODEL=gpt-4.1-mini
+
+# Telegram channel
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_ALLOWLIST=123456789
+TELEGRAM_WEBHOOK_SECRET=your_secret_token
 ```
 
 ### 3) Run locally
@@ -110,9 +117,9 @@ curl -X POST http://127.0.0.1:8000/chat \
 - Validate chat quality and memory behavior
 - Keep API contracts fixed
 
-### Phase 2: Channel Integration (SMS first)
-- Connect iPhone SMS user flow through a messaging gateway webhook
-- Let users chat with the diet assistant through SMS
+### Phase 2: Channel Integration (Telegram first)
+- Use Telegram as the primary mobile chat channel
+- Keep iterating the Telegram conversation quality and reliability
 
 ### Phase 3: Meal Photo Nutrition
 - Accept user meal photos
@@ -133,4 +140,30 @@ curl -X POST http://127.0.0.1:8000/chat \
 
 - Current memory store is **InMemoryStore** for development speed.
 - Persistent store (e.g., Postgres-backed store) will be added later after baseline stabilization.
+- Telegram allowlist uses numeric user IDs (`from.id`) for stability.
+- Current media policy is conservative: image logging flow is not enabled yet; text chat is the current stable path.
 - Tests that depend on older RAG/tools pipeline will be migrated in subsequent iterations.
+
+## Telegram Quick Test
+
+1. Start app:
+```bash
+uvicorn main:app --reload
+```
+
+2. Expose local service (example):
+```bash
+ngrok http 8000
+```
+
+3. Set Telegram webhook:
+```bash
+curl -X POST "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://<your-public-domain>/webhooks/telegram",
+    "secret_token": "your_secret_token"
+  }'
+```
+
+4. Send a message to your bot from your phone Telegram app and verify reply.
