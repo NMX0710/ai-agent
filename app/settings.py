@@ -1,5 +1,8 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # root dir
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -14,11 +17,6 @@ LONG_TERM_MEMORY_ENABLED = os.getenv("LONG_TERM_MEMORY_ENABLED", "1") == "1"
 MEMORY_RETENTION_DAYS = int(os.getenv("MEMORY_RETENTION_DAYS", "90"))
 MEMORY_MAX_RECORDS_PER_USER = int(os.getenv("MEMORY_MAX_RECORDS_PER_USER", "200"))
 MEMORY_RETRIEVE_TOP_K = int(os.getenv("MEMORY_RETRIEVE_TOP_K", "5"))
-
-# SMS / Twilio settings
-SMS_TWILIO_AUTH_TOKEN = os.getenv("SMS_TWILIO_AUTH_TOKEN", "")
-SMS_ENFORCE_TWILIO_SIGNATURE = os.getenv("SMS_ENFORCE_TWILIO_SIGNATURE", "0") == "1"
-SMS_ALLOWLIST_RAW = os.getenv("SMS_ALLOWLIST", "")
 
 # Telegram settings
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")

@@ -1,25 +1,21 @@
-import base64
 import hashlib
 import hmac
-import html
 import logging
 import time
 from typing import Any
 
 import httpx
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from pydantic import BaseModel
 
+from app.governance import ImageGovernanceEvent, process_image_event
 from app.routers import sample
 from app.recipe_app import RecipeApp
 from app.settings import (
-    SMS_ALLOWLIST_RAW,
-    SMS_ENFORCE_TWILIO_SIGNATURE,
-    SMS_TWILIO_AUTH_TOKEN,
     TELEGRAM_ALLOWLIST_RAW,
     TELEGRAM_BOT_TOKEN,
     TELEGRAM_WEBHOOK_SECRET,
@@ -39,6 +35,11 @@ app = FastAPI()
 # Create a singleton RecipeApp instance shared across requests
 recipe_app = RecipeApp()
 
+
+@app.on_event("shutdown")
+async def _shutdown_recipe_app() -> None:
+    await recipe_app.close()
+
 # Jinja templates (web UI)
 templates = Jinja2Templates(directory="app/templates")
 
@@ -46,8 +47,6 @@ templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(sample.router, prefix="/api")
 
-_SMS_CACHE_TTL_SECONDS = 24 * 60 * 60
-_sms_sid_cache: dict[str, tuple[float, str]] = {}
 _TG_CACHE_TTL_SECONDS = 24 * 60 * 60
 _tg_update_cache: dict[int, float] = {}
 
@@ -73,22 +72,6 @@ async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-def _normalize_phone(value: str) -> str:
-    return "".join(ch for ch in (value or "") if ch in "+0123456789")
-
-
-def _build_allowlist() -> set[str]:
-    entries = [
-        _normalize_phone(item.strip())
-        for item in SMS_ALLOWLIST_RAW.split(",")
-        if item.strip()
-    ]
-    return {item for item in entries if item}
-
-
-SMS_ALLOWLIST = _build_allowlist()
-
-
 def _build_telegram_allowlist() -> set[int]:
     out: set[int] = set()
     for raw in TELEGRAM_ALLOWLIST_RAW.split(","):
@@ -105,20 +88,6 @@ def _build_telegram_allowlist() -> set[int]:
 TELEGRAM_ALLOWLIST = _build_telegram_allowlist()
 
 
-def _build_twiml(message: str) -> str:
-    safe = html.escape(message or "")
-    return f'<?xml version="1.0" encoding="UTF-8"?><Response><Message>{safe}</Message></Response>'
-
-
-def _prune_sms_cache(now_ts: float) -> None:
-    expired_keys = [
-        sid for sid, (ts, _) in _sms_sid_cache.items()
-        if now_ts - ts > _SMS_CACHE_TTL_SECONDS
-    ]
-    for sid in expired_keys:
-        _sms_sid_cache.pop(sid, None)
-
-
 def _prune_tg_cache(now_ts: float) -> None:
     expired = [
         update_id for update_id, ts in _tg_update_cache.items()
@@ -126,20 +95,6 @@ def _prune_tg_cache(now_ts: float) -> None:
     ]
     for update_id in expired:
         _tg_update_cache.pop(update_id, None)
-
-
-def _twilio_signature_valid(url: str, form_data: dict[str, str], signature: str) -> bool:
-    if not SMS_TWILIO_AUTH_TOKEN:
-        return False
-
-    data = url + "".join(f"{k}{form_data[k]}" for k in sorted(form_data))
-    digest = hmac.new(
-        SMS_TWILIO_AUTH_TOKEN.encode("utf-8"),
-        data.encode("utf-8"),
-        hashlib.sha1,
-    ).digest()
-    expected = base64.b64encode(digest).decode("utf-8")
-    return hmac.compare_digest(expected, signature or "")
 
 
 async def _telegram_send_text(chat_id: int, text: str, reply_to_message_id: int | None = None) -> None:
@@ -159,6 +114,103 @@ async def _telegram_send_text(chat_id: int, text: str, reply_to_message_id: int 
         resp = await client.post(url, json=payload)
         if resp.status_code >= 400:
             logging.error("[Telegram] sendMessage failed: %s - %s", resp.status_code, resp.text)
+
+
+def _guess_mime_type_from_path(file_path: str) -> str:
+    low = (file_path or "").lower()
+    if low.endswith(".jpg") or low.endswith(".jpeg"):
+        return "image/jpeg"
+    if low.endswith(".png"):
+        return "image/png"
+    if low.endswith(".webp"):
+        return "image/webp"
+    return "application/octet-stream"
+
+
+def _select_best_photo_size(photo_sizes: list[dict[str, Any]]) -> dict[str, Any] | None:
+    if not photo_sizes:
+        return None
+
+    def _score(item: dict[str, Any]) -> tuple[int, int]:
+        file_size = item.get("file_size")
+        if isinstance(file_size, int) and file_size > 0:
+            return (file_size, 1)
+        width = item.get("width") if isinstance(item.get("width"), int) else 0
+        height = item.get("height") if isinstance(item.get("height"), int) else 0
+        return (width * height, 0)
+
+    ranked = sorted(
+        (item for item in photo_sizes if isinstance(item, dict)),
+        key=_score,
+        reverse=True,
+    )
+    return ranked[0] if ranked else None
+
+
+async def _telegram_get_file_path(file_id: str) -> str | None:
+    if not TELEGRAM_BOT_TOKEN or not file_id:
+        return None
+
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getFile"
+    payload = {"file_id": file_id}
+    async with httpx.AsyncClient(timeout=20.0) as client:
+        resp = await client.post(url, json=payload)
+        if resp.status_code >= 400:
+            logging.error("[Telegram] getFile failed: %s - %s", resp.status_code, resp.text)
+            return None
+        data = resp.json()
+    if not data.get("ok"):
+        logging.error("[Telegram] getFile returned non-ok payload: %s", data)
+        return None
+
+    result = data.get("result") or {}
+    file_path = result.get("file_path")
+    return file_path if isinstance(file_path, str) else None
+
+
+async def _telegram_download_file_bytes(file_path: str) -> bytes | None:
+    if not TELEGRAM_BOT_TOKEN or not file_path:
+        return None
+
+    url = f"https://api.telegram.org/file/bot{TELEGRAM_BOT_TOKEN}/{file_path}"
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.get(url)
+        if resp.status_code >= 400:
+            logging.error("[Telegram] file download failed: %s - %s", resp.status_code, resp.text)
+            return None
+        return resp.content
+
+
+async def _telegram_download_photo_as_bytes(photo_sizes: list[dict[str, Any]]) -> dict[str, Any] | None:
+    chosen = _select_best_photo_size(photo_sizes)
+    if not chosen:
+        return None
+
+    file_id = chosen.get("file_id")
+    file_unique_id = chosen.get("file_unique_id")
+    if not isinstance(file_id, str) or not isinstance(file_unique_id, str):
+        return None
+
+    file_path = await _telegram_get_file_path(file_id)
+    if not file_path:
+        return None
+
+    image_bytes = await _telegram_download_file_bytes(file_path)
+    if not image_bytes:
+        return None
+
+    return {
+        "file_id": file_id,
+        "file_unique_id": file_unique_id,
+        "file_path": file_path,
+        "mime_type": _guess_mime_type_from_path(file_path),
+        "file_size_bytes": len(image_bytes),
+        "sha256": hashlib.sha256(image_bytes).hexdigest(),
+    }
+
+
+async def _process_telegram_photo_event(event: ImageGovernanceEvent) -> dict[str, Any]:
+    return await process_image_event(event)
 
 
 @app.post("/webhooks/telegram")
@@ -194,7 +246,10 @@ async def telegram_webhook(request: Request):
     from_obj = message.get("from") or {}
     chat_obj = message.get("chat") or {}
     text = (message.get("text") or "").strip()
+    caption = (message.get("caption") or "").strip()
+    photo_sizes = message.get("photo") if isinstance(message.get("photo"), list) else []
     message_id = message.get("message_id")
+    event_ts = message.get("date") if isinstance(message.get("date"), int) else None
 
     from_id = from_obj.get("id")
     chat_id = chat_obj.get("id")
@@ -205,99 +260,60 @@ async def telegram_webhook(request: Request):
         await _telegram_send_text(chat_id, "This Telegram account is not authorized.", message_id)
         return JSONResponse(content={"ok": True, "blocked": True})
 
+    user_id = f"tg:{from_id}"
+    recipe_chat_id = f"tg:{chat_id}"
+
+    if photo_sizes:
+        try:
+            image_meta = await _telegram_download_photo_as_bytes(photo_sizes)
+            if not image_meta:
+                await _telegram_send_text(
+                    chat_id,
+                    "Image received, but download failed. Please try sending the photo again.",
+                    message_id,
+                )
+                return JSONResponse(content={"ok": True, "photo_processed": False})
+
+            gov_event = ImageGovernanceEvent(
+                source="telegram",
+                user_id=user_id,
+                chat_id=recipe_chat_id,
+                update_id=update_id,
+                message_id=message_id if isinstance(message_id, int) else None,
+                event_ts=event_ts,
+                caption=caption,
+                file_id=image_meta["file_id"],
+                file_unique_id=image_meta["file_unique_id"],
+                file_path=image_meta["file_path"],
+                mime_type=image_meta["mime_type"],
+                file_size_bytes=image_meta["file_size_bytes"],
+                sha256=image_meta["sha256"],
+            )
+            gov_result = await _process_telegram_photo_event(gov_event)
+            tracking_id = gov_result.get("tracking_id", "n/a")
+            await _telegram_send_text(
+                chat_id,
+                f"Image received and queued for model governance. Tracking ID: {tracking_id}",
+                message_id,
+            )
+            return JSONResponse(content={"ok": True, "photo_processed": True})
+        except Exception:
+            logging.exception("[Telegram] Photo processing failed. update_id=%s", update_id)
+            await _telegram_send_text(
+                chat_id,
+                "Image processing failed on server side. Please try again later.",
+                message_id,
+            )
+            return JSONResponse(content={"ok": True, "photo_processed": False})
+
     if not text:
         await _telegram_send_text(chat_id, "Please send a text message with your diet request.", message_id)
         return JSONResponse(content={"ok": True, "ignored": True})
-
-    user_id = f"tg:{from_id}"
-    recipe_chat_id = f"tg:{chat_id}"
 
     logging.info("[Telegram] from_id=%s chat_id=%s update_id=%s text=%s", from_id, chat_id, update_id, text)
     answer = await recipe_app.chat(chat_id=recipe_chat_id, message=text, user_id=user_id)
     await _telegram_send_text(chat_id, answer, message_id)
     return JSONResponse(content={"ok": True})
-
-
-@app.post("/webhooks/twilio/sms")
-async def twilio_sms_webhook(request: Request):
-    """
-    Twilio inbound SMS webhook endpoint.
-
-    Security and routing strategy:
-    - Optional signature verification via SMS_ENFORCE_TWILIO_SIGNATURE
-    - Allowlist-based sender filtering
-    - per-peer session mapping: one session per sender-recipient pair
-    """
-    form = await request.form()
-    form_data = {k: str(v) for k, v in form.items()}
-
-    signature = request.headers.get("X-Twilio-Signature", "")
-    if SMS_ENFORCE_TWILIO_SIGNATURE:
-        if not _twilio_signature_valid(str(request.url), form_data, signature):
-            logging.warning("[SMS] Invalid Twilio signature.")
-            return Response(
-                content=_build_twiml("Unauthorized request."),
-                media_type="application/xml",
-                status_code=403,
-            )
-
-    from_number_raw = form_data.get("From", "")
-    to_number_raw = form_data.get("To", "")
-    message_sid = form_data.get("MessageSid", "")
-    body = (form_data.get("Body", "") or "").strip()
-    num_media = int(form_data.get("NumMedia", "0") or 0)
-
-    from_number = _normalize_phone(from_number_raw)
-    to_number = _normalize_phone(to_number_raw)
-
-    if SMS_ALLOWLIST and from_number not in SMS_ALLOWLIST:
-        logging.info("[SMS] Blocked sender not in allowlist: %s", from_number_raw)
-        return Response(
-            content=_build_twiml("This number is not authorized for this assistant."),
-            media_type="application/xml",
-            status_code=200,
-        )
-
-    now_ts = time.time()
-    _prune_sms_cache(now_ts)
-    if message_sid and message_sid in _sms_sid_cache:
-        cached_xml = _sms_sid_cache[message_sid][1]
-        return Response(content=cached_xml, media_type="application/xml", status_code=200)
-
-    if num_media > 0:
-        xml = _build_twiml(
-            "Image meal logging is not enabled yet. Please send text for now."
-        )
-        if message_sid:
-            _sms_sid_cache[message_sid] = (now_ts, xml)
-        return Response(content=xml, media_type="application/xml", status_code=200)
-
-    if not body:
-        xml = _build_twiml("Please send a text message with your diet request.")
-        if message_sid:
-            _sms_sid_cache[message_sid] = (now_ts, xml)
-        return Response(content=xml, media_type="application/xml", status_code=200)
-
-    user_id = f"sms:{from_number}"
-    chat_id = f"sms:{from_number}->{to_number or 'unknown-recipient'}"
-
-    logging.info(
-        "[SMS] from=%s to=%s sid=%s body=%s",
-        from_number,
-        to_number,
-        message_sid,
-        body,
-    )
-
-    response_text = await recipe_app.chat(
-        chat_id=chat_id,
-        message=body,
-        user_id=user_id,
-    )
-    xml = _build_twiml(response_text)
-    if message_sid:
-        _sms_sid_cache[message_sid] = (now_ts, xml)
-    return Response(content=xml, media_type="application/xml", status_code=200)
 
 
 # ------------------------------------------------------------

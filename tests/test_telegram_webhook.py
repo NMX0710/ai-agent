@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 project_root = (
@@ -11,6 +12,12 @@ project_root = (
 sys.path.append(str(project_root))
 
 import main
+
+
+@pytest.fixture(autouse=True)
+def _reset_telegram_runtime(monkeypatch):
+    monkeypatch.setattr(main, "TELEGRAM_WEBHOOK_SECRET", "")
+    monkeypatch.setattr(main, "_tg_update_cache", {})
 
 
 def test_telegram_blocked_by_allowlist(monkeypatch):
@@ -84,6 +91,108 @@ def test_telegram_chat_success(monkeypatch):
     assert sent["chat_id"] == 555111
     assert sent["text"] == "TG reply"
     assert sent["reply_to"] == 34
+
+
+def test_telegram_photo_success_to_governance(monkeypatch):
+    client = TestClient(main.app)
+    monkeypatch.setattr(main, "TELEGRAM_ALLOWLIST", {999000})
+    monkeypatch.setattr(main, "_tg_update_cache", {})
+
+    sent = {}
+    captured = {}
+
+    async def fake_send(chat_id: int, text: str, reply_to_message_id=None):
+        sent["chat_id"] = chat_id
+        sent["text"] = text
+        sent["reply_to"] = reply_to_message_id
+
+    async def fake_download_photo(photo_sizes):
+        return {
+            "file_id": "abc-file-id",
+            "file_unique_id": "abc-unique-id",
+            "file_path": "photos/demo.jpg",
+            "mime_type": "image/jpeg",
+            "file_size_bytes": 1234,
+            "sha256": "f" * 64,
+        }
+
+    async def fake_process(event):
+        captured["source"] = event.source
+        captured["user_id"] = event.user_id
+        captured["chat_id"] = event.chat_id
+        captured["update_id"] = event.update_id
+        captured["message_id"] = event.message_id
+        captured["caption"] = event.caption
+        captured["file_id"] = event.file_id
+        return {"status": "accepted", "tracking_id": "tg-999"}
+
+    monkeypatch.setattr(main, "_telegram_send_text", fake_send)
+    monkeypatch.setattr(main, "_telegram_download_photo_as_bytes", fake_download_photo)
+    monkeypatch.setattr(main, "_process_telegram_photo_event", fake_process)
+
+    payload = {
+        "update_id": 105,
+        "message": {
+            "message_id": 36,
+            "caption": "lunch today",
+            "from": {"id": 999000},
+            "chat": {"id": 555111},
+            "photo": [
+                {"file_id": "small", "file_unique_id": "uniq1", "width": 100, "height": 100},
+                {"file_id": "large", "file_unique_id": "uniq2", "width": 1000, "height": 1000},
+            ],
+        },
+    }
+    response = client.post("/webhooks/telegram", json=payload)
+
+    assert response.status_code == 200
+    assert response.json().get("photo_processed") is True
+    assert captured["source"] == "telegram"
+    assert captured["user_id"] == "tg:999000"
+    assert captured["chat_id"] == "tg:555111"
+    assert captured["update_id"] == 105
+    assert captured["message_id"] == 36
+    assert captured["caption"] == "lunch today"
+    assert captured["file_id"] == "abc-file-id"
+    assert sent["chat_id"] == 555111
+    assert "queued for model governance" in sent["text"].lower()
+    assert sent["reply_to"] == 36
+
+
+def test_telegram_photo_download_failure(monkeypatch):
+    client = TestClient(main.app)
+    monkeypatch.setattr(main, "TELEGRAM_ALLOWLIST", {999000})
+    monkeypatch.setattr(main, "_tg_update_cache", {})
+
+    sent = {}
+
+    async def fake_send(chat_id: int, text: str, reply_to_message_id=None):
+        sent["chat_id"] = chat_id
+        sent["text"] = text
+        sent["reply_to"] = reply_to_message_id
+
+    async def fake_download_photo(photo_sizes):
+        return None
+
+    monkeypatch.setattr(main, "_telegram_send_text", fake_send)
+    monkeypatch.setattr(main, "_telegram_download_photo_as_bytes", fake_download_photo)
+
+    payload = {
+        "update_id": 106,
+        "message": {
+            "message_id": 37,
+            "from": {"id": 999000},
+            "chat": {"id": 555111},
+            "photo": [{"file_id": "small", "file_unique_id": "uniq1", "width": 100, "height": 100}],
+        },
+    }
+    response = client.post("/webhooks/telegram", json=payload)
+
+    assert response.status_code == 200
+    assert response.json().get("photo_processed") is False
+    assert sent["chat_id"] == 555111
+    assert "download failed" in sent["text"].lower()
+    assert sent["reply_to"] == 37
 
 
 def test_telegram_duplicate_update_id(monkeypatch):
