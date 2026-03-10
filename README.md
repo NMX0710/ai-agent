@@ -2,7 +2,7 @@
 
 This repository is currently in a **baseline architecture phase**.
 
-The app runs a **minimal Deep Agent pipeline** behind FastAPI, with no RAG and no external tools yet.  
+The app runs a **minimal Deep Agent pipeline** behind FastAPI, with no RAG.  
 Goal: stabilize the core chat, memory, and runtime interfaces first, then add capabilities incrementally.
 
 ## Current Status
@@ -13,11 +13,11 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - Session memory via LangGraph checkpointer
 - In-memory long-term memory filesystem route (`/memories/`)
 - Telegram webhook channel (`/webhooks/telegram`) with allowlist + update dedup
+- Built-in HTTP nutrition tools for Spoonacular and USDA FoodData Central
 - AgentCore-compatible endpoints (`/ping`, `/invocations`)
 
 ### What is intentionally disabled (for now)
 - RAG retrieval pipeline
-- Tool registry / MCP tools
 - Report generation flow
 - Postgres-backed persistent memory
 
@@ -34,7 +34,8 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 ### 2) Agent Layer
 - `app/recipe_app.py` builds a minimal Deep Agent:
   - `create_deep_agent(...)`
-  - `tools=[]` (empty by design in baseline)
+  - nutrition tools loaded at startup (configured by env)
+  - nutrition skill for tool usage guidance
   - chef-oriented `system_prompt`
 
 ### 3) Memory Layer
@@ -78,6 +79,12 @@ Create/update `.env` in project root:
 ```env
 OPENAI_API_KEY=your_key_here
 OPENAI_MODEL=gpt-4.1-mini
+
+# Spoonacular tool
+SPOONACULAR_API_KEY=your_spoonacular_key
+
+# USDA FoodData Central tool
+USDA_API_KEY=your_usda_key
 
 # Telegram channel
 TELEGRAM_BOT_TOKEN=your_bot_token

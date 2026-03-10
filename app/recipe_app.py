@@ -1,6 +1,9 @@
 import logging
 import os
+from pathlib import Path
+import time
 from typing import Any, Dict
+from uuid import uuid4
 
 from deepagents import create_deep_agent
 from deepagents.backends import CompositeBackend, StateBackend, StoreBackend
@@ -9,6 +12,9 @@ from langchain_core.messages import HumanMessage  # noqa: F401
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.store.memory import InMemoryStore
+
+from app.tracing import reset_trace_id, set_trace_id, trace_log
+from app.tools.tool_registry import load_all_tools
 
 load_dotenv()
 
@@ -43,6 +49,7 @@ class RecipeApp:
             temperature=0.5,
         )
         self.memory_saver = MemorySaver()
+        self.tools = load_all_tools()
         self.deep_agent = self._build_deep_agent()
 
     @staticmethod
@@ -54,10 +61,12 @@ class RecipeApp:
             default=StateBackend(runtime),
             routes={"/memories/": StoreBackend(runtime)},
         )
+        skill_dir = Path(__file__).resolve().parent / "skills" / "nutrition-tools"
 
         return create_deep_agent(
             model=self.model,
-            tools=[],
+            tools=self.tools,
+            skills=[str(skill_dir)],
             system_prompt=SYSTEM_PROMPT,
             backend=composite_backend,
             store=InMemoryStore(),
@@ -66,6 +75,8 @@ class RecipeApp:
 
     async def chat(self, chat_id: str, message: str, user_id: str = "anonymous-user") -> str:
         logging.info("[Chat] user_id=%s, chat_id=%s, message=%s", user_id, chat_id, message)
+        trace_id = uuid4().hex[:12]
+        trace_token = set_trace_id(trace_id)
 
         history_key = self._history_key(user_id, chat_id)
         config = {"configurable": {"thread_id": history_key}}
@@ -82,15 +93,42 @@ class RecipeApp:
                 {"role": "user", "content": message},
             ]
         }
+        trace_log(
+            "ChatInput",
+            "Invoking deep agent",
+            {
+                "user_id": user_id,
+                "chat_id": chat_id,
+                "thread_id": history_key,
+                "messages": state["messages"],
+            },
+        )
 
         try:
+            start = time.monotonic()
             out = await self.deep_agent.ainvoke(state, config=config)
+            elapsed_ms = round((time.monotonic() - start) * 1000, 2)
             answer = self._extract_answer(out)
             logging.info("[Chat] response=%s", answer)
+            trace_log(
+                "ChatOutput",
+                "Deep agent returned",
+                {
+                    "elapsed_ms": elapsed_ms,
+                    "answer": answer,
+                    "result_keys": list(out.keys()) if isinstance(out, dict) else str(type(out)),
+                },
+            )
             return answer
         except Exception:
             logging.exception("[Chat] Invocation failed.")
+            trace_log("ChatError", "Deep agent invocation failed")
             raise
+        finally:
+            reset_trace_id(trace_token)
+
+    async def close(self) -> None:
+        return None
 
     @staticmethod
     def _extract_answer(result: Dict[str, Any]) -> str:
