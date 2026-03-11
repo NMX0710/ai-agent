@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import logging
+import re
 import time
 from typing import Any
 
@@ -17,11 +18,14 @@ from app.nutrition.meal_log_service import (
     cancel_meal_log_draft,
     commit_meal_log_draft,
     latest_pending_draft_for_chat,
+    list_pending_apple_health_writes,
     mark_confirmation_prompted,
+    report_apple_health_write_result,
 )
 from app.routers import sample
 from app.recipe_app import RecipeApp
 from app.settings import (
+    APPLE_HEALTH_BRIDGE_TOKEN,
     TELEGRAM_ALLOWLIST_RAW,
     TELEGRAM_BOT_TOKEN,
     TELEGRAM_WEBHOOK_SECRET,
@@ -66,6 +70,19 @@ class ChatRequest(BaseModel):
     user_id: str
 
 
+class AppleHealthPendingRequest(BaseModel):
+    user_id: str
+    limit: int = 20
+
+
+class AppleHealthWriteReportRequest(BaseModel):
+    user_id: str
+    draft_id: str
+    success: bool
+    external_id: str | None = None
+    error: str | None = None
+
+
 @app.post("/chat")
 async def chat(req: ChatRequest):
     """Internal endpoint for local/Web chat usage."""
@@ -92,6 +109,13 @@ def _build_telegram_allowlist() -> set[int]:
 
 
 TELEGRAM_ALLOWLIST = _build_telegram_allowlist()
+
+
+def _bridge_authorized(request: Request) -> bool:
+    if not APPLE_HEALTH_BRIDGE_TOKEN:
+        return True
+    token = request.headers.get("X-Apple-Bridge-Token", "")
+    return hmac.compare_digest(token, APPLE_HEALTH_BRIDGE_TOKEN)
 
 
 def _prune_tg_cache(now_ts: float) -> None:
@@ -122,7 +146,12 @@ async def _telegram_send_text(chat_id: int, text: str, reply_to_message_id: int 
             logging.error("[Telegram] sendMessage failed: %s - %s", resp.status_code, resp.text)
 
 
-async def _telegram_send_confirmation_prompt(chat_id: int, draft_id: str, reply_to_message_id: int | None = None) -> None:
+async def _telegram_send_confirmation_prompt(
+    chat_id: int,
+    draft_id: str,
+    text: str,
+    reply_to_message_id: int | None = None,
+) -> None:
     if not TELEGRAM_BOT_TOKEN:
         logging.error("[Telegram] TELEGRAM_BOT_TOKEN is not configured.")
         return
@@ -130,10 +159,7 @@ async def _telegram_send_confirmation_prompt(chat_id: int, draft_id: str, reply_
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload: dict[str, Any] = {
         "chat_id": chat_id,
-        "text": (
-            "I prepared a meal log draft for you.\n"
-            "Please confirm before writing into Apple Health."
-        ),
+        "text": text,
         "reply_markup": {
             "inline_keyboard": [
                 [
@@ -150,6 +176,37 @@ async def _telegram_send_confirmation_prompt(chat_id: int, draft_id: str, reply_
         resp = await client.post(url, json=payload)
         if resp.status_code >= 400:
             logging.error("[Telegram] send confirmation prompt failed: %s - %s", resp.status_code, resp.text)
+
+
+def _is_probably_chinese(text: str) -> bool:
+    return bool(re.search(r"[\u4e00-\u9fff]", text or ""))
+
+
+def _format_meal_estimate_message(
+    *,
+    language_hint_text: str,
+    energy_kcal: float,
+    protein_g: float,
+    carbs_g: float,
+    fat_g: float,
+) -> str:
+    if _is_probably_chinese(language_hint_text):
+        return (
+            "当然可以，我先帮你做了估算：\n"
+            f"- 热量约 {energy_kcal:.0f} kcal\n"
+            f"- 蛋白质约 {protein_g:.1f} g\n"
+            f"- 碳水约 {carbs_g:.1f} g\n"
+            f"- 脂肪约 {fat_g:.1f} g\n\n"
+            "你看这样可以吗？如果可以请点下方【确认保存】，我就写入 Apple Health。"
+        )
+    return (
+        "Sure. Here is my estimate for this meal:\n"
+        f"- Energy: ~{energy_kcal:.0f} kcal\n"
+        f"- Protein: ~{protein_g:.1f} g\n"
+        f"- Carbs: ~{carbs_g:.1f} g\n"
+        f"- Fat: ~{fat_g:.1f} g\n\n"
+        "Does this look right? If yes, tap Confirm Write below and I will sync it to Apple Health."
+    )
 
 
 async def _telegram_answer_callback_query(callback_query_id: str, text: str | None = None) -> None:
@@ -175,13 +232,28 @@ async def _maybe_prompt_meal_confirmation(
     user_id: str,
     recipe_chat_id: str,
     reply_to_message_id: int | None,
-) -> None:
+    language_hint_text: str = "",
+) -> bool:
     pending = latest_pending_draft_for_chat(user_id=user_id, chat_id=recipe_chat_id)
     if not pending or pending.confirmation_prompted:
-        return
+        return False
 
-    await _telegram_send_confirmation_prompt(chat_id=chat_id, draft_id=pending.draft_id, reply_to_message_id=reply_to_message_id)
+    totals = pending.meal_log.nutrition_totals
+    text = _format_meal_estimate_message(
+        language_hint_text=language_hint_text or (pending.meal_log.raw_inputs.text if pending.meal_log.raw_inputs else ""),
+        energy_kcal=totals.energy_kcal,
+        protein_g=totals.protein_g,
+        carbs_g=totals.carbs_g,
+        fat_g=totals.fat_g,
+    )
+    await _telegram_send_confirmation_prompt(
+        chat_id=chat_id,
+        draft_id=pending.draft_id,
+        text=text,
+        reply_to_message_id=reply_to_message_id,
+    )
     mark_confirmation_prompted(pending.draft_id)
+    return True
 
 
 def _guess_mime_type_from_path(file_path: str) -> str:
@@ -334,7 +406,7 @@ async def telegram_webhook(request: Request):
             draft_id = data.split("meal_confirm:", 1)[1].strip()
             result = commit_meal_log_draft(draft_id=draft_id, user_id=user_id, confirmed=True)
             if result.get("ok"):
-                text = f"Meal log written to Apple Health flow. Draft: {draft_id}"
+                text = "Meal log confirmed and queued for Apple Health sync."
                 callback_text = "Confirmed"
             else:
                 text = f"Write failed: {result.get('error', 'unknown_error')}"
@@ -343,7 +415,7 @@ async def telegram_webhook(request: Request):
             draft_id = data.split("meal_cancel:", 1)[1].strip()
             result = cancel_meal_log_draft(draft_id=draft_id, user_id=user_id)
             if result.get("ok"):
-                text = f"Meal log draft cancelled. Draft: {draft_id}"
+                text = "Meal log draft cancelled."
                 callback_text = "Cancelled"
             else:
                 text = f"Cancel failed: {result.get('error', 'unknown_error')}"
@@ -414,13 +486,15 @@ async def telegram_webhook(request: Request):
                 "If missing dish details, ask a concise follow-up question."
             )
             answer = await recipe_app.chat(chat_id=recipe_chat_id, message=photo_message, user_id=user_id)
-            await _telegram_send_text(chat_id, answer, message_id)
-            await _maybe_prompt_meal_confirmation(
+            prompted = await _maybe_prompt_meal_confirmation(
                 chat_id=chat_id,
                 user_id=user_id,
                 recipe_chat_id=recipe_chat_id,
                 reply_to_message_id=message_id if isinstance(message_id, int) else None,
+                language_hint_text=caption,
             )
+            if not prompted:
+                await _telegram_send_text(chat_id, answer, message_id)
             return JSONResponse(content={"ok": True, "photo_processed": True, "tracking_id": tracking_id})
         except Exception:
             logging.exception("[Telegram] Photo processing failed. update_id=%s", update_id)
@@ -437,14 +511,39 @@ async def telegram_webhook(request: Request):
 
     logging.info("[Telegram] from_id=%s chat_id=%s update_id=%s text=%s", from_id, chat_id, update_id, text)
     answer = await recipe_app.chat(chat_id=recipe_chat_id, message=text, user_id=user_id)
-    await _telegram_send_text(chat_id, answer, message_id)
-    await _maybe_prompt_meal_confirmation(
+    prompted = await _maybe_prompt_meal_confirmation(
         chat_id=chat_id,
         user_id=user_id,
         recipe_chat_id=recipe_chat_id,
         reply_to_message_id=message_id if isinstance(message_id, int) else None,
+        language_hint_text=text,
     )
+    if not prompted:
+        await _telegram_send_text(chat_id, answer, message_id)
     return JSONResponse(content={"ok": True})
+
+
+@app.post("/integrations/apple-health/pending-writes")
+async def apple_health_pending_writes(request: Request, body: AppleHealthPendingRequest):
+    if not _bridge_authorized(request):
+        return JSONResponse(content={"ok": False, "error": "unauthorized"}, status_code=403)
+    rows = list_pending_apple_health_writes(user_id=body.user_id, limit=body.limit)
+    return {"ok": True, "count": len(rows), "items": rows}
+
+
+@app.post("/integrations/apple-health/write-result")
+async def apple_health_write_result(request: Request, body: AppleHealthWriteReportRequest):
+    if not _bridge_authorized(request):
+        return JSONResponse(content={"ok": False, "error": "unauthorized"}, status_code=403)
+    result = report_apple_health_write_result(
+        draft_id=body.draft_id,
+        user_id=body.user_id,
+        success=body.success,
+        external_id=body.external_id,
+        error=body.error,
+    )
+    status_code = 200 if result.get("ok") else 400
+    return JSONResponse(content=result, status_code=status_code)
 
 
 # ------------------------------------------------------------

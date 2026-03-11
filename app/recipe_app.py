@@ -27,7 +27,7 @@ SYSTEM_PROMPT = (
     "If the user wants to improve everyday family meals, suggest easy-to-cook, nutritious home-style dishes. "
     "If the user mentions specific ingredients (e.g., chicken, tomatoes), recommend appropriate techniques "
     "based on the ingredient characteristics. "
-    "Reply in Chinese unless the user explicitly requests English.\n\n"
+    "\n\n"
     "Use memory files for stable user preferences and profile:\n"
     "- Long-term memory directory: /memories/users/<user_id>/\n"
     "- Keep profile in /memories/users/<user_id>/profile.md\n"
@@ -66,7 +66,7 @@ class RecipeApp:
             default=StateBackend(runtime),
             routes={"/memories/": StoreBackend(runtime)},
         )
-        skill_dir = Path(__file__).resolve().parent / "skills" / "nutrition-tools"
+        skill_dir = Path(__file__).resolve().parent / "skills"
 
         return create_deep_agent(
             model=self.model,

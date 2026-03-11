@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from threading import Lock
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from app.nutrition.meallog import CanonicalMealLog
 
@@ -18,6 +18,7 @@ class MealDraftRecord:
     created_at: datetime
     updated_at: datetime
     confirmation_prompted: bool = False
+    bridge_dispatched: bool = False
     write_result: Optional[dict] = None
     last_error: Optional[str] = None
 
@@ -72,6 +73,15 @@ class InMemoryMealDraftStore:
                 return None
             pending.sort(key=lambda x: x.created_at, reverse=True)
             return pending[0]
+
+    def list_for_user(self, user_id: str, status: Optional[str] = None, limit: int = 20) -> List[MealDraftRecord]:
+        with self._lock:
+            self._prune_locked()
+            rows = [rec for rec in self._records.values() if rec.user_id == user_id]
+            if status:
+                rows = [rec for rec in rows if rec.status == status]
+            rows.sort(key=lambda x: x.updated_at, reverse=True)
+            return rows[:max(1, limit)]
 
 
 _MEAL_DRAFT_STORE = InMemoryMealDraftStore(ttl_hours=24)
