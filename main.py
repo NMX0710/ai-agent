@@ -13,6 +13,12 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.governance import ImageGovernanceEvent, process_image_event
+from app.nutrition.meal_log_service import (
+    cancel_meal_log_draft,
+    commit_meal_log_draft,
+    latest_pending_draft_for_chat,
+    mark_confirmation_prompted,
+)
 from app.routers import sample
 from app.recipe_app import RecipeApp
 from app.settings import (
@@ -114,6 +120,68 @@ async def _telegram_send_text(chat_id: int, text: str, reply_to_message_id: int 
         resp = await client.post(url, json=payload)
         if resp.status_code >= 400:
             logging.error("[Telegram] sendMessage failed: %s - %s", resp.status_code, resp.text)
+
+
+async def _telegram_send_confirmation_prompt(chat_id: int, draft_id: str, reply_to_message_id: int | None = None) -> None:
+    if not TELEGRAM_BOT_TOKEN:
+        logging.error("[Telegram] TELEGRAM_BOT_TOKEN is not configured.")
+        return
+
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload: dict[str, Any] = {
+        "chat_id": chat_id,
+        "text": (
+            "I prepared a meal log draft for you.\n"
+            "Please confirm before writing into Apple Health."
+        ),
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {"text": "Confirm Write", "callback_data": f"meal_confirm:{draft_id}"},
+                    {"text": "Cancel", "callback_data": f"meal_cancel:{draft_id}"},
+                ]
+            ]
+        },
+    }
+    if reply_to_message_id:
+        payload["reply_to_message_id"] = reply_to_message_id
+
+    async with httpx.AsyncClient(timeout=20.0) as client:
+        resp = await client.post(url, json=payload)
+        if resp.status_code >= 400:
+            logging.error("[Telegram] send confirmation prompt failed: %s - %s", resp.status_code, resp.text)
+
+
+async def _telegram_answer_callback_query(callback_query_id: str, text: str | None = None) -> None:
+    if not TELEGRAM_BOT_TOKEN:
+        logging.error("[Telegram] TELEGRAM_BOT_TOKEN is not configured.")
+        return
+    if not callback_query_id:
+        return
+
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/answerCallbackQuery"
+    payload: dict[str, Any] = {"callback_query_id": callback_query_id}
+    if text:
+        payload["text"] = text
+    async with httpx.AsyncClient(timeout=20.0) as client:
+        resp = await client.post(url, json=payload)
+        if resp.status_code >= 400:
+            logging.error("[Telegram] answerCallbackQuery failed: %s - %s", resp.status_code, resp.text)
+
+
+async def _maybe_prompt_meal_confirmation(
+    *,
+    chat_id: int,
+    user_id: str,
+    recipe_chat_id: str,
+    reply_to_message_id: int | None,
+) -> None:
+    pending = latest_pending_draft_for_chat(user_id=user_id, chat_id=recipe_chat_id)
+    if not pending or pending.confirmation_prompted:
+        return
+
+    await _telegram_send_confirmation_prompt(chat_id=chat_id, draft_id=pending.draft_id, reply_to_message_id=reply_to_message_id)
+    mark_confirmation_prompted(pending.draft_id)
 
 
 def _guess_mime_type_from_path(file_path: str) -> str:
@@ -231,9 +299,10 @@ async def telegram_webhook(request: Request):
 
     payload = await request.json()
     update_id = payload.get("update_id")
+    callback_query = payload.get("callback_query")
     message = payload.get("message") or payload.get("edited_message")
 
-    if not isinstance(update_id, int) or not isinstance(message, dict):
+    if not isinstance(update_id, int):
         return JSONResponse(content={"ok": True, "ignored": True})
 
     now_ts = time.time()
@@ -242,6 +311,52 @@ async def telegram_webhook(request: Request):
         return JSONResponse(content={"ok": True, "duplicate": True})
 
     _tg_update_cache[update_id] = now_ts
+
+    if isinstance(callback_query, dict):
+        from_obj = callback_query.get("from") or {}
+        callback_message = callback_query.get("message") or {}
+        from_id = from_obj.get("id")
+        callback_id = callback_query.get("id")
+        data = (callback_query.get("data") or "").strip()
+        chat_obj = callback_message.get("chat") or {}
+        chat_id = chat_obj.get("id")
+        message_id = callback_message.get("message_id")
+
+        if not isinstance(from_id, int) or not isinstance(chat_id, int):
+            return JSONResponse(content={"ok": True, "ignored": True})
+
+        if TELEGRAM_ALLOWLIST and from_id not in TELEGRAM_ALLOWLIST:
+            await _telegram_answer_callback_query(callback_id if isinstance(callback_id, str) else "", "Unauthorized")
+            return JSONResponse(content={"ok": True, "blocked": True})
+
+        user_id = f"tg:{from_id}"
+        if data.startswith("meal_confirm:"):
+            draft_id = data.split("meal_confirm:", 1)[1].strip()
+            result = commit_meal_log_draft(draft_id=draft_id, user_id=user_id, confirmed=True)
+            if result.get("ok"):
+                text = f"Meal log written to Apple Health flow. Draft: {draft_id}"
+                callback_text = "Confirmed"
+            else:
+                text = f"Write failed: {result.get('error', 'unknown_error')}"
+                callback_text = "Write failed"
+        elif data.startswith("meal_cancel:"):
+            draft_id = data.split("meal_cancel:", 1)[1].strip()
+            result = cancel_meal_log_draft(draft_id=draft_id, user_id=user_id)
+            if result.get("ok"):
+                text = f"Meal log draft cancelled. Draft: {draft_id}"
+                callback_text = "Cancelled"
+            else:
+                text = f"Cancel failed: {result.get('error', 'unknown_error')}"
+                callback_text = "Cancel failed"
+        else:
+            return JSONResponse(content={"ok": True, "ignored": True})
+
+        await _telegram_answer_callback_query(callback_id if isinstance(callback_id, str) else "", callback_text)
+        await _telegram_send_text(chat_id, text, message_id if isinstance(message_id, int) else None)
+        return JSONResponse(content={"ok": True, "callback_processed": True})
+
+    if not isinstance(message, dict):
+        return JSONResponse(content={"ok": True, "ignored": True})
 
     from_obj = message.get("from") or {}
     chat_obj = message.get("chat") or {}
@@ -291,12 +406,22 @@ async def telegram_webhook(request: Request):
             )
             gov_result = await _process_telegram_photo_event(gov_event)
             tracking_id = gov_result.get("tracking_id", "n/a")
-            await _telegram_send_text(
-                chat_id,
-                f"Image received and queued for model governance. Tracking ID: {tracking_id}",
-                message_id,
+            photo_message = (
+                "User sent a meal photo in Telegram.\n"
+                f"tracking_id: {tracking_id}\n"
+                f"caption: {caption or '(none)'}\n"
+                "If user intent is to log a meal, prepare a meal log draft first. "
+                "If missing dish details, ask a concise follow-up question."
             )
-            return JSONResponse(content={"ok": True, "photo_processed": True})
+            answer = await recipe_app.chat(chat_id=recipe_chat_id, message=photo_message, user_id=user_id)
+            await _telegram_send_text(chat_id, answer, message_id)
+            await _maybe_prompt_meal_confirmation(
+                chat_id=chat_id,
+                user_id=user_id,
+                recipe_chat_id=recipe_chat_id,
+                reply_to_message_id=message_id if isinstance(message_id, int) else None,
+            )
+            return JSONResponse(content={"ok": True, "photo_processed": True, "tracking_id": tracking_id})
         except Exception:
             logging.exception("[Telegram] Photo processing failed. update_id=%s", update_id)
             await _telegram_send_text(
@@ -313,6 +438,12 @@ async def telegram_webhook(request: Request):
     logging.info("[Telegram] from_id=%s chat_id=%s update_id=%s text=%s", from_id, chat_id, update_id, text)
     answer = await recipe_app.chat(chat_id=recipe_chat_id, message=text, user_id=user_id)
     await _telegram_send_text(chat_id, answer, message_id)
+    await _maybe_prompt_meal_confirmation(
+        chat_id=chat_id,
+        user_id=user_id,
+        recipe_chat_id=recipe_chat_id,
+        reply_to_message_id=message_id if isinstance(message_id, int) else None,
+    )
     return JSONResponse(content={"ok": True})
 
 

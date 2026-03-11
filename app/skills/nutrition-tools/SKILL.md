@@ -10,6 +10,7 @@ Use this skill when users ask for:
 - Nutrition facts verification
 - Recipe search with nutrition context
 - Ingredient substitution with macro awareness
+- Meal logging or recording nutrition into Apple Health flow
 
 ## Workflow
 
@@ -21,15 +22,22 @@ Use this skill when users ask for:
 2. Select tools directly:
 - Use `spoonacular_search_recipe` for recipe and Spoonacular nutrition capabilities.
 - Use `usda_search_foods` for USDA FoodData Central lookups.
+- Use `prepare_meal_log` when user intent is to record/log a meal.
+- Use `commit_meal_log` only after explicit user confirmation.
 
 3. If user intent is broad (for example “what should I eat”), recipe tools may be enough.
 
 4. If user asks numeric nutrition values, call at least one nutrition-focused tool before answering.
 
 5. Report numbers clearly with units and mention source tool names you used.
+6. For meal logging:
+- Create a draft first via `prepare_meal_log`.
+- Ask for explicit confirmation before writing.
+- Call `commit_meal_log` only when user clearly confirms.
 
 ## Guardrails
 
 - Do not invent nutrition numbers when tools returned no usable data.
 - Ask a brief clarification question when quantity/unit is missing and materially affects calories/macros.
 - Keep answers concise and practical for meal decisions.
+- Never call `commit_meal_log` without explicit user confirmation in the current chat context.

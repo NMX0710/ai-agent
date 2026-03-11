@@ -33,7 +33,12 @@ SYSTEM_PROMPT = (
     "- Keep profile in /memories/users/<user_id>/profile.md\n"
     "- Keep preference snippets in /memories/users/<user_id>/preferences.md\n"
     "Read existing memory before giving personalized advice. "
-    "Update memory when user provides durable preferences or constraints."
+    "Update memory when user provides durable preferences or constraints.\n\n"
+    "Meal logging policy:\n"
+    "- If the user asks to record/log a meal, use tool prepare_meal_log to create a draft.\n"
+    "- Never write meal logs without explicit confirmation.\n"
+    "- Only after explicit confirmation, use tool commit_meal_log.\n"
+    "- If confirmation is missing, ask for confirmation first."
 )
 
 

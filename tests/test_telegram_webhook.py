@@ -100,6 +100,7 @@ def test_telegram_photo_success_to_governance(monkeypatch):
 
     sent = {}
     captured = {}
+    chat_calls = {}
 
     async def fake_send(chat_id: int, text: str, reply_to_message_id=None):
         sent["chat_id"] = chat_id
@@ -126,9 +127,16 @@ def test_telegram_photo_success_to_governance(monkeypatch):
         captured["file_id"] = event.file_id
         return {"status": "accepted", "tracking_id": "tg-999"}
 
+    async def fake_chat(chat_id: str, message: str, user_id: str = "anonymous-user") -> str:
+        chat_calls["chat_id"] = chat_id
+        chat_calls["message"] = message
+        chat_calls["user_id"] = user_id
+        return "Photo analyzed"
+
     monkeypatch.setattr(main, "_telegram_send_text", fake_send)
     monkeypatch.setattr(main, "_telegram_download_photo_as_bytes", fake_download_photo)
     monkeypatch.setattr(main, "_process_telegram_photo_event", fake_process)
+    monkeypatch.setattr(main.recipe_app, "chat", fake_chat)
 
     payload = {
         "update_id": 105,
@@ -154,8 +162,11 @@ def test_telegram_photo_success_to_governance(monkeypatch):
     assert captured["message_id"] == 36
     assert captured["caption"] == "lunch today"
     assert captured["file_id"] == "abc-file-id"
+    assert chat_calls["user_id"] == "tg:999000"
+    assert chat_calls["chat_id"] == "tg:555111"
+    assert "tracking_id: tg-999" in chat_calls["message"]
     assert sent["chat_id"] == 555111
-    assert "queued for model governance" in sent["text"].lower()
+    assert sent["text"] == "Photo analyzed"
     assert sent["reply_to"] == 36
 
 
@@ -236,3 +247,47 @@ def test_telegram_secret_validation(monkeypatch):
     payload = {"update_id": 104, "message": {"from": {"id": 1}, "chat": {"id": 2}, "text": "x"}}
     response = client.post("/webhooks/telegram", json=payload)
     assert response.status_code == 403
+
+
+def test_telegram_callback_confirm_success(monkeypatch):
+    client = TestClient(main.app)
+    monkeypatch.setattr(main, "TELEGRAM_ALLOWLIST", {999000})
+    monkeypatch.setattr(main, "_tg_update_cache", {})
+
+    sent = {}
+
+    async def fake_send(chat_id: int, text: str, reply_to_message_id=None):
+        sent["chat_id"] = chat_id
+        sent["text"] = text
+        sent["reply_to"] = reply_to_message_id
+
+    async def fake_answer(callback_query_id: str, text: str | None = None):
+        sent["callback_query_id"] = callback_query_id
+        sent["callback_text"] = text
+
+    def fake_commit(*, draft_id: str, user_id: str, confirmed: bool):
+        assert draft_id == "draft-1"
+        assert user_id == "tg:999000"
+        assert confirmed is True
+        return {"ok": True, "status": "synced", "draft_id": draft_id}
+
+    monkeypatch.setattr(main, "_telegram_send_text", fake_send)
+    monkeypatch.setattr(main, "_telegram_answer_callback_query", fake_answer)
+    monkeypatch.setattr(main, "commit_meal_log_draft", fake_commit)
+
+    payload = {
+        "update_id": 120,
+        "callback_query": {
+            "id": "cbq-1",
+            "from": {"id": 999000},
+            "data": "meal_confirm:draft-1",
+            "message": {"message_id": 50, "chat": {"id": 555111}},
+        },
+    }
+    response = client.post("/webhooks/telegram", json=payload)
+
+    assert response.status_code == 200
+    assert response.json().get("callback_processed") is True
+    assert sent["chat_id"] == 555111
+    assert "written to apple health flow" in sent["text"].lower()
+    assert sent["callback_query_id"] == "cbq-1"

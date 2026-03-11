@@ -1,0 +1,81 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from threading import Lock
+from typing import Dict, Optional
+
+from app.nutrition.meallog import CanonicalMealLog
+
+
+@dataclass
+class MealDraftRecord:
+    draft_id: str
+    user_id: str
+    chat_id: str
+    meal_log: CanonicalMealLog
+    status: str
+    created_at: datetime
+    updated_at: datetime
+    confirmation_prompted: bool = False
+    write_result: Optional[dict] = None
+    last_error: Optional[str] = None
+
+
+class InMemoryMealDraftStore:
+    """
+    Short-lived runtime store for confirmation flow.
+    This is not long-term user memory.
+    """
+
+    def __init__(self, ttl_hours: int = 24):
+        self._ttl = timedelta(hours=max(1, ttl_hours))
+        self._records: Dict[str, MealDraftRecord] = {}
+        self._lock = Lock()
+
+    def _prune_locked(self) -> None:
+        now = datetime.now(timezone.utc)
+        expired = [draft_id for draft_id, rec in self._records.items() if now - rec.updated_at > self._ttl]
+        for draft_id in expired:
+            self._records.pop(draft_id, None)
+
+    def save(self, record: MealDraftRecord) -> MealDraftRecord:
+        with self._lock:
+            self._prune_locked()
+            self._records[record.draft_id] = record
+            return record
+
+    def get(self, draft_id: str) -> Optional[MealDraftRecord]:
+        with self._lock:
+            self._prune_locked()
+            return self._records.get(draft_id)
+
+    def update(self, draft_id: str, **fields) -> Optional[MealDraftRecord]:
+        with self._lock:
+            self._prune_locked()
+            rec = self._records.get(draft_id)
+            if not rec:
+                return None
+            for key, value in fields.items():
+                setattr(rec, key, value)
+            rec.updated_at = datetime.now(timezone.utc)
+            return rec
+
+    def latest_pending_for_chat(self, user_id: str, chat_id: str) -> Optional[MealDraftRecord]:
+        with self._lock:
+            self._prune_locked()
+            pending = [
+                rec for rec in self._records.values()
+                if rec.user_id == user_id and rec.chat_id == chat_id and rec.status == "draft"
+            ]
+            if not pending:
+                return None
+            pending.sort(key=lambda x: x.created_at, reverse=True)
+            return pending[0]
+
+
+_MEAL_DRAFT_STORE = InMemoryMealDraftStore(ttl_hours=24)
+
+
+def get_meal_draft_store() -> InMemoryMealDraftStore:
+    return _MEAL_DRAFT_STORE
