@@ -81,11 +81,14 @@ def test_report_failure_marks_sync_failed(monkeypatch):
 
     commit = commit_meal_log_draft(draft_id=draft_id, user_id="tg:2", confirmed=True)
     assert commit["status"] == "pending_device_write"
+    claimed = list_pending_apple_health_writes(user_id="tg:2")
+    assert len(claimed) == 1
 
     failed = report_apple_health_write_result(
         draft_id=draft_id,
         user_id="tg:2",
         success=False,
+        claim_token=claimed[0]["claim_token"],
         error="bridge_timeout",
     )
     assert failed["ok"] is True
@@ -159,7 +162,7 @@ def test_estimate_scans_multiple_usda_results(monkeypatch):
     assert totals["fat_g"] == 14
 
 
-def test_prepare_passes_normalized_query_without_rule_based_extraction(monkeypatch):
+def test_prepare_prefers_clean_agent_supplied_queries(monkeypatch):
     _reset_store()
     captured = {}
 
@@ -185,9 +188,11 @@ def test_prepare_passes_normalized_query_without_rule_based_extraction(monkeypat
         user_id="tg:5",
         chat_id="tg:chat5",
         input_source=InputSource.text,
-        meal_description="我晚上吃了意大利面 可以帮我记录吗",
+        meal_description="晚餐吃了意大利面",
+        food_query="意大利面",
+        food_query_en="spaghetti",
     )
-    assert captured["query"] == "我晚上吃了意大利面 可以帮我记录吗"
+    assert captured["query"] == "spaghetti"
 
 
 def test_prepare_uses_llm_fallback_when_tools_have_no_hits(monkeypatch):

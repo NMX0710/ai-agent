@@ -14,6 +14,9 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - In-memory long-term memory filesystem route (`/memories/`)
 - Telegram webhook channel (`/webhooks/telegram`) with allowlist + update dedup
 - Built-in HTTP nutrition tools for Spoonacular and USDA FoodData Central
+- Meal logging draft -> confirm -> Apple Health bridge flow
+- Bilingual nutrition lookup normalization (`meal_description`, `food_query`, `food_query_en`)
+- Local Apple Health bridge runner CLI with mock writers for end-to-end bridge verification
 - AgentCore-compatible endpoints (`/ping`, `/invocations`)
 
 ### What is intentionally disabled (for now)
@@ -30,6 +33,8 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
   - `POST /webhooks/telegram` Telegram inbound webhook
   - `GET /ping` health check
   - `POST /invocations` AgentCore runtime entrypoint
+  - `POST /integrations/apple-health/pending-writes`
+  - `POST /integrations/apple-health/write-result`
 
 ### 2) Agent Layer
 - `app/recipe_app.py` builds a minimal Deep Agent:
@@ -37,6 +42,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
   - nutrition tools loaded at startup (configured by env)
   - nutrition skill for tool usage guidance
   - chef-oriented `system_prompt`
+  - explicit meal-log guidance for `meal_description`, `food_query`, and `food_query_en`
 
 ### 3) Memory Layer
 - `MemorySaver()` for thread/session state
@@ -48,6 +54,14 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 This gives:
 - short-term memory in-thread
 - long-term memory semantics through `/memories/` (currently in-memory only)
+
+### 4) Meal Logging + Apple Health Bridge
+- `prepare_meal_log` creates a draft and estimates macros/calories before any write.
+- Telegram confirm/cancel buttons control the explicit write gate.
+- Confirmed drafts become bridge-visible pending writes.
+- `app/apple_health_bridge_runner.py` can poll pending writes and report results back.
+- Current runner modes are `mock-success` and `mock-failure` for local end-to-end verification.
+- Real Apple Health writes still require an Apple-platform companion implementation using HealthKit.
 
 ## Project Structure
 
@@ -90,6 +104,9 @@ USDA_API_KEY=your_usda_key
 TELEGRAM_BOT_TOKEN=your_bot_token
 TELEGRAM_ALLOWLIST=123456789
 TELEGRAM_WEBHOOK_SECRET=your_secret_token
+
+# Optional Apple Health bridge auth
+APPLE_HEALTH_BRIDGE_TOKEN=shared_bridge_secret
 ```
 
 ### 3) Run locally
@@ -135,6 +152,7 @@ curl -X POST http://127.0.0.1:8000/chat \
 
 ### Phase 4: Apple Health App Sync
 - Add iOS companion app for HealthKit authorization/write
+- Replace mock bridge writer with real HealthKit writer
 - Sync confirmed nutrition entries into Apple Health
 - Extend to additional health/productivity apps later
 
@@ -149,7 +167,28 @@ curl -X POST http://127.0.0.1:8000/chat \
 - Persistent store (e.g., Postgres-backed store) will be added later after baseline stabilization.
 - Telegram allowlist uses numeric user IDs (`from.id`) for stability.
 - Current media policy is conservative: image logging flow is not enabled yet; text chat is the current stable path.
+- Nutrition lookup currently prefers agent-supplied `food_query` / `food_query_en`, with fallback normalization kept intentionally thin.
+- The Python bridge runner verifies the server-side Apple Health queue lifecycle, but it does not write to HealthKit by itself.
 - Tests that depend on older RAG/tools pipeline will be migrated in subsequent iterations.
+
+## Apple Health Bridge Runner
+
+Run the API server first, then start the bridge runner in a separate process:
+
+```bash
+./.venv/bin/python -m app.apple_health_bridge_runner \
+  --base-url http://127.0.0.1:8000 \
+  --user-id tg:123 \
+  --writer mock-success \
+  --lease-seconds 120 \
+  --once
+```
+
+Supported runner modes:
+- `mock-success`: consumes a pending write and reports a successful sync
+- `mock-failure`: consumes a pending write and reports a failed sync
+
+This is intended for bridge verification only. A real Apple Health write path still requires a native iOS/macOS writer backed by HealthKit.
 
 ## Telegram Quick Test
 

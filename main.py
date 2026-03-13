@@ -73,12 +73,14 @@ class ChatRequest(BaseModel):
 class AppleHealthPendingRequest(BaseModel):
     user_id: str
     limit: int = 20
+    lease_seconds: int = 300
 
 
 class AppleHealthWriteReportRequest(BaseModel):
     user_id: str
     draft_id: str
     success: bool
+    claim_token: str | None = None
     external_id: str | None = None
     error: str | None = None
 
@@ -527,7 +529,17 @@ async def telegram_webhook(request: Request):
 async def apple_health_pending_writes(request: Request, body: AppleHealthPendingRequest):
     if not _bridge_authorized(request):
         return JSONResponse(content={"ok": False, "error": "unauthorized"}, status_code=403)
-    rows = list_pending_apple_health_writes(user_id=body.user_id, limit=body.limit)
+    logging.info(
+        "[AppleHealthBridge] pending_writes user_id=%s limit=%s lease_seconds=%s",
+        body.user_id,
+        body.limit,
+        body.lease_seconds,
+    )
+    rows = list_pending_apple_health_writes(
+        user_id=body.user_id,
+        limit=body.limit,
+        lease_seconds=body.lease_seconds,
+    )
     return {"ok": True, "count": len(rows), "items": rows}
 
 
@@ -535,10 +547,18 @@ async def apple_health_pending_writes(request: Request, body: AppleHealthPending
 async def apple_health_write_result(request: Request, body: AppleHealthWriteReportRequest):
     if not _bridge_authorized(request):
         return JSONResponse(content={"ok": False, "error": "unauthorized"}, status_code=403)
+    logging.info(
+        "[AppleHealthBridge] write_result user_id=%s draft_id=%s success=%s claim_token=%s",
+        body.user_id,
+        body.draft_id,
+        body.success,
+        body.claim_token,
+    )
     result = report_apple_health_write_result(
         draft_id=body.draft_id,
         user_id=body.user_id,
         success=body.success,
+        claim_token=body.claim_token,
         external_id=body.external_id,
         error=body.error,
     )

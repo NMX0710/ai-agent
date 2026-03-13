@@ -22,11 +22,8 @@ from app.nutrition.meallog import (
     NutritionTotals,
     RawInputs,
 )
+from app.nutrition.query_normalization import NormalizedMealQuery, normalize_meal_query
 from app.tools.nutrition_http_tools import spoonacular_search_recipe, usda_search_foods
-
-
-def _normalize_lookup_query(text: str) -> str:
-    return " ".join((text or "").strip().split())
 
 
 def _has_complete_macros(calories: Any, protein: Any, carbs: Any, fat: Any) -> bool:
@@ -113,130 +110,147 @@ def _coerce_meal_type(value: Optional[str]) -> MealType:
     return MealType.unknown
 
 
-def _estimate_nutrition_from_text(meal_description: str) -> tuple[NutritionTotals, float]:
-    meal_text = (meal_description or "").strip()
-    lookup_query = _normalize_lookup_query(meal_text)
+def _select_lookup_queries(query: NormalizedMealQuery) -> list[str]:
+    candidates: list[str] = []
+    for item in [query.food_query_en, query.food_query]:
+        value = " ".join((item or "").strip().split())
+        if value and value not in candidates:
+            candidates.append(value)
+    return candidates
+
+
+def _estimate_nutrition_from_text(query: NormalizedMealQuery) -> tuple[NutritionTotals, float]:
+    meal_text = query.meal_description
+    lookup_queries = _select_lookup_queries(query)
+    lookup_query = lookup_queries[0] if lookup_queries else ""
     if not meal_text:
         logging.info(
             "[MealEstimate] source=none reason=empty_input raw_query=%r lookup_query=%r",
-            meal_description,
+            query.user_text,
             lookup_query,
         )
         return NutritionTotals(energy_kcal=0, protein_g=0, carbs_g=0, fat_g=0), 0.2
 
     # usda_search_foods/spoonacular_search_recipe are LangChain StructuredTool (@tool), invoke with dict args.
-    data = usda_search_foods.invoke({"query": lookup_query, "page_size": 5, "page_number": 1})
-    foods = data.get("foods") if isinstance(data, dict) else None
-    usda_count = len(foods) if isinstance(foods, list) else 0
-    logging.info(
-        "[MealEstimate] source=usda stage=query raw_query=%r lookup_query=%r hits=%s",
-        meal_description,
-        lookup_query,
-        usda_count,
-    )
     usda_has_complete_macros = False
-    if isinstance(foods, list):
-        for idx, item in enumerate(foods):
-            if not isinstance(item, dict):
-                continue
-            desc = item.get("description")
-            calories = item.get("calories_kcal")
-            protein = item.get("protein_g")
-            carbs = item.get("carbs_g")
-            fat = item.get("fat_g")
-            logging.info(
-                "[MealEstimate] source=usda stage=candidate idx=%s description=%r calories=%r protein=%r carbs=%r fat=%r",
-                idx,
-                desc,
-                calories,
-                protein,
-                carbs,
-                fat,
-            )
-            if _has_complete_macros(calories, protein, carbs, fat):
-                usda_has_complete_macros = True
+    for lookup_query in lookup_queries:
+        data = usda_search_foods.invoke({"query": lookup_query, "page_size": 5, "page_number": 1})
+        foods = data.get("foods") if isinstance(data, dict) else None
+        usda_count = len(foods) if isinstance(foods, list) else 0
+        logging.info(
+            "[MealEstimate] source=usda stage=query raw_query=%r food_query=%r food_query_en=%r lookup_query=%r hits=%s",
+            query.user_text,
+            query.food_query,
+            query.food_query_en,
+            lookup_query,
+            usda_count,
+        )
+        if isinstance(foods, list):
+            for idx, item in enumerate(foods):
+                if not isinstance(item, dict):
+                    continue
+                desc = item.get("description")
+                calories = item.get("calories_kcal")
+                protein = item.get("protein_g")
+                carbs = item.get("carbs_g")
+                fat = item.get("fat_g")
                 logging.info(
-                    "[MealEstimate] source=usda stage=selected idx=%s description=%r calories=%s protein=%s carbs=%s fat=%s",
+                    "[MealEstimate] source=usda stage=candidate idx=%s description=%r calories=%r protein=%r carbs=%r fat=%r",
                     idx,
                     desc,
-                    float(calories),
-                    float(protein),
-                    float(carbs),
-                    float(fat),
+                    calories,
+                    protein,
+                    carbs,
+                    fat,
                 )
-                return (
-                    NutritionTotals(
-                        energy_kcal=float(calories),
-                        protein_g=float(protein),
-                        carbs_g=float(carbs),
-                        fat_g=float(fat),
-                    ),
-                    0.68,
-                )
-        if usda_count == 0:
-            logging.info("[MealEstimate] source=usda stage=selected reason=no_hits")
-        elif not usda_has_complete_macros:
-            logging.info("[MealEstimate] source=usda stage=selected reason=has_hits_but_missing_macros")
+                if _has_complete_macros(calories, protein, carbs, fat):
+                    usda_has_complete_macros = True
+                    logging.info(
+                        "[MealEstimate] source=usda stage=selected idx=%s description=%r calories=%s protein=%s carbs=%s fat=%s",
+                        idx,
+                        desc,
+                        float(calories),
+                        float(protein),
+                        float(carbs),
+                        float(fat),
+                    )
+                    return (
+                        NutritionTotals(
+                            energy_kcal=float(calories),
+                            protein_g=float(protein),
+                            carbs_g=float(carbs),
+                            fat_g=float(fat),
+                        ),
+                        0.68,
+                    )
+            if usda_count == 0:
+                logging.info("[MealEstimate] source=usda stage=selected reason=no_hits")
+            elif not usda_has_complete_macros:
+                logging.info("[MealEstimate] source=usda stage=selected reason=has_hits_but_missing_macros")
 
-    recipe_data = spoonacular_search_recipe.invoke({"query": lookup_query, "number": 5})
-    recipes = recipe_data.get("results") if isinstance(recipe_data, dict) else None
-    spoon_count = len(recipes) if isinstance(recipes, list) else 0
-    logging.info(
-        "[MealEstimate] source=spoonacular stage=query raw_query=%r lookup_query=%r hits=%s",
-        meal_description,
-        lookup_query,
-        spoon_count,
-    )
     spoon_has_complete_macros = False
-    if isinstance(recipes, list):
-        for idx, item in enumerate(recipes):
-            if not isinstance(item, dict):
-                continue
-            title = item.get("title")
-            calories = item.get("calories")
-            protein = item.get("protein_g")
-            carbs = item.get("carbs_g")
-            fat = item.get("fat_g")
-            logging.info(
-                "[MealEstimate] source=spoonacular stage=candidate idx=%s title=%r calories=%r protein=%r carbs=%r fat=%r",
-                idx,
-                title,
-                calories,
-                protein,
-                carbs,
-                fat,
-            )
-            if _has_complete_macros(calories, protein, carbs, fat):
-                spoon_has_complete_macros = True
+    for lookup_query in lookup_queries:
+        recipe_data = spoonacular_search_recipe.invoke({"query": lookup_query, "number": 5})
+        recipes = recipe_data.get("results") if isinstance(recipe_data, dict) else None
+        spoon_count = len(recipes) if isinstance(recipes, list) else 0
+        logging.info(
+            "[MealEstimate] source=spoonacular stage=query raw_query=%r food_query=%r food_query_en=%r lookup_query=%r hits=%s",
+            query.user_text,
+            query.food_query,
+            query.food_query_en,
+            lookup_query,
+            spoon_count,
+        )
+        if isinstance(recipes, list):
+            for idx, item in enumerate(recipes):
+                if not isinstance(item, dict):
+                    continue
+                title = item.get("title")
+                calories = item.get("calories")
+                protein = item.get("protein_g")
+                carbs = item.get("carbs_g")
+                fat = item.get("fat_g")
                 logging.info(
-                    "[MealEstimate] source=spoonacular stage=selected idx=%s title=%r calories=%s protein=%s carbs=%s fat=%s",
+                    "[MealEstimate] source=spoonacular stage=candidate idx=%s title=%r calories=%r protein=%r carbs=%r fat=%r",
                     idx,
                     title,
-                    float(calories),
-                    float(protein),
-                    float(carbs),
-                    float(fat),
+                    calories,
+                    protein,
+                    carbs,
+                    fat,
                 )
-                return (
-                    NutritionTotals(
-                        energy_kcal=float(calories),
-                        protein_g=float(protein),
-                        carbs_g=float(carbs),
-                        fat_g=float(fat),
-                    ),
-                    0.6,
-                )
-        if spoon_count == 0:
-            logging.info("[MealEstimate] source=spoonacular stage=selected reason=no_hits")
-        elif not spoon_has_complete_macros:
-            logging.info("[MealEstimate] source=spoonacular stage=selected reason=has_hits_but_missing_macros")
+                if _has_complete_macros(calories, protein, carbs, fat):
+                    spoon_has_complete_macros = True
+                    logging.info(
+                        "[MealEstimate] source=spoonacular stage=selected idx=%s title=%r calories=%s protein=%s carbs=%s fat=%s",
+                        idx,
+                        title,
+                        float(calories),
+                        float(protein),
+                        float(carbs),
+                        float(fat),
+                    )
+                    return (
+                        NutritionTotals(
+                            energy_kcal=float(calories),
+                            protein_g=float(protein),
+                            carbs_g=float(carbs),
+                            fat_g=float(fat),
+                        ),
+                        0.6,
+                    )
+            if spoon_count == 0:
+                logging.info("[MealEstimate] source=spoonacular stage=selected reason=no_hits")
+            elif not spoon_has_complete_macros:
+                logging.info("[MealEstimate] source=spoonacular stage=selected reason=has_hits_but_missing_macros")
 
     logging.info(
-        "[MealEstimate] source=none reason=all_sources_missing_macros raw_query=%r lookup_query=%r",
-        meal_description,
-        lookup_query,
+        "[MealEstimate] source=none reason=all_sources_missing_macros raw_query=%r food_query=%r food_query_en=%r",
+        query.user_text,
+        query.food_query,
+        query.food_query_en,
     )
-    llm_fallback = _infer_nutrition_with_llm(lookup_query)
+    llm_fallback = _infer_nutrition_with_llm(query.food_query_en or query.food_query or meal_text)
     if llm_fallback:
         totals, confidence = llm_fallback
         logging.info(
@@ -273,6 +287,8 @@ def prepare_meal_log_draft(
     chat_id: str,
     input_source: InputSource,
     meal_description: str,
+    food_query: Optional[str] = None,
+    food_query_en: Optional[str] = None,
     consumed_at_iso: Optional[str] = None,
     timezone_name: str = "America/New_York",
     meal_type: Optional[str] = None,
@@ -289,7 +305,20 @@ def prepare_meal_log_draft(
     if consumed_at.tzinfo is None or consumed_at.tzinfo.utcoffset(consumed_at) is None:
         consumed_at = consumed_at.replace(tzinfo=timezone.utc)
 
-    nutrition_totals, nutrition_confidence = _estimate_nutrition_from_text(meal_description)
+    normalized_query = normalize_meal_query(
+        user_text=meal_description,
+        meal_description=meal_description,
+        food_query=food_query,
+        food_query_en=food_query_en,
+    )
+    logging.info(
+        "[MealDraft] normalized_query meal_description=%r food_query=%r food_query_en=%r detected_language=%s",
+        normalized_query.meal_description,
+        normalized_query.food_query,
+        normalized_query.food_query_en,
+        normalized_query.detected_language,
+    )
+    nutrition_totals, nutrition_confidence = _estimate_nutrition_from_text(normalized_query)
     draft_id = uuid4().hex
     meal_log = CanonicalMealLog(
         meal_id=uuid4(),
@@ -347,6 +376,8 @@ def prepare_meal_log_draft(
         "status": "draft",
         "nutrition_totals": meal_log.nutrition_totals.model_dump(),
         "meal_type": meal_log.meal_type.value,
+        "food_query": normalized_query.food_query,
+        "food_query_en": normalized_query.food_query_en,
     }
 
 
@@ -369,6 +400,9 @@ def commit_meal_log_draft(*, draft_id: str, user_id: str, confirmed: bool) -> di
         draft_id,
         status=MealLogStatus.confirmed.value,
         bridge_dispatched=False,
+        bridge_claim_token=None,
+        bridge_claimed_at=None,
+        bridge_claim_expires_at=None,
         write_result=None,
         last_error=None,
     )
@@ -402,8 +436,18 @@ def mark_confirmation_prompted(draft_id: str) -> None:
     get_meal_draft_store().update(draft_id, confirmation_prompted=True)
 
 
-def list_pending_apple_health_writes(*, user_id: str, limit: int = 20) -> list[dict[str, Any]]:
-    rows = get_meal_draft_store().list_for_user(user_id=user_id, status=MealLogStatus.confirmed.value, limit=limit)
+def list_pending_apple_health_writes(
+    *,
+    user_id: str,
+    limit: int = 20,
+    lease_seconds: int = 300,
+) -> list[dict[str, Any]]:
+    rows = get_meal_draft_store().claim_for_user(
+        user_id=user_id,
+        status=MealLogStatus.confirmed.value,
+        limit=limit,
+        lease_seconds=lease_seconds,
+    )
     out: list[dict[str, Any]] = []
     for row in rows:
         out.append(
@@ -413,6 +457,9 @@ def list_pending_apple_health_writes(*, user_id: str, limit: int = 20) -> list[d
                 "chat_id": row.chat_id,
                 "status": row.status,
                 "bridge_dispatched": row.bridge_dispatched,
+                "bridge_attempt_count": row.bridge_attempt_count,
+                "claim_token": row.bridge_claim_token,
+                "claim_expires_at": row.bridge_claim_expires_at.isoformat() if row.bridge_claim_expires_at else None,
                 "payload": meal_log_to_apple_health_payload(row.meal_log),
                 "created_at": row.created_at.isoformat(),
                 "updated_at": row.updated_at.isoformat(),
@@ -426,6 +473,7 @@ def report_apple_health_write_result(
     draft_id: str,
     user_id: str,
     success: bool,
+    claim_token: Optional[str] = None,
     external_id: Optional[str] = None,
     error: Optional[str] = None,
 ) -> dict[str, Any]:
@@ -437,6 +485,35 @@ def report_apple_health_write_result(
         return {"ok": False, "error": "draft_user_mismatch"}
     if record.status == "cancelled":
         return {"ok": False, "error": "draft_cancelled"}
+    if record.status == MealLogStatus.synced.value:
+        return {
+            "ok": True,
+            "status": "synced",
+            "draft_id": draft_id,
+            "write_result": record.write_result,
+        }
+
+    active_claim_token = record.bridge_claim_token
+    claim_expired = bool(
+        record.bridge_claim_expires_at
+        and record.bridge_claim_expires_at <= datetime.now(timezone.utc)
+    )
+    effective_claim_token = claim_token or active_claim_token
+    if record.last_claim_token and claim_token and claim_token == record.last_claim_token and record.status == MealLogStatus.sync_failed.value:
+        return {
+            "ok": True,
+            "status": MealLogStatus.sync_failed.value,
+            "draft_id": draft_id,
+            "error": record.last_error or "unknown_error",
+        }
+    if not effective_claim_token:
+        return {"ok": False, "error": "claim_token_required"}
+    if not active_claim_token:
+        return {"ok": False, "error": "draft_not_claimed"}
+    if claim_expired:
+        return {"ok": False, "error": "claim_expired"}
+    if effective_claim_token != active_claim_token:
+        return {"ok": False, "error": "claim_token_mismatch"}
 
     if success:
         write_result = {
@@ -447,7 +524,9 @@ def report_apple_health_write_result(
         store.update(
             draft_id,
             status=MealLogStatus.synced.value,
-            bridge_dispatched=True,
+            bridge_claim_token=None,
+            bridge_claimed_at=None,
+            bridge_claim_expires_at=None,
             write_result=write_result,
             last_error=None,
         )
@@ -456,7 +535,9 @@ def report_apple_health_write_result(
     store.update(
         draft_id,
         status=MealLogStatus.sync_failed.value,
-        bridge_dispatched=True,
+        bridge_claim_token=None,
+        bridge_claimed_at=None,
+        bridge_claim_expires_at=None,
         write_result=None,
         last_error=error or "unknown_error",
     )
