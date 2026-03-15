@@ -23,7 +23,12 @@ from app.nutrition.meallog import (
     RawInputs,
 )
 from app.nutrition.query_normalization import NormalizedMealQuery, normalize_meal_query
-from app.tools.nutrition_http_tools import spoonacular_search_recipe, usda_search_foods
+from app.tools.nutrition_http_tools import (
+    openfoodfacts_search_products,
+    spoonacular_search_recipe,
+    tavily_search_nutrition,
+    usda_search_foods,
+)
 
 
 def _has_complete_macros(calories: Any, protein: Any, carbs: Any, fat: Any) -> bool:
@@ -119,19 +124,40 @@ def _select_lookup_queries(query: NormalizedMealQuery) -> list[str]:
     return candidates
 
 
-def _estimate_nutrition_from_text(query: NormalizedMealQuery) -> tuple[NutritionTotals, float]:
-    meal_text = query.meal_description
-    lookup_queries = _select_lookup_queries(query)
-    lookup_query = lookup_queries[0] if lookup_queries else ""
-    if not meal_text:
-        logging.info(
-            "[MealEstimate] source=none reason=empty_input raw_query=%r lookup_query=%r",
-            query.user_text,
-            lookup_query,
-        )
-        return NutritionTotals(energy_kcal=0, protein_g=0, carbs_g=0, fat_g=0), 0.2
+def _totals_from_macros(calories: Any, protein: Any, carbs: Any, fat: Any) -> NutritionTotals:
+    return NutritionTotals(
+        energy_kcal=float(calories),
+        protein_g=float(protein),
+        carbs_g=float(carbs),
+        fat_g=float(fat),
+    )
 
-    # usda_search_foods/spoonacular_search_recipe are LangChain StructuredTool (@tool), invoke with dict args.
+
+def _extract_tavily_macros(text: str) -> tuple[float, float, float, float] | None:
+    if not text:
+        return None
+    low = text.lower()
+    patterns = {
+        "calories": r"(\d+(?:\.\d+)?)\s*(?:kcal|calories|calorie)",
+        "protein": r"protein[^0-9]{0,20}(\d+(?:\.\d+)?)\s*g|\b(\d+(?:\.\d+)?)\s*g[^.\n]{0,20}protein",
+        "carbs": r"carb(?:s|ohydrates)?[^0-9]{0,20}(\d+(?:\.\d+)?)\s*g|\b(\d+(?:\.\d+)?)\s*g[^.\n]{0,20}carb",
+        "fat": r"fat[^0-9]{0,20}(\d+(?:\.\d+)?)\s*g|\b(\d+(?:\.\d+)?)\s*g[^.\n]{0,20}fat",
+    }
+    values: dict[str, float] = {}
+    for key, pattern in patterns.items():
+        match = re.search(pattern, low)
+        if not match:
+            return None
+        for group in match.groups():
+            if group is not None:
+                values[key] = float(group)
+                break
+    if len(values) != 4:
+        return None
+    return values["calories"], values["protein"], values["carbs"], values["fat"]
+
+
+def _try_usda_lookup(query: NormalizedMealQuery, lookup_queries: list[str]) -> tuple[NutritionTotals, float, str] | None:
     usda_has_complete_macros = False
     for lookup_query in lookup_queries:
         data = usda_search_foods.invoke({"query": lookup_query, "page_size": 5, "page_number": 1})
@@ -174,20 +200,15 @@ def _estimate_nutrition_from_text(query: NormalizedMealQuery) -> tuple[Nutrition
                         float(carbs),
                         float(fat),
                     )
-                    return (
-                        NutritionTotals(
-                            energy_kcal=float(calories),
-                            protein_g=float(protein),
-                            carbs_g=float(carbs),
-                            fat_g=float(fat),
-                        ),
-                        0.68,
-                    )
+                    return _totals_from_macros(calories, protein, carbs, fat), 0.68, "USDA"
             if usda_count == 0:
                 logging.info("[MealEstimate] source=usda stage=selected reason=no_hits")
             elif not usda_has_complete_macros:
                 logging.info("[MealEstimate] source=usda stage=selected reason=has_hits_but_missing_macros")
+    return None
 
+
+def _try_spoonacular_lookup(query: NormalizedMealQuery, lookup_queries: list[str]) -> tuple[NutritionTotals, float, str] | None:
     spoon_has_complete_macros = False
     for lookup_query in lookup_queries:
         recipe_data = spoonacular_search_recipe.invoke({"query": lookup_query, "number": 5})
@@ -230,19 +251,128 @@ def _estimate_nutrition_from_text(query: NormalizedMealQuery) -> tuple[Nutrition
                         float(carbs),
                         float(fat),
                     )
-                    return (
-                        NutritionTotals(
-                            energy_kcal=float(calories),
-                            protein_g=float(protein),
-                            carbs_g=float(carbs),
-                            fat_g=float(fat),
-                        ),
-                        0.6,
-                    )
+                    return _totals_from_macros(calories, protein, carbs, fat), 0.6, "Spoonacular"
             if spoon_count == 0:
                 logging.info("[MealEstimate] source=spoonacular stage=selected reason=no_hits")
             elif not spoon_has_complete_macros:
                 logging.info("[MealEstimate] source=spoonacular stage=selected reason=has_hits_but_missing_macros")
+    return None
+
+
+def _try_tavily_lookup(query: NormalizedMealQuery, lookup_queries: list[str]) -> tuple[NutritionTotals, float, str] | None:
+    for lookup_query in lookup_queries:
+        data = tavily_search_nutrition.invoke({"query": lookup_query, "max_results": 5})
+        results = data.get("results") if isinstance(data, dict) else None
+        tavily_count = len(results) if isinstance(results, list) else 0
+        logging.info(
+            "[MealEstimate] source=tavily stage=query raw_query=%r food_query=%r food_query_en=%r lookup_query=%r hits=%s",
+            query.user_text,
+            query.food_query,
+            query.food_query_en,
+            lookup_query,
+            tavily_count,
+        )
+        if not isinstance(results, list):
+            continue
+        for idx, item in enumerate(results):
+            if not isinstance(item, dict):
+                continue
+            title = item.get("title")
+            content = str(item.get("content") or "")
+            parsed = _extract_tavily_macros(content)
+            logging.info(
+                "[MealEstimate] source=tavily stage=candidate idx=%s title=%r parsed=%r",
+                idx,
+                title,
+                parsed,
+            )
+            if not parsed:
+                continue
+            calories, protein, carbs, fat = parsed
+            logging.info(
+                "[MealEstimate] source=tavily stage=selected idx=%s title=%r calories=%s protein=%s carbs=%s fat=%s",
+                idx,
+                title,
+                calories,
+                protein,
+                carbs,
+                fat,
+            )
+            return _totals_from_macros(calories, protein, carbs, fat), 0.5, "Tavily"
+        if tavily_count == 0:
+            logging.info("[MealEstimate] source=tavily stage=selected reason=no_hits")
+    return None
+
+
+def _try_openfoodfacts_lookup(query: NormalizedMealQuery, lookup_queries: list[str]) -> tuple[NutritionTotals, float, str] | None:
+    for lookup_query in lookup_queries:
+        data = openfoodfacts_search_products.invoke({"query": lookup_query, "page_size": 5})
+        products = data.get("products") if isinstance(data, dict) else None
+        off_count = len(products) if isinstance(products, list) else 0
+        logging.info(
+            "[MealEstimate] source=openfoodfacts stage=query raw_query=%r food_query=%r food_query_en=%r lookup_query=%r hits=%s",
+            query.user_text,
+            query.food_query,
+            query.food_query_en,
+            lookup_query,
+            off_count,
+        )
+        if not isinstance(products, list):
+            continue
+        for idx, item in enumerate(products):
+            if not isinstance(item, dict):
+                continue
+            product_name = item.get("product_name")
+            calories = item.get("calories_kcal")
+            protein = item.get("protein_g")
+            carbs = item.get("carbs_g")
+            fat = item.get("fat_g")
+            logging.info(
+                "[MealEstimate] source=openfoodfacts stage=candidate idx=%s product_name=%r calories=%r protein=%r carbs=%r fat=%r",
+                idx,
+                product_name,
+                calories,
+                protein,
+                carbs,
+                fat,
+            )
+            if _has_complete_macros(calories, protein, carbs, fat):
+                logging.info(
+                    "[MealEstimate] source=openfoodfacts stage=selected idx=%s product_name=%r calories=%s protein=%s carbs=%s fat=%s",
+                    idx,
+                    product_name,
+                    float(calories),
+                    float(protein),
+                    float(carbs),
+                    float(fat),
+                )
+                return _totals_from_macros(calories, protein, carbs, fat), 0.58, "OpenFoodFacts"
+        if off_count == 0:
+            logging.info("[MealEstimate] source=openfoodfacts stage=selected reason=no_hits")
+    return None
+
+
+def _estimate_nutrition_from_text(query: NormalizedMealQuery) -> tuple[NutritionTotals, float, str]:
+    meal_text = query.meal_description
+    lookup_queries = _select_lookup_queries(query)
+    lookup_query = lookup_queries[0] if lookup_queries else ""
+    if not meal_text:
+        logging.info(
+            "[MealEstimate] source=none reason=empty_input raw_query=%r lookup_query=%r",
+            query.user_text,
+            lookup_query,
+        )
+        return NutritionTotals(energy_kcal=0, protein_g=0, carbs_g=0, fat_g=0), 0.2, "Estimated"
+
+    for lookup_fn in [
+        _try_usda_lookup,
+        _try_spoonacular_lookup,
+        _try_tavily_lookup,
+        _try_openfoodfacts_lookup,
+    ]:
+        result = lookup_fn(query, lookup_queries)
+        if result:
+            return result
 
     logging.info(
         "[MealEstimate] source=none reason=all_sources_missing_macros raw_query=%r food_query=%r food_query_en=%r",
@@ -261,7 +391,7 @@ def _estimate_nutrition_from_text(query: NormalizedMealQuery) -> tuple[Nutrition
             totals.fat_g,
             confidence,
         )
-        return totals, confidence
+        return totals, confidence, "Estimated"
 
     # Hard fallback to avoid returning empty/zero record when all upstream estimates fail.
     hard_fallback = NutritionTotals(
@@ -278,7 +408,7 @@ def _estimate_nutrition_from_text(query: NormalizedMealQuery) -> tuple[Nutrition
         hard_fallback.fat_g,
         0.25,
     )
-    return hard_fallback, 0.25
+    return hard_fallback, 0.25, "Estimated"
 
 
 def prepare_meal_log_draft(
@@ -318,7 +448,7 @@ def prepare_meal_log_draft(
         normalized_query.food_query_en,
         normalized_query.detected_language,
     )
-    nutrition_totals, nutrition_confidence = _estimate_nutrition_from_text(normalized_query)
+    nutrition_totals, nutrition_confidence, nutrition_source = _estimate_nutrition_from_text(normalized_query)
     draft_id = uuid4().hex
     meal_log = CanonicalMealLog(
         meal_id=uuid4(),
@@ -378,6 +508,7 @@ def prepare_meal_log_draft(
         "meal_type": meal_log.meal_type.value,
         "food_query": normalized_query.food_query,
         "food_query_en": normalized_query.food_query_en,
+        "nutrition_source": nutrition_source,
     }
 
 

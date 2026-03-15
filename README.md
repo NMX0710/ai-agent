@@ -13,9 +13,10 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - Session memory via LangGraph checkpointer
 - In-memory long-term memory filesystem route (`/memories/`)
 - Telegram webhook channel (`/webhooks/telegram`) with allowlist + update dedup
-- Built-in HTTP nutrition tools for Spoonacular and USDA FoodData Central
+- Built-in HTTP nutrition tools for USDA, Spoonacular, Tavily fallback, and Open Food Facts
 - Meal logging draft -> confirm -> Apple Health bridge flow
 - Bilingual nutrition lookup normalization (`meal_description`, `food_query`, `food_query_en`)
+- Conservative long-term memory policy for `/memories/users/<user_id>/*.md`
 - Local Apple Health bridge runner CLI with mock writers for end-to-end bridge verification
 - AgentCore-compatible endpoints (`/ping`, `/invocations`)
 
@@ -40,7 +41,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - `app/recipe_app.py` builds a minimal Deep Agent:
   - `create_deep_agent(...)`
   - nutrition tools loaded at startup (configured by env)
-  - nutrition skill for tool usage guidance
+  - nutrition and memory policy skills for tool usage guidance
   - chef-oriented `system_prompt`
   - explicit meal-log guidance for `meal_description`, `food_query`, and `food_query_en`
 
@@ -54,9 +55,11 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 This gives:
 - short-term memory in-thread
 - long-term memory semantics through `/memories/` (currently in-memory only)
+- Phase 1 long-term memory focus on `profile.md` and `preferences.md`
 
 ### 4) Meal Logging + Apple Health Bridge
 - `prepare_meal_log` creates a draft and estimates macros/calories before any write.
+- Nutrition source order is `USDA -> Spoonacular -> Tavily -> Open Food Facts -> Estimated`.
 - Telegram confirm/cancel buttons control the explicit write gate.
 - Confirmed drafts become bridge-visible pending writes.
 - `app/apple_health_bridge_runner.py` can poll pending writes and report results back.
@@ -99,6 +102,12 @@ SPOONACULAR_API_KEY=your_spoonacular_key
 
 # USDA FoodData Central tool
 USDA_API_KEY=your_usda_key
+
+# Tavily fallback tool
+TAVILY_API_KEY=your_tavily_key
+
+# Open Food Facts identifies clients via User-Agent; no API key required for read access
+OPENFOODFACTS_USER_AGENT="ai-agent-nutrition/0.1 (contact: team@example.com)"
 
 # Telegram channel
 TELEGRAM_BOT_TOKEN=your_bot_token
@@ -165,9 +174,12 @@ curl -X POST http://127.0.0.1:8000/chat \
 
 - Current memory store is **InMemoryStore** for development speed.
 - Persistent store (e.g., Postgres-backed store) will be added later after baseline stabilization.
+- Long-term memory policy is documented in `docs/long-term-memory-design.md`.
 - Telegram allowlist uses numeric user IDs (`from.id`) for stability.
 - Current media policy is conservative: image logging flow is not enabled yet; text chat is the current stable path.
 - Nutrition lookup currently prefers agent-supplied `food_query` / `food_query_en`, with fallback normalization kept intentionally thin.
+- Nutrition source labels are kept explicit: `USDA`, `Spoonacular`, `Tavily`, `OpenFoodFacts`, `Estimated`.
+- Open Food Facts read access does not require an API key, but requests should send a descriptive `User-Agent`.
 - The Python bridge runner verifies the server-side Apple Health queue lifecycle, but it does not write to HealthKit by itself.
 - Tests that depend on older RAG/tools pipeline will be migrated in subsequent iterations.
 

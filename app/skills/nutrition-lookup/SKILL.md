@@ -26,6 +26,8 @@ This skill handles nutrition lookup requests and prepares reliable calorie/macro
 3. Call tools in this order:
 - First: `usda_search_foods(query=<food_query>, page_size=5, page_number=1)`
 - Second (if USDA has no usable macros): `spoonacular_search_recipe(query=<food_query>, number=5)`
+- Third fallback: `tavily_search_nutrition(query=<food_query>)`
+- Fourth fallback for packaged/branded foods: `openfoodfacts_search_products(query=<food_query>)`
 - For Chinese input, prefer `food_query_en` for the actual tool call and keep `food_query` for display/debug context.
 - For meal logging, pass both `food_query` and `food_query_en` into `prepare_meal_log(...)` so the draft pipeline can reuse them directly.
 
@@ -40,7 +42,7 @@ This skill handles nutrition lookup requests and prepares reliable calorie/macro
 
 6. Reporting format:
 - Give kcal/protein/carbs/fat with units.
-- Label source (`USDA` or `Spoonacular`).
+- Label source (`USDA`, `Spoonacular`, `Tavily`, `OpenFoodFacts`, or `Estimated`).
 - Respond in the user's language when practical, even if the lookup query was converted to English.
 
 ## Query Normalization Examples
