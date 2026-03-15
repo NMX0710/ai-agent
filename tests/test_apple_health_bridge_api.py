@@ -104,7 +104,7 @@ def test_bridge_api_claims_once_and_accepts_idempotent_report(monkeypatch):
     monkeypatch.setattr(main, "APPLE_HEALTH_BRIDGE_TOKEN", "")
     monkeypatch.setattr(
         "app.nutrition.meal_log_service._estimate_nutrition_from_text",
-        lambda _: (NutritionTotals(energy_kcal=410, protein_g=22, carbs_g=44, fat_g=14), 0.7),
+        lambda _: (NutritionTotals(energy_kcal=410, protein_g=22, carbs_g=44, fat_g=14), 0.7, "test_source"),
     )
 
     draft = prepare_meal_log_draft(
