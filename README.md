@@ -15,7 +15,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - Telegram webhook channel (`/webhooks/telegram`) with allowlist + update dedup
 - Built-in HTTP nutrition tools for USDA, Spoonacular, Tavily fallback, and Open Food Facts
 - Meal logging draft -> confirm -> Apple Health bridge flow
-- Bilingual nutrition lookup normalization (`meal_description`, `food_query`, `food_query_en`)
+- Agent-side nutrition tool selection with source-labeled final estimates
 - Conservative long-term memory policy for `/memories/users/<user_id>/*.md`
 - Local Apple Health bridge runner CLI with mock writers for end-to-end bridge verification
 - AgentCore-compatible endpoints (`/ping`, `/invocations`)
@@ -43,7 +43,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
   - nutrition tools loaded at startup (configured by env)
   - nutrition and memory policy skills for tool usage guidance
   - chef-oriented `system_prompt`
-  - explicit meal-log guidance for `meal_description`, `food_query`, and `food_query_en`
+  - explicit meal-log guidance for choosing a nutrition source before draft creation
 
 ### 3) Memory Layer
 - `MemorySaver()` for thread/session state
@@ -58,8 +58,8 @@ This gives:
 - Phase 1 long-term memory focus on `profile.md` and `preferences.md`
 
 ### 4) Meal Logging + Apple Health Bridge
-- `prepare_meal_log` creates a draft and estimates macros/calories before any write.
-- Nutrition source order is `USDA -> Spoonacular -> Tavily -> Open Food Facts -> Estimated`.
+- The agent chooses nutrition lookup tools and selects one final estimate before any write.
+- `prepare_meal_log` creates a draft from that final estimate; it does not perform nutrition lookup itself.
 - Telegram confirm/cancel buttons control the explicit write gate.
 - Confirmed drafts become bridge-visible pending writes.
 - `app/apple_health_bridge_runner.py` can poll pending writes and report results back.
@@ -177,7 +177,7 @@ curl -X POST http://127.0.0.1:8000/chat \
 - Long-term memory policy is documented in `docs/long-term-memory-design.md`.
 - Telegram allowlist uses numeric user IDs (`from.id`) for stability.
 - Current media policy is conservative: image logging flow is not enabled yet; text chat is the current stable path.
-- Nutrition lookup currently prefers agent-supplied `food_query` / `food_query_en`, with fallback normalization kept intentionally thin.
+- Nutrition tool selection is guided by skill/tool descriptions rather than a hard-coded source priority list in the meal-log service.
 - Nutrition source labels are kept explicit: `USDA`, `Spoonacular`, `Tavily`, `OpenFoodFacts`, `Estimated`.
 - Open Food Facts read access does not require an API key, but requests should send a descriptive `User-Agent`.
 - The Python bridge runner verifies the server-side Apple Health queue lifecycle, but it does not write to HealthKit by itself.

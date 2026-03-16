@@ -17,20 +17,26 @@ This skill controls the meal logging workflow and write safety for Apple Health 
 2. Build a clean `food_query` from the user sentence.
 - Keep only food/dish phrase for lookup quality.
 - If user input is Chinese, also derive `food_query_en` for USDA/Spoonacular lookup.
-- This is the agent's job. Do not rely on the service layer to strip wrappers for you.
+- This is the agent's job.
 
-3. Create draft first.
+3. Look up nutrition before drafting.
+- Choose the nutrition tool or tools that best fit the food type.
+- Decide on one final estimate for kcal/protein/carbs/fat and a source label.
+- `prepare_meal_log(...)` does not do nutrition lookup for you.
+
+4. Create draft after you have the final estimate.
 - Call `prepare_meal_log(...)` with:
 - `meal_description`: concise user-facing description of what the user ate.
-- `food_query`: normalized food phrase only. Never include wrappers like `我晚上吃了`, `吃了`, `帮我记录`, `log this`, `record this`.
-- `food_query_en`: when `food_query` is Chinese or mixed-language, provide an English lookup phrase such as `spaghetti` or `avocado toast and eggs`.
+- `energy_kcal`, `protein_g`, `carbs_g`, `fat_g`: the final estimate you chose.
+- `nutrition_source`: the source you used for the final estimate.
+- `nutrition_confidence`: optional when you have a meaningful confidence judgment.
 - If the user already asked to log the meal and the food is clear enough, create the draft immediately. Do not ask a redundant question like “Do you want me to generate a draft?” first.
 
-4. Show estimate before write.
+5. Show estimate before write.
 - Present kcal/protein/carbs/fat to user.
 - Ask for explicit confirmation.
 
-5. Commit only after explicit confirmation.
+6. Commit only after explicit confirmation.
 - Call `commit_meal_log(draft_id=<id>, user_id=<id>, confirmed=true)` only after a clear user confirmation action.
 
 ## Guardrails
@@ -43,8 +49,7 @@ This skill controls the meal logging workflow and write safety for Apple Health 
 
 - User: "我晚上吃了意大利面，可以帮我记录吗？"
   - meal_description: `晚餐吃了意大利面`
-  - food_query: `意大利面`
-  - food_query_en: `spaghetti`
+  - choose nutrition lookup tool(s) and one final estimate
   - Prepare draft immediately
   - Show estimate + ask for confirm
   - Commit only on confirmation

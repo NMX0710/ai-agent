@@ -102,16 +102,15 @@ def test_bridge_api_claims_once_and_accepts_idempotent_report(monkeypatch):
     _reset_store()
     client = TestClient(main.app)
     monkeypatch.setattr(main, "APPLE_HEALTH_BRIDGE_TOKEN", "")
-    monkeypatch.setattr(
-        "app.nutrition.meal_log_service._estimate_nutrition_from_text",
-        lambda _: (NutritionTotals(energy_kcal=410, protein_g=22, carbs_g=44, fat_g=14), 0.7, "test_source"),
-    )
 
     draft = prepare_meal_log_draft(
         user_id="tg:bridge",
         chat_id="tg:chat-bridge",
         input_source=InputSource.text,
         meal_description="rice bowl",
+        nutrition_totals=NutritionTotals(energy_kcal=410, protein_g=22, carbs_g=44, fat_g=14),
+        nutrition_source="test_source",
+        nutrition_confidence=0.7,
     )
     commit_meal_log_draft(draft_id=draft["draft_id"], user_id="tg:bridge", confirmed=True)
 

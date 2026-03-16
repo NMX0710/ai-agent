@@ -6,24 +6,26 @@ from typing import Any
 from langchain_core.tools import tool
 
 from app.nutrition.meal_log_service import commit_meal_log_draft, prepare_meal_log_draft
-from app.nutrition.meallog import InputSource
+from app.nutrition.meallog import InputSource, NutritionTotals
 
 
 @tool(
     description=(
-        "Prepare a canonical meal log draft from user meal input. "
-        "Use this when the user asks to record/log a meal. "
-        "meal_description is user-facing meal text in the user's language. "
-        "food_query must be a clean food phrase only, with no wrappers like 'I ate', '帮我记录', or time-of-day filler. "
-        "If the original input is Chinese or mixed-language, also pass food_query_en as the English lookup phrase for USDA/Spoonacular."
+        "Prepare a canonical meal log draft from a final nutrition estimate that the agent has already chosen. "
+        "Use this only after the agent has used nutrition lookup tools and selected one final kcal/protein/carbs/fat estimate. "
+        "This tool does not perform nutrition lookup."
     )
 )
 def prepare_meal_log(
     user_id: str,
     chat_id: str,
     meal_description: str,
-    food_query: str | None = None,
-    food_query_en: str | None = None,
+    energy_kcal: float,
+    protein_g: float,
+    carbs_g: float,
+    fat_g: float,
+    nutrition_source: str,
+    nutrition_confidence: float | None = None,
     consumed_at_iso: str | None = None,
     timezone_name: str = "America/New_York",
     meal_type: str | None = None,
@@ -34,18 +36,27 @@ def prepare_meal_log(
 ) -> dict[str, Any]:
     source = InputSource(input_source) if input_source in InputSource._value2member_map_ else InputSource.text
     logging.info(
-        "[MealLogTool] prepare_meal_log meal_description=%r food_query=%r food_query_en=%r",
+        "[MealLogTool] prepare_meal_log meal_description=%r source=%r calories=%s protein=%s carbs=%s fat=%s",
         meal_description,
-        food_query,
-        food_query_en,
+        nutrition_source,
+        energy_kcal,
+        protein_g,
+        carbs_g,
+        fat_g,
     )
     return prepare_meal_log_draft(
         user_id=user_id,
         chat_id=chat_id,
         input_source=source,
         meal_description=meal_description,
-        food_query=food_query,
-        food_query_en=food_query_en,
+        nutrition_totals=NutritionTotals(
+            energy_kcal=energy_kcal,
+            protein_g=protein_g,
+            carbs_g=carbs_g,
+            fat_g=fat_g,
+        ),
+        nutrition_source=nutrition_source,
+        nutrition_confidence=nutrition_confidence,
         consumed_at_iso=consumed_at_iso,
         timezone_name=timezone_name,
         meal_type=meal_type,

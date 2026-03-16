@@ -1,6 +1,6 @@
 ---
 name: nutrition-lookup
-description: Use this skill for calorie/macronutrient lookup and nutrition fact questions. Extract a clean food query first, then call USDA and Spoonacular in order, and report numbers with source labels.
+description: Use this skill for calorie/macronutrient lookup and nutrition fact questions. Choose nutrition tools based on food type, then report a single final estimate with a source label.
 ---
 
 # Nutrition Lookup
@@ -23,13 +23,13 @@ This skill handles nutrition lookup requests and prepares reliable calorie/macro
 - `food_query`: lookup-oriented dish phrase with wrappers removed.
 - `food_query_en`: English lookup phrase for USDA/Spoonacular when `food_query` is Chinese or mixed-language.
 
-3. Call tools in this order:
-- First: `usda_search_foods(query=<food_query>, page_size=5, page_number=1)`
-- Second (if USDA has no usable macros): `spoonacular_search_recipe(query=<food_query>, number=5)`
-- Third fallback: `tavily_search_nutrition(query=<food_query>)`
-- Fourth fallback for packaged/branded foods: `openfoodfacts_search_products(query=<food_query>)`
-- For Chinese input, prefer `food_query_en` for the actual tool call and keep `food_query` for display/debug context.
-- For meal logging, pass both `food_query` and `food_query_en` into `prepare_meal_log(...)` so the draft pipeline can reuse them directly.
+3. Choose tools by food type and source fit:
+- `usda_search_foods`: best for generic ingredients, basic foods, and common staples.
+- `spoonacular_search_recipe`: best for composed dishes, named recipes, and home-style plated meals.
+- `openfoodfacts_search_products`: best for packaged or branded foods.
+- `tavily_search_nutrition`: best as a fallback for restaurant items, niche foods, or cases where the structured sources are a poor fit.
+- For Chinese input, prefer `food_query_en` when a tool works better with English dish names.
+- Use as few tools as needed. Stop once you have a credible estimate from a well-matched source.
 
 4. A usable result must have all four core values:
 - calories (kcal)
@@ -37,12 +37,17 @@ This skill handles nutrition lookup requests and prepares reliable calorie/macro
 - carbs (g)
 - fat (g)
 
-5. If tools still do not return usable macros:
+5. After lookup:
+- Pick one final estimate to present. Do not dump multiple conflicting tool outputs without choosing.
+- Label the source you actually used (`USDA`, `Spoonacular`, `Tavily`, `OpenFoodFacts`, or `Estimated`).
+- If the user is asking to log the meal, pass the final chosen estimate into `prepare_meal_log(...)`.
+
+6. If tools still do not return usable macros:
 - Ask one concise clarification question (portion size, recipe style, or major ingredients), unless user explicitly asked to proceed with estimate.
 
-6. Reporting format:
+7. Reporting format:
 - Give kcal/protein/carbs/fat with units.
-- Label source (`USDA`, `Spoonacular`, `Tavily`, `OpenFoodFacts`, or `Estimated`).
+- Label the chosen source.
 - Respond in the user's language when practical, even if the lookup query was converted to English.
 
 ## Query Normalization Examples

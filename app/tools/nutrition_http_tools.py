@@ -4,6 +4,8 @@ from typing import Any
 import httpx
 from langchain_core.tools import tool
 
+from app.tracing import trace_log
+
 
 SPOONACULAR_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch"
 USDA_BASE_URL = "https://api.nal.usda.gov/fdc/v1/foods/search"
@@ -15,7 +17,37 @@ OPENFOODFACTS_USER_AGENT = os.getenv(
 )
 
 
-@tool(description="Search recipes from Spoonacular with optional nutrition summary.")
+def _truncate_text(value: Any, limit: int = 160) -> str | None:
+    if value is None:
+        return None
+    text = " ".join(str(value).split())
+    if len(text) <= limit:
+        return text
+    return f"{text[:limit]}..."
+
+
+def _trace_tool_call(tool_name: str, payload: dict[str, Any]) -> None:
+    trace_log("ToolCall", f"{tool_name} invoked", payload)
+
+
+def _trace_tool_result(tool_name: str, query: str, results: list[dict[str, Any]], count: int) -> None:
+    trace_log(
+        "ToolResult",
+        f"{tool_name} returned",
+        {
+            "query": query,
+            "count": count,
+            "preview": results[:3],
+        },
+    )
+
+
+@tool(
+    description=(
+        "Search recipe-style dishes and composed meals from Spoonacular with nutrition summaries. "
+        "Best for plated dishes, home-style meals, and named recipes such as spaghetti bolognese or chicken curry."
+    )
+)
 def spoonacular_search_recipe(
     query: str,
     diet: str | None = None,
@@ -25,6 +57,16 @@ def spoonacular_search_recipe(
     api_key = os.getenv("SPOONACULAR_API_KEY", "").strip()
     if not api_key:
         return {"error": "missing SPOONACULAR_API_KEY"}
+
+    _trace_tool_call(
+        "spoonacular_search_recipe",
+        {
+            "query": query,
+            "diet": diet,
+            "intolerances": intolerances,
+            "number": max(1, min(number, 20)),
+        },
+    )
 
     params = {
         "query": query,
@@ -73,10 +115,27 @@ def spoonacular_search_recipe(
             }
         )
 
+    preview = [
+        {
+            "title": item.get("title"),
+            "calories": item.get("calories"),
+            "protein_g": item.get("protein_g"),
+            "carbs_g": item.get("carbs_g"),
+            "fat_g": item.get("fat_g"),
+        }
+        for item in results
+    ]
+    _trace_tool_result("spoonacular_search_recipe", query, preview, len(results))
+
     return {"results": results, "count": len(results), "source": "spoonacular"}
 
 
-@tool(description="Search USDA FoodData Central foods and return key nutrient values.")
+@tool(
+    description=(
+        "Search USDA FoodData Central foods and return key nutrient values. "
+        "Best for generic ingredients, simple foods, and common staples such as rice, eggs, chicken breast, or yogurt."
+    )
+)
 def usda_search_foods(
     query: str,
     page_size: int = 5,
@@ -85,6 +144,15 @@ def usda_search_foods(
     api_key = os.getenv("USDA_API_KEY", "").strip()
     if not api_key:
         return {"error": "missing USDA_API_KEY"}
+
+    _trace_tool_call(
+        "usda_search_foods",
+        {
+            "query": query,
+            "page_size": max(1, min(page_size, 25)),
+            "page_number": max(1, page_number),
+        },
+    )
 
     payload = {
         "query": query,
@@ -127,6 +195,19 @@ def usda_search_foods(
             }
         )
 
+    preview = [
+        {
+            "description": item.get("description"),
+            "brand_name": item.get("brand_name"),
+            "calories_kcal": item.get("calories_kcal"),
+            "protein_g": item.get("protein_g"),
+            "carbs_g": item.get("carbs_g"),
+            "fat_g": item.get("fat_g"),
+        }
+        for item in foods
+    ]
+    _trace_tool_result("usda_search_foods", query, preview, len(foods))
+
     return {
         "foods": foods,
         "count": len(foods),
@@ -135,15 +216,30 @@ def usda_search_foods(
     }
 
 
-@tool(description="Search the web with Tavily for nutrition clues when structured food databases miss.")
+@tool(
+    description=(
+        "Search the web with Tavily for nutrition clues when structured food databases are a poor fit. "
+        "Use as a fallback for restaurant meals, niche foods, or cases where USDA, Spoonacular, and Open Food Facts are not sufficient."
+    )
+)
 def tavily_search_nutrition(query: str, max_results: int = 5) -> dict[str, Any]:
     api_key = os.getenv("TAVILY_API_KEY", "").strip()
     if not api_key:
         return {"error": "missing TAVILY_API_KEY"}
 
+    resolved_query = f"{query} nutrition facts calories protein carbs fat"
+    _trace_tool_call(
+        "tavily_search_nutrition",
+        {
+            "query": query,
+            "resolved_query": resolved_query,
+            "max_results": max(1, min(max_results, 10)),
+        },
+    )
+
     payload = {
         "api_key": api_key,
-        "query": f"{query} nutrition facts calories protein carbs fat",
+        "query": resolved_query,
         "search_depth": "basic",
         "max_results": max(1, min(max_results, 10)),
         "include_answer": False,
@@ -171,6 +267,17 @@ def tavily_search_nutrition(query: str, max_results: int = 5) -> dict[str, Any]:
             }
         )
 
+    preview = [
+        {
+            "title": item.get("title"),
+            "score": item.get("score"),
+            "url": item.get("url"),
+            "content": _truncate_text(item.get("content")),
+        }
+        for item in results
+    ]
+    _trace_tool_result("tavily_search_nutrition", query, preview, len(results))
+
     return {
         "results": results,
         "count": len(results),
@@ -178,8 +285,21 @@ def tavily_search_nutrition(query: str, max_results: int = 5) -> dict[str, Any]:
     }
 
 
-@tool(description="Search Open Food Facts for packaged food products and nutrition values.")
+@tool(
+    description=(
+        "Search Open Food Facts for packaged or branded food products and nutrition values. "
+        "Best for store-bought bars, drinks, snacks, cereal, and other packaged consumer foods."
+    )
+)
 def openfoodfacts_search_products(query: str, page_size: int = 5) -> dict[str, Any]:
+    _trace_tool_call(
+        "openfoodfacts_search_products",
+        {
+            "query": query,
+            "page_size": max(1, min(page_size, 10)),
+        },
+    )
+
     params = {
         "search_terms": query,
         "search_simple": 1,
@@ -229,6 +349,20 @@ def openfoodfacts_search_products(query: str, page_size: int = 5) -> dict[str, A
                 "fat_g": nutriments.get("fat_serving") or nutriments.get("fat_100g"),
             }
         )
+
+    preview = [
+        {
+            "product_name": item.get("product_name"),
+            "brands": item.get("brands"),
+            "serving_size": item.get("serving_size"),
+            "calories_kcal": item.get("calories_kcal"),
+            "protein_g": item.get("protein_g"),
+            "carbs_g": item.get("carbs_g"),
+            "fat_g": item.get("fat_g"),
+        }
+        for item in products
+    ]
+    _trace_tool_result("openfoodfacts_search_products", query, preview, len(products))
 
     return {
         "products": products,
