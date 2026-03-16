@@ -5,7 +5,7 @@
 - `main.py` is the runtime entrypoint. It serves the web UI, local chat API, Telegram webhook, health endpoints, and Apple Health bridge endpoints.
 - `app/recipe_app.py` builds the active agent pipeline: OpenAI chat model, Deep Agent orchestration, tool loading, and memory routing.
 - `app/tools/` contains tool entrypoints. `app/nutrition/` contains meal logging, nutrition estimation, Apple Health mapping, and draft state.
-- `app/governance/` handles image-event processing. `app/memory/` contains long-term memory helpers. `app/skills/` holds skill-specific instructions for the agent runtime.
+- `app/governance/` handles image-event processing. `app/skills/` holds skill-specific instructions for the agent runtime. Long-term memory behavior is defined through the active Deep Agents `/memories/...` route and related docs/skills.
 - `tests/` is the source of truth for expected behavior. Some tests and modules still reflect older RAG-era architecture; treat them as legacy unless your task is explicitly reviving that path.
 
 ## Agent Roles
@@ -48,7 +48,7 @@
 - Reuse existing modules and patterns:
   - FastAPI routes in `main.py` or router modules.
   - Tool registration in `app/tools/tool_registry.py`.
-  - Domain logic in `app/nutrition/`, `app/governance/`, or `app/memory/`.
+  - Domain logic in `app/nutrition/` or `app/governance/`.
 - Treat external integrations as unstable boundaries. Fail safely and log clearly.
 
 ## Task Workflow
@@ -84,4 +84,3 @@
 - Install deps: `pip install -r requirements.txt`
 - Run app: `uvicorn main:app --reload`
 - Run tests: `pytest`, or targeted paths such as `pytest tests/test_telegram_webhook.py`
-- Start local Postgres when needed: `docker compose up postgres`
