@@ -39,6 +39,22 @@ struct ContentView: View {
                 Section("Sync") {
                     Button {
                         Task {
+                            await viewModel.testConnection()
+                        }
+                    } label: {
+                        if viewModel.isTestingConnection {
+                            HStack {
+                                ProgressView()
+                                Text("Testing...")
+                            }
+                        } else {
+                            Text("Test Connection")
+                        }
+                    }
+                    .disabled(viewModel.isTestingConnection || viewModel.isSyncing)
+
+                    Button {
+                        Task {
                             await viewModel.syncNow()
                         }
                     } label: {

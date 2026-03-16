@@ -29,4 +29,12 @@ struct BridgeConfiguration {
         let value = baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
         return URL(string: value)
     }
+
+    var normalizedBridgeToken: String {
+        bridgeToken.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var normalizedUserID: String {
+        userID.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
 }

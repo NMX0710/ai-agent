@@ -72,6 +72,10 @@ struct WriteResultResponse: Decodable {
     let error: String?
 }
 
+struct PingResponse: Decodable {
+    let status: String
+}
+
 struct SyncSummary {
     let title: String
     let processed: Int

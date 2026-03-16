@@ -5,6 +5,7 @@ final class SyncViewModel: ObservableObject {
     @Published var configuration = BridgeConfiguration()
     @Published var lastSummary: SyncSummary?
     @Published var isSyncing = false
+    @Published var isTestingConnection = false
     @Published private(set) var authorizationStatusText: String
 
     private let bridgeClient: BridgeClient
@@ -14,6 +15,32 @@ final class SyncViewModel: ObservableObject {
         self.bridgeClient = bridgeClient
         self.healthKitWriter = healthKitWriter
         self.authorizationStatusText = healthKitWriter.authorizationStatusDescription()
+    }
+
+    func testConnection() async {
+        isTestingConnection = true
+        defer { isTestingConnection = false }
+
+        do {
+            let response = try await bridgeClient.ping(configuration: configuration)
+            lastSummary = SyncSummary(
+                title: "Connection OK",
+                processed: 0,
+                succeeded: 0,
+                failed: 0,
+                message: "Backend responded to /ping with status=\(response.status).",
+                timestamp: Date()
+            )
+        } catch {
+            lastSummary = SyncSummary(
+                title: "Connection failed",
+                processed: 0,
+                succeeded: 0,
+                failed: 0,
+                message: error.localizedDescription,
+                timestamp: Date()
+            )
+        }
     }
 
     func requestAuthorization() async {
@@ -41,7 +68,7 @@ final class SyncViewModel: ObservableObject {
     }
 
     func syncNow() async {
-        guard !configuration.userID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        guard !configuration.normalizedUserID.isEmpty else {
             lastSummary = SyncSummary(
                 title: "Missing user ID",
                 processed: 0,

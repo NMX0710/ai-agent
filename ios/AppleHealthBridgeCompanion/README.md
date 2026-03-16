@@ -59,6 +59,8 @@ The current app expects the existing payload shape from `app/nutrition/apple_hea
 
 ## Real Device Test
 
+Use LAN first. Do not switch between LAN and ngrok until you have a clear result for `/ping`.
+
 1. Start the backend.
    Recommended for LAN testing:
    `uvicorn main:app --host 0.0.0.0 --port 8000`
@@ -68,13 +70,31 @@ The current app expects the existing payload shape from `app/nutrition/apple_hea
 5. Find the Mac LAN IP, for example:
    `ipconfig getifaddr en0`
 6. Enter `Base URL` as `http://<mac-lan-ip>:8000`
-7. Tap `Request Health Access`.
-8. Tap `Sync Now`.
-9. Verify:
+7. In iPhone Safari, open `http://<mac-lan-ip>:8000/ping`
+8. In the app, tap `Test Connection`
+9. Tap `Request Health Access`.
+10. Tap `Sync Now`.
+11. Verify:
    - backend logs show `pending_writes`
    - backend logs show `write_result`
    - the app shows the sync summary
    - Apple Health shows the dietary nutrition samples
+
+If Safari or `Test Connection` fails, stop and fix the network path before trying `Sync Now`.
+
+## LAN Troubleshooting
+
+Work down this list in order:
+
+1. Confirm the backend responds locally:
+   `curl http://127.0.0.1:8000/ping`
+2. Confirm the backend is listening on all interfaces:
+   `lsof -nP -iTCP:8000 -sTCP:LISTEN`
+   Expect `*:8000` or `0.0.0.0:8000`, not only `127.0.0.1:8000`
+3. Confirm the Mac can reach the LAN address:
+   `curl http://<mac-lan-ip>:8000/ping`
+4. Confirm the iPhone and Mac are on the same Wi-Fi
+5. If Safari still cannot open `/ping`, check macOS firewall or router guest-network isolation
 
 ## ATS Note
 
