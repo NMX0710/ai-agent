@@ -4,7 +4,7 @@ from typing import Any
 import httpx
 from langchain_core.tools import tool
 
-from app.tracing import trace_log
+from app.observability import trace_log
 
 
 SPOONACULAR_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch"

@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.governance import ImageGovernanceEvent, process_image_event
+from app.observability import configure_logging
 from app.nutrition.meal_log_service import (
     cancel_meal_log_draft,
     commit_meal_log_draft,
@@ -31,14 +32,7 @@ from app.settings import (
     TELEGRAM_WEBHOOK_SECRET,
 )
 
-# ------------------------------------------------------------
-# Logging configuration
-# ------------------------------------------------------------
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler()],
-)
+configure_logging(logging.INFO)
 
 app = FastAPI()
 

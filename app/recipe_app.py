@@ -13,7 +13,8 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.store.memory import InMemoryStore
 
-from app.tracing import reset_trace_id, set_trace_id, trace_log
+from app.observability import is_terminal_trace_enabled, reset_trace_id, set_trace_id, trace_log
+from app.observability.agent_middleware import AgentContextTraceMiddleware
 from app.tools.tool_registry import load_all_tools
 
 load_dotenv()
@@ -80,12 +81,14 @@ class RecipeApp:
             routes={"/memories/": StoreBackend(runtime)},
         )
         skill_dir = Path(__file__).resolve().parent / "skills"
+        middleware = [AgentContextTraceMiddleware()] if is_terminal_trace_enabled() else []
 
         return create_deep_agent(
             model=self.model,
             tools=self.tools,
             skills=[str(skill_dir)],
             system_prompt=SYSTEM_PROMPT,
+            middleware=middleware,
             backend=composite_backend,
             store=InMemoryStore(),
             checkpointer=self.memory_saver,

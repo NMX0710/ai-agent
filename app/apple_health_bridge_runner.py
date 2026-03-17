@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 
+from app.observability import configure_logging
 from app.nutrition.apple_health_bridge_worker import (
     AppleHealthBridgeClient,
     AppleHealthWriteOutcome,
@@ -60,11 +61,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[logging.StreamHandler()],
-    )
+    configure_logging(logging.INFO)
 
     writer = _build_writer(args.writer)
     client = AppleHealthBridgeClient(
