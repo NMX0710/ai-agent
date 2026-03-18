@@ -205,6 +205,26 @@ def _format_meal_estimate_message(
     )
 
 
+def _draft_has_valid_nutrition_estimate(pending) -> bool:
+    if not pending or not getattr(pending, "meal_log", None):
+        return False
+
+    totals = pending.meal_log.nutrition_totals
+    source = (
+        getattr(getattr(pending, "meal_log", None), "raw_inputs", None)
+        and getattr(pending.meal_log.raw_inputs, "text", None)
+    )
+    _ = source  # keep local structure simple and explicit for future extension
+
+    core_values = [
+        totals.energy_kcal,
+        totals.protein_g,
+        totals.carbs_g,
+        totals.fat_g,
+    ]
+    return not all(value == 0 for value in core_values)
+
+
 async def _telegram_answer_callback_query(callback_query_id: str, text: str | None = None) -> None:
     if not TELEGRAM_BOT_TOKEN:
         logging.error("[Telegram] TELEGRAM_BOT_TOKEN is not configured.")
@@ -232,6 +252,14 @@ async def _maybe_prompt_meal_confirmation(
 ) -> bool:
     pending = latest_pending_draft_for_chat(user_id=user_id, chat_id=recipe_chat_id)
     if not pending or pending.confirmation_prompted:
+        return False
+    if not _draft_has_valid_nutrition_estimate(pending):
+        logging.info(
+            "[Telegram] Skip confirmation prompt for invalid draft draft_id=%s user_id=%s chat_id=%s",
+            pending.draft_id,
+            user_id,
+            recipe_chat_id,
+        )
         return False
 
     totals = pending.meal_log.nutrition_totals

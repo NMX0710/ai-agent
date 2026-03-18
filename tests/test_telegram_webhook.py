@@ -357,3 +357,65 @@ def test_telegram_record_flow_sends_single_estimate_confirmation(monkeypatch):
     assert "热量约 600" in confirmation["text"]
     assert "确认保存" in confirmation["text"]
     assert "agent raw response should be suppressed" not in confirmation["text"]
+
+
+def test_telegram_invalid_draft_does_not_suppress_agent_clarification(monkeypatch):
+    client = TestClient(main.app)
+    monkeypatch.setattr(main, "TELEGRAM_ALLOWLIST", {999000})
+    monkeypatch.setattr(main, "_tg_update_cache", {})
+
+    sent = {}
+
+    async def fake_send(chat_id: int, text: str, reply_to_message_id=None):
+        sent["chat_id"] = chat_id
+        sent["text"] = text
+        sent["reply_to"] = reply_to_message_id
+
+    async def fake_confirmation(chat_id: int, draft_id: str, text: str, reply_to_message_id=None):
+        raise AssertionError("confirmation prompt should not be sent for invalid draft")
+
+    async def fake_chat(chat_id: str, message: str, user_id: str = "anonymous-user") -> str:
+        return "请告诉我大致分量，我再帮你估算。"
+
+    meal_log = CanonicalMealLog(
+        meal_id="4f52ba58-4dca-4f64-b115-bf00a264f6f1",
+        user_id="tg:999000",
+        consumed_at="2026-03-10T20:00:00-04:00",
+        timezone="America/New_York",
+        input_source=InputSource.text,
+        status=MealLogStatus.draft,
+        nutrition_totals=NutritionTotals(energy_kcal=0, protein_g=0, carbs_g=0, fat_g=0),
+        confidence=ConfidenceInfo(overall=0.8),
+    )
+    pending = MealDraftRecord(
+        draft_id="draft-invalid",
+        user_id="tg:999000",
+        chat_id="tg:555111",
+        meal_log=meal_log,
+        status="draft",
+        created_at=meal_log.consumed_at,
+        updated_at=meal_log.consumed_at,
+        confirmation_prompted=False,
+    )
+
+    monkeypatch.setattr(main, "_telegram_send_text", fake_send)
+    monkeypatch.setattr(main, "_telegram_send_confirmation_prompt", fake_confirmation)
+    monkeypatch.setattr(main.recipe_app, "chat", fake_chat)
+    monkeypatch.setattr(main, "latest_pending_draft_for_chat", lambda user_id, chat_id: pending)
+    monkeypatch.setattr(main, "mark_confirmation_prompted", lambda draft_id: None)
+
+    payload = {
+        "update_id": 131,
+        "message": {
+            "message_id": 89,
+            "text": "我晚上吃了肉酱意大利面 可以帮我记录吗",
+            "from": {"id": 999000},
+            "chat": {"id": 555111},
+        },
+    }
+    response = client.post("/webhooks/telegram", json=payload)
+
+    assert response.status_code == 200
+    assert sent["chat_id"] == 555111
+    assert sent["text"] == "请告诉我大致分量，我再帮你估算。"
+    assert sent["reply_to"] == 89

@@ -84,6 +84,39 @@ def test_prepare_requires_nutrition_source():
         )
 
 
+def test_prepare_rejects_placeholder_nutrition_source():
+    _reset_store()
+
+    with pytest.raises(ValueError, match="nutrition_source must identify a real nutrition estimate source"):
+        prepare_meal_log_draft(
+            user_id="tg:placeholder-source",
+            chat_id="tg:chat-placeholder-source",
+            input_source=InputSource.text,
+            meal_description="spaghetti bolognese",
+            nutrition_totals=_sample_totals(),
+            nutrition_source="user_input",
+        )
+
+
+def test_prepare_rejects_all_zero_final_estimate():
+    _reset_store()
+
+    with pytest.raises(ValueError, match="final nutrition estimate cannot be all zeros"):
+        prepare_meal_log_draft(
+            user_id="tg:zero-estimate",
+            chat_id="tg:chat-zero-estimate",
+            input_source=InputSource.text,
+            meal_description="spaghetti bolognese",
+            nutrition_totals=NutritionTotals(
+                energy_kcal=0,
+                protein_g=0,
+                carbs_g=0,
+                fat_g=0,
+            ),
+            nutrition_source="Estimated",
+        )
+
+
 def test_commit_generates_pending_device_write_then_report_synced():
     _reset_store()
 

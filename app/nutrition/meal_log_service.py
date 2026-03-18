@@ -43,6 +43,21 @@ def _coerce_nutrition_confidence(value: float | None) -> float:
     return min(1.0, max(0.0, float(value)))
 
 
+def _validate_final_nutrition_estimate(totals: NutritionTotals, source: str) -> None:
+    source_low = source.strip().lower()
+    if source_low in {"user_input", "unknown", "n/a", "none"}:
+        raise ValueError("nutrition_source must identify a real nutrition estimate source")
+
+    core_values = [
+        totals.energy_kcal,
+        totals.protein_g,
+        totals.carbs_g,
+        totals.fat_g,
+    ]
+    if all(value == 0 for value in core_values):
+        raise ValueError("final nutrition estimate cannot be all zeros")
+
+
 def prepare_meal_log_draft(
     *,
     user_id: str,
@@ -74,6 +89,7 @@ def prepare_meal_log_draft(
     final_nutrition_confidence = _coerce_nutrition_confidence(nutrition_confidence)
     if not final_nutrition_source:
         raise ValueError("nutrition_source is required")
+    _validate_final_nutrition_estimate(final_nutrition_totals, final_nutrition_source)
     logging.info(
         "[MealDraft] final_estimate meal_description=%r source=%r calories=%s protein=%s carbs=%s fat=%s confidence=%s",
         normalized_description,

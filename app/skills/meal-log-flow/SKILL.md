@@ -1,6 +1,6 @@
 ---
 name: meal-log-flow
-description: Use this skill when users ask to log or record meals into Apple Health. Follow prepare -> show estimate -> explicit confirm -> commit flow.
+description: Use this skill when users ask to log or record meals into Apple Health. Follow lookup -> choose final estimate -> prepare -> show estimate -> explicit confirm -> commit flow.
 ---
 
 # Meal Log Flow
@@ -30,7 +30,8 @@ This skill controls the meal logging workflow and write safety for Apple Health 
 - `energy_kcal`, `protein_g`, `carbs_g`, `fat_g`: the final estimate you chose.
 - `nutrition_source`: the source you used for the final estimate.
 - `nutrition_confidence`: optional when you have a meaningful confidence judgment.
-- If the user already asked to log the meal and the food is clear enough, create the draft immediately. Do not ask a redundant question like “Do you want me to generate a draft?” first.
+- If the user already asked to log the meal and the food is clear enough, create the draft immediately only after you have a usable final estimate. Do not ask a redundant question like “Do you want me to generate a draft?” first.
+- If you do not yet have a usable final estimate, do not call `prepare_meal_log(...)`. Ask one concise clarification question or explicitly choose an approximate estimate first.
 
 5. Show estimate before write.
 - Present kcal/protein/carbs/fat to user.
@@ -50,7 +51,7 @@ This skill controls the meal logging workflow and write safety for Apple Health 
 - User: "我晚上吃了意大利面，可以帮我记录吗？"
   - meal_description: `晚餐吃了意大利面`
   - choose nutrition lookup tool(s) and one final estimate
-  - Prepare draft immediately
+  - Prepare draft immediately after selecting a usable final estimate
   - Show estimate + ask for confirm
   - Commit only on confirmation
 

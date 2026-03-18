@@ -6,7 +6,7 @@ from typing import Any, Dict
 from uuid import uuid4
 
 from deepagents import create_deep_agent
-from deepagents.backends import CompositeBackend, StateBackend, StoreBackend
+from deepagents.backends import CompositeBackend, FilesystemBackend, StateBackend, StoreBackend
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage  # noqa: F401
 from langchain_openai import ChatOpenAI
@@ -43,17 +43,20 @@ SYSTEM_PROMPT = (
     "- If information is ambiguous or only relevant to the current chat, keep it in conversation context and do not write memory\n"
     "- When updating memory, prefer revising existing stable facts instead of appending noisy event history\n\n"
     "Meal logging policy:\n"
-    "- If the user asks to record/log a meal, use tool prepare_meal_log to create a draft.\n"
+    "- If the user asks to record/log a meal, first determine whether you already have a usable final nutrition estimate.\n"
     "- If the user has already asked to log or record a meal and the food is identifiable, do not ask an extra "
-    "permission question about creating a draft. Prepare the draft immediately, then show the estimate and ask only for save confirmation.\n"
+    "permission question about creating a draft. If you already have a usable final estimate, prepare the draft immediately, then show the estimate and ask only for save confirmation.\n"
     "- Before calling prepare_meal_log, first use one or more nutrition lookup tools and choose a single final estimate for kcal, protein, carbs, and fat.\n"
     "- Choose nutrition tools based on food type and source fit. Do not assume a fixed tool priority order.\n"
     "- For Chinese or mixed-language foods, you may derive an English lookup query for tools that work better in English.\n"
     "- Pass meal_description plus the final nutrition estimate and source into prepare_meal_log. prepare_meal_log does not perform lookup for you.\n"
+    "- If you do not have a usable final estimate, do not call prepare_meal_log yet. Ask one concise clarification question or explicitly choose an approximate estimate first.\n"
     "- Never write meal logs without explicit confirmation.\n"
     "- Only after explicit confirmation, use tool commit_meal_log.\n"
     "- If confirmation is missing, ask for confirmation first."
 )
+
+SKILLS_ROUTE = "/skills/"
 
 
 class RecipeApp:
@@ -75,18 +78,29 @@ class RecipeApp:
     def _history_key(user_id: str, chat_id: str) -> str:
         return f"{user_id}:{chat_id}"
 
-    def _build_deep_agent(self):
-        composite_backend = lambda runtime: CompositeBackend(
+    @staticmethod
+    def _skills_root() -> Path:
+        return Path(__file__).resolve().parent / "skills"
+
+    @staticmethod
+    def _build_backend(runtime: Any, *, skills_root: Path | None = None) -> CompositeBackend:
+        resolved_skills_root = (skills_root or RecipeApp._skills_root()).resolve()
+        return CompositeBackend(
             default=StateBackend(runtime),
-            routes={"/memories/": StoreBackend(runtime)},
+            routes={
+                "/memories/": StoreBackend(runtime),
+                SKILLS_ROUTE: FilesystemBackend(root_dir=resolved_skills_root, virtual_mode=True),
+            },
         )
-        skill_dir = Path(__file__).resolve().parent / "skills"
+
+    def _build_deep_agent(self):
+        composite_backend = lambda runtime: self._build_backend(runtime, skills_root=self._skills_root())
         middleware = [AgentContextTraceMiddleware()] if is_terminal_trace_enabled() else []
 
         return create_deep_agent(
             model=self.model,
             tools=self.tools,
-            skills=[str(skill_dir)],
+            skills=[SKILLS_ROUTE],
             system_prompt=SYSTEM_PROMPT,
             middleware=middleware,
             backend=composite_backend,

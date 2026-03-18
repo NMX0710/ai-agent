@@ -41,7 +41,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - `app/recipe_app.py` builds a minimal Deep Agent:
   - `create_deep_agent(...)`
   - nutrition tools loaded at startup (configured by env)
-  - nutrition and memory policy skills for tool usage guidance
+  - nutrition and memory policy skills loaded from project filesystem via `/skills/`
   - chef-oriented `system_prompt`
   - explicit meal-log guidance for choosing a nutrition source before draft creation
 
@@ -51,6 +51,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - `CompositeBackend` routing:
   - default: `StateBackend`
   - `/memories/`: `StoreBackend`
+  - `/skills/`: `FilesystemBackend` rooted at `app/skills`
 
 This gives:
 - short-term memory in-thread

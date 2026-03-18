@@ -13,6 +13,8 @@ from app.nutrition.meallog import InputSource, NutritionTotals
     description=(
         "Prepare a canonical meal log draft from a final nutrition estimate that the agent has already chosen. "
         "Use this only after the agent has used nutrition lookup tools and selected one final kcal/protein/carbs/fat estimate. "
+        "Do not call this tool with placeholder sources, all-zero macros, or unknown final values. "
+        "If you do not yet have a usable final estimate, ask a clarification question or explicitly choose an approximate estimate first. "
         "This tool does not perform nutrition lookup."
     )
 )
