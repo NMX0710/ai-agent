@@ -12,23 +12,25 @@ This skill handles nutrition lookup requests and prepares reliable calorie/macro
 ## Tool Use Rules
 
 1. Always derive a clean `food_query` before calling tools.
-- Keep food/dish names and key style words (for example: grilled, tomato sauce, bolognese).
-- Remove intent wrapper text such as "I ate", "help me log", "can you record", and similar filler.
-- If the user writes in Chinese, also derive `food_query_en` for tool lookup. Keep `food_query` as the user-language dish phrase.
-- This extraction should happen in the agent plan before the tool call. Do not pass wrapper sentences into tools and expect the service layer to repair them.
+- Extract the real thing the user wants nutrition for: the food, drink, product, dish, brand item, or menu item.
+- Preserve whatever wording best identifies that real item for lookup quality.
+- Remove surrounding filler only when it is clearly not part of the item being looked up.
+- Build an English lookup query before every nutrition tool call.
+- The current nutrition search tools are English-oriented tools. Their `query` input must be English, even when the user asks in Chinese or another language.
+- Do not send Chinese or other non-English lookup text directly into nutrition tool calls.
 
 2. Field boundaries:
 - `user_text`: the original user sentence.
-- `meal_description`: concise user-facing description of the meal; can stay in user language.
-- `food_query`: lookup-oriented dish phrase with wrappers removed.
-- `food_query_en`: English lookup phrase for USDA/Spoonacular when `food_query` is Chinese or mixed-language.
+- `meal_description`: concise user-facing description of the meal when the user is asking about intake or logging.
+- `food_query`: the lookup-oriented name of the real item you chose to search.
+- `food_query_en`: the English lookup phrase you will actually use for English-oriented search tools.
 
 3. Choose tools by food type and source fit:
 - `usda_search_foods`: best for generic ingredients, basic foods, and common staples.
 - `spoonacular_search_recipe`: best for composed dishes, named recipes, and home-style plated meals.
 - `openfoodfacts_search_products`: best for packaged or branded foods.
 - `tavily_search_nutrition`: best as a fallback for restaurant items, niche foods, or cases where the structured sources are a poor fit.
-- For Chinese input, prefer `food_query_en` when a tool works better with English dish names.
+- For tool calls, use `food_query_en` rather than the original Chinese wording.
 - Use as few tools as needed. Stop once you have a credible estimate from a well-matched source.
 
 4. A usable result must have all four core values:
@@ -41,6 +43,7 @@ This skill handles nutrition lookup requests and prepares reliable calorie/macro
 - Pick one final estimate to present. Do not dump multiple conflicting tool outputs without choosing.
 - Label the source you actually used (`USDA`, `Spoonacular`, `Tavily`, `OpenFoodFacts`, or `Estimated`).
 - If the user is asking to log the meal, pass the final chosen estimate into `prepare_meal_log(...)`.
+- If the user is only asking for nutrition facts, answer the nutrition question directly and do not proactively switch into meal logging.
 
 6. If tools still do not return usable macros:
 - Ask one concise clarification question (portion size, recipe style, or major ingredients), unless user explicitly asked to proceed with estimate.
@@ -54,6 +57,7 @@ This skill handles nutrition lookup requests and prepares reliable calorie/macro
 
 - "我晚上吃了意大利面，可以帮我记录吗？" -> `意大利面`
 - "我晚上吃了意大利面，可以帮我记录吗？" -> `food_query=意大利面`, `food_query_en=spaghetti`
-- "就是普通的番茄肉酱意大利面" -> `番茄肉酱意大利面`
-- "I had chicken rice tonight, please log it" -> `chicken rice`
-- "记录一下我吃的牛油果吐司和鸡蛋" -> `牛油果吐司 鸡蛋`
+- "就是普通的番茄肉酱意大利面" -> `food_query=番茄肉酱意大利面`, `food_query_en=spaghetti bolognese`
+- "I had chicken rice tonight, please log it" -> `food_query_en=chicken rice`
+- "记录一下我吃的牛油果吐司和鸡蛋" -> `food_query=牛油果吐司 鸡蛋`, `food_query_en=avocado toast egg`
+- "吃茶三千的芒果绿茶热量多少" -> keep the branded drink item together and use an English lookup such as `food_query_en=Chi Cha San Chen mango green tea`

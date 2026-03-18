@@ -45,7 +45,8 @@ def _trace_tool_result(tool_name: str, query: str, results: list[dict[str, Any]]
 @tool(
     description=(
         "Search recipe-style dishes and composed meals from Spoonacular with nutrition summaries. "
-        "Best for plated dishes, home-style meals, and named recipes such as spaghetti bolognese or chicken curry."
+        "Best for plated dishes, home-style meals, and named recipes such as spaghetti bolognese or chicken curry. "
+        "For tool calls, the query must be an English dish or recipe name."
     )
 )
 def spoonacular_search_recipe(
@@ -133,7 +134,8 @@ def spoonacular_search_recipe(
 @tool(
     description=(
         "Search USDA FoodData Central foods and return key nutrient values. "
-        "Best for generic ingredients, simple foods, and common staples such as rice, eggs, chicken breast, or yogurt."
+        "Best for generic ingredients, simple foods, and common staples such as rice, eggs, chicken breast, or yogurt. "
+        "For tool calls, the query must be an English common food or ingredient name."
     )
 )
 def usda_search_foods(
