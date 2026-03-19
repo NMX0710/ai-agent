@@ -18,7 +18,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - Agent-side nutrition tool selection with source-labeled final estimates
 - Conservative long-term memory policy for `/memories/users/<user_id>/*.md`
 - Local Apple Health bridge runner CLI with mock writers for end-to-end bridge verification
-- AgentCore-compatible endpoints (`/ping`, `/invocations`)
+- iOS companion app (AppleHealthBridgeCompanion) for real HealthKit writes via Sync Now
 
 ### What is intentionally disabled (for now)
 - RAG retrieval pipeline
@@ -32,8 +32,6 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
   - `GET /` web chat UI
   - `POST /chat` local chat API
   - `POST /webhooks/telegram` Telegram inbound webhook
-  - `GET /ping` health check
-  - `POST /invocations` AgentCore runtime entrypoint
   - `POST /integrations/apple-health/pending-writes`
   - `POST /integrations/apple-health/write-result`
 
@@ -65,7 +63,7 @@ This gives:
 - Confirmed drafts become bridge-visible pending writes.
 - `app/apple_health_bridge_runner.py` can poll pending writes and report results back.
 - Current runner modes are `mock-success` and `mock-failure` for local end-to-end verification.
-- Real Apple Health writes still require an Apple-platform companion implementation using HealthKit.
+- The iOS companion app (`ios/AppleHealthBridgeCompanion`) handles real HealthKit writes on device.
 
 ## Project Structure
 
@@ -160,10 +158,10 @@ curl -X POST http://127.0.0.1:8000/chat \
 - Estimate calories and macro nutrients
 - Return structured nutrition summary with confidence
 
-### Phase 4: Apple Health App Sync
-- Add iOS companion app for HealthKit authorization/write
-- Replace mock bridge writer with real HealthKit writer
-- Sync confirmed nutrition entries into Apple Health
+### Phase 4: Apple Health App Sync ✓
+- iOS companion app built with HealthKit authorization and Sync Now write flow
+- Backend bridge queue and write-result reporting implemented
+- Confirmed nutrition entries sync into Apple Health via companion app
 - Extend to additional health/productivity apps later
 
 ### Phase 5: Skills-based Tooling
@@ -181,7 +179,7 @@ curl -X POST http://127.0.0.1:8000/chat \
 - Nutrition tool selection is guided by skill/tool descriptions rather than a hard-coded source priority list in the meal-log service.
 - Nutrition source labels are kept explicit: `USDA`, `Spoonacular`, `Tavily`, `OpenFoodFacts`, `Estimated`.
 - Open Food Facts read access does not require an API key, but requests should send a descriptive `User-Agent`.
-- The Python bridge runner verifies the server-side Apple Health queue lifecycle, but it does not write to HealthKit by itself.
+- The Python bridge runner verifies the server-side Apple Health queue lifecycle; real HealthKit writes are performed by the iOS companion app.
 - Tests that depend on older RAG/tools pipeline will be migrated in subsequent iterations.
 
 ## Apple Health Bridge Runner
@@ -201,7 +199,7 @@ Supported runner modes:
 - `mock-success`: consumes a pending write and reports a successful sync
 - `mock-failure`: consumes a pending write and reports a failed sync
 
-This is intended for bridge verification only. A real Apple Health write path still requires a native iOS/macOS writer backed by HealthKit.
+This is intended for bridge verification only. Real HealthKit writes are handled by the iOS companion app (`ios/AppleHealthBridgeCompanion`).
 
 ## Telegram Quick Test
 
