@@ -47,4 +47,4 @@ def test_skills_route_reads_skill_markdown_from_project_filesystem():
     assert response.content is not None
     content = response.content.decode("utf-8")
     assert "name: meal-log-flow" in content
-    assert "Follow prepare -> show estimate -> explicit confirm -> commit flow." in content
+    assert "Follow lookup -> choose final estimate -> prepare -> show estimate -> explicit confirm -> commit flow." in content

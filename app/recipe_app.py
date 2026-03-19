@@ -13,6 +13,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.store.memory import InMemoryStore
 
+from app.observability.backend_trace import TracingBackend
 from app.observability import is_terminal_trace_enabled, reset_trace_id, set_trace_id, trace_log
 from app.observability.agent_middleware import AgentContextTraceMiddleware
 from app.tools.tool_registry import load_all_tools
@@ -25,7 +26,17 @@ SYSTEM_PROMPT = (
     "Respond in the user's language when practical. "
     "Do not pretend to know details you do not have; ask a brief clarification question when needed. "
     "\n\n"
-    "Use long-term memory only for explicit durable user facts and stable preferences when relevant, following the memory-policy skill. "
+    "Your long-term memory lives under /memories/users/<user_id>/. "
+    "Use /memories/users/<user_id>/profile.md for durable dietary constraints, allergies, intolerances, and other stable user facts that materially affect recommendations. "
+    "Use /memories/users/<user_id>/preferences.md for stable food likes or dislikes, recurring eating habits, cuisine preferences, ingredient avoidances, and stable budget or cooking-time preferences. "
+    "For recurring eating habits and dietary preferences, write only to the canonical file /memories/users/<current user_id>/preferences.md. "
+    "Always use the current runtime user_id when writing long-term memory. Never substitute placeholder ids such as default_user or anonymous. "
+    "Do not invent new memory filenames such as dietary_preferences.md, dietary_habits.md, or other free-form variants for preference memory. "
+    "Write preference memory as short bullet summaries in preferences.md rather than loose paragraphs. "
+    "When the user explicitly states a stable preference or recurring habit with strong wording such as usually, normally, always, do not eat, avoid, 我平常, 我一般, or 我不吃, do not ask a redundant confirmation question before updating long-term memory unless the user also indicates uncertainty or that it is temporary. "
+    "If you update long-term memory, update the canonical target file directly. "
+    "When a user explicitly states a durable fact or stable preference that is likely to matter again, consider updating long-term memory even if the user does not explicitly ask you to remember it, following the memory-policy skill. "
+    "Do not write temporary requests, one-time moods, meal events, weight history, Apple Health sync state, or inferred medical conclusions into long-term memory. "
     "Use the appropriate skills and tools for task-specific workflows instead of inventing ad hoc rules. "
     "If the user is only asking a nutrition question, answer that question directly. "
     "Only enter meal logging flow when the user clearly asks to log, save, or record intake. "
@@ -42,7 +53,7 @@ class RecipeApp:
             raise RuntimeError("Missing environment variable OPENAI_API_KEY. Please configure it in your .env file.")
 
         self.model = ChatOpenAI(
-            model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
+            model=os.getenv("OPENAI_MODEL", "gpt-5.4-mini"),
             api_key=api_key,
             temperature=0.5,
         )
@@ -61,13 +72,14 @@ class RecipeApp:
     @staticmethod
     def _build_backend(runtime: Any, *, skills_root: Path | None = None) -> CompositeBackend:
         resolved_skills_root = (skills_root or RecipeApp._skills_root()).resolve()
-        return CompositeBackend(
+        backend = CompositeBackend(
             default=StateBackend(runtime),
             routes={
                 "/memories/": StoreBackend(runtime),
                 SKILLS_ROUTE: FilesystemBackend(root_dir=resolved_skills_root, virtual_mode=True),
             },
         )
+        return TracingBackend(backend)
 
     def _build_deep_agent(self):
         composite_backend = lambda runtime: self._build_backend(runtime, skills_root=self._skills_root())
