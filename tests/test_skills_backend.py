@@ -9,7 +9,10 @@ project_root = (
 )
 sys.path.append(str(project_root))
 
-from app.recipe_app import RecipeApp, SKILLS_ROUTE
+from app.recipe_app import RecipeApp
+
+
+SKILLS_ROUTE = "/skills/"
 
 
 def test_skills_route_uses_filesystem_backend_and_lists_project_skills():
@@ -26,9 +29,8 @@ def test_skills_route_uses_filesystem_backend_and_lists_project_skills():
     infos = backend.ls_info(SKILLS_ROUTE)
     paths = sorted(item["path"] for item in infos if item.get("is_dir"))
 
-    assert "/skills/meal-log-flow/" in paths
-    assert "/skills/memory-policy/" in paths
-    assert "/skills/nutrition-lookup/" in paths
+    assert "/skills/main/" in paths
+    assert "/skills/nutrition/" in paths
 
 
 def test_skills_route_reads_skill_markdown_from_project_filesystem():
@@ -41,7 +43,7 @@ def test_skills_route_reads_skill_markdown_from_project_filesystem():
     )
 
     backend = RecipeApp._build_backend(runtime, skills_root=Path(project_root) / "app/skills")
-    response = backend.download_files(["/skills/meal-log-flow/SKILL.md"])[0]
+    response = backend.download_files(["/skills/main/meal-log-flow/SKILL.md"])[0]
 
     assert response.error is None
     assert response.content is not None

@@ -38,12 +38,24 @@ SYSTEM_PROMPT = (
     "When a user explicitly states a durable fact or stable preference that is likely to matter again, consider updating long-term memory even if the user does not explicitly ask you to remember it, following the memory-policy skill. "
     "Do not write temporary requests, one-time moods, meal events, weight history, Apple Health sync state, or inferred medical conclusions into long-term memory. "
     "Use the appropriate skills and tools for task-specific workflows instead of inventing ad hoc rules. "
+    "For any request that requires calorie, macro, or nutrition estimation, delegate the estimation work to the nutrition-specialist subagent instead of answering from general knowledge. "
+    "This includes direct nutrition questions and meal-log pre-estimate tasks. "
+    "The nutrition-specialist only estimates nutrition; it does not prepare drafts, commit meal logs, or handle Apple Health flow. "
+    "If the user wants to log a meal, first delegate the nutrition estimate to the nutrition-specialist, then handle prepare_meal_log and later confirmation in the main agent yourself. "
+    "Do not use the general-purpose subagent for nutrition estimation when the nutrition-specialist fits the task. "
     "If the user is only asking a nutrition question, answer that question directly. "
     "Only enter meal logging flow when the user clearly asks to log, save, or record intake. "
     "Never commit a meal log without explicit user confirmation."
 )
 
-SKILLS_ROUTE = "/skills/"
+MAIN_SKILLS_ROUTE = "/skills/main/"
+NUTRITION_SKILLS_ROUTE = "/skills/nutrition/"
+NUTRITION_TOOL_NAMES = {
+    "spoonacular_search_recipe",
+    "usda_search_foods",
+    "tavily_search_nutrition",
+    "openfoodfacts_search_products",
+}
 
 
 class RecipeApp:
@@ -58,7 +70,7 @@ class RecipeApp:
             temperature=0.5,
         )
         self.memory_saver = MemorySaver()
-        self.tools = load_all_tools()
+        self.tools = self._main_agent_tools()
         self.deep_agent = self._build_deep_agent()
 
     @staticmethod
@@ -70,13 +82,29 @@ class RecipeApp:
         return Path(__file__).resolve().parent / "skills"
 
     @staticmethod
+    def _nutrition_tools() -> list[Any]:
+        return [
+            tool
+            for tool in load_all_tools()
+            if getattr(tool, "name", None) in NUTRITION_TOOL_NAMES
+        ]
+
+    @staticmethod
+    def _main_agent_tools() -> list[Any]:
+        return [
+            tool
+            for tool in load_all_tools()
+            if getattr(tool, "name", None) not in NUTRITION_TOOL_NAMES
+        ]
+
+    @staticmethod
     def _build_backend(runtime: Any, *, skills_root: Path | None = None) -> CompositeBackend:
         resolved_skills_root = (skills_root or RecipeApp._skills_root()).resolve()
         backend = CompositeBackend(
             default=StateBackend(runtime),
             routes={
                 "/memories/": StoreBackend(runtime),
-                SKILLS_ROUTE: FilesystemBackend(root_dir=resolved_skills_root, virtual_mode=True),
+                "/skills/": FilesystemBackend(root_dir=resolved_skills_root, virtual_mode=True),
             },
         )
         return TracingBackend(backend)
@@ -84,11 +112,40 @@ class RecipeApp:
     def _build_deep_agent(self):
         composite_backend = lambda runtime: self._build_backend(runtime, skills_root=self._skills_root())
         middleware = [AgentContextTraceMiddleware()] if is_terminal_trace_enabled() else []
+        nutrition_specialist = {
+            "name": "nutrition-specialist",
+            "description": (
+                "Use this agent for all calorie, macro, and nutrition estimation tasks. "
+                "It handles ambiguous foods, provider selection, clarification questions, and choosing one final estimate. "
+                "It does not perform meal-log actions."
+            ),
+            "system_prompt": (
+                "You are a nutrition estimation specialist. "
+                "Use the nutrition-lookup skill for workflow guidance. "
+                "Use only the provided nutrition lookup tools. "
+                "Your job is estimation only, not logging orchestration. "
+                "Before returning a final estimate, verify that the candidate matches the user's portion level and meal context. "
+                "Do not treat a likely per-100g value, a small-serving database value, or a generic low-granularity entry as the final estimate for a full dish or whole meal. "
+                "When the user describes a full dish or meal and direct lookup results are missing, low-granularity, or implausible, decompose the dish into common ingredients and estimate from a typical single serving. "
+                "Use any user-provided ingredients to override the default composition before estimating. "
+                "If the food description is too ambiguous for a credible estimate, ask one concise, high-value clarification question. "
+                "If portion size is missing, either ask one concise, high-value clarification question or estimate a common single serving and clearly label that assumption as approximate. "
+                "If the user wants an estimate without more detail, choose a common default version of the dish and clearly label it as approximate. "
+                "If an estimate is implausibly low or high for the described dish or meal, do not return it as-is. Reassess the serving basis, ask one clarification question, or use a more credible approximate estimate. "
+                "Do not dump multiple raw candidates to the user. You must either ask one concise clarification question or choose one final estimate with a source label. "
+                "Do not call meal logging tools. "
+                "Return either a concise clarification question or a final nutrition estimate in the user's language. "
+                "If the upstream request involves meal logging, still return only the estimate or the clarification question; the main agent will handle prepare_meal_log."
+            ),
+            "tools": self._nutrition_tools(),
+            "skills": [NUTRITION_SKILLS_ROUTE],
+        }
 
         return create_deep_agent(
             model=self.model,
             tools=self.tools,
-            skills=[SKILLS_ROUTE],
+            skills=[MAIN_SKILLS_ROUTE],
+            subagents=[nutrition_specialist],
             system_prompt=SYSTEM_PROMPT,
             middleware=middleware,
             backend=composite_backend,
