@@ -8,6 +8,7 @@ from app.tools.nutrition_http_tools import (
     tavily_search_nutrition,
     usda_search_foods,
 )
+from app.tools.youtube_playlist_tools import search_youtube_playlist_recipes
 
 
 def load_all_tools() -> List:
@@ -16,6 +17,7 @@ def load_all_tools() -> List:
         usda_search_foods,
         tavily_search_nutrition,
         openfoodfacts_search_products,
+        search_youtube_playlist_recipes,
         prepare_meal_log,
         commit_meal_log,
     ]

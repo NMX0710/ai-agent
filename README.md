@@ -14,6 +14,7 @@ Goal: stabilize the core chat, memory, and runtime interfaces first, then add ca
 - In-memory long-term memory filesystem route (`/memories/`)
 - Telegram webhook channel (`/webhooks/telegram`) with allowlist + update dedup
 - Built-in HTTP nutrition tools for USDA, Spoonacular, Tavily fallback, and Open Food Facts
+- YouTube playlist recipe retrieval for meal ideas and video references
 - Meal logging draft -> confirm -> Apple Health bridge flow
 - Agent-side nutrition tool selection with source-labeled final estimates
 - Conservative long-term memory policy for `/memories/users/<user_id>/*.md`
@@ -107,6 +108,11 @@ TAVILY_API_KEY=your_tavily_key
 
 # Open Food Facts identifies clients via User-Agent; no API key required for read access
 OPENFOODFACTS_USER_AGENT="ai-agent-nutrition/0.1 (contact: team@example.com)"
+
+# YouTube recipe playlist retrieval
+YOUTUBE_API_KEY=your_youtube_data_api_key
+YOUTUBE_PLAYLIST_ID=your_playlist_id
+YOUTUBE_PLAYLIST_MAX_ITEMS=100
 
 # Telegram channel
 TELEGRAM_BOT_TOKEN=your_bot_token
