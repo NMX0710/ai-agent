@@ -30,10 +30,12 @@ Use `search_youtube_playlist_recipes(...)` for requests like:
 3. Prefer one strong video reference over many weak ones.
 - Usually return one primary video link in the final answer.
 - You may mention one or two additional ideas when helpful, but keep the response concise.
+- If the tool returns a `summary`, use it to explain why the video fits the user's need before giving the link.
 
 4. Include the direct YouTube URL in the final answer.
 - Telegram can render a link preview from the standard YouTube URL.
-- Keep the link intact on its own line when practical.
+- Keep the link intact as a raw standard YouTube URL on its own line.
+- Do not wrap the URL in markdown, angle brackets, or surrounding punctuation.
 
 5. If the playlist search returns no relevant result:
 - The tool may fall back to general YouTube video search.
@@ -43,5 +45,6 @@ Use `search_youtube_playlist_recipes(...)` for requests like:
 ## Answer Style
 
 - Give a practical food recommendation first.
+- If available, briefly summarize what the chosen video covers.
 - Then attach the most relevant video link as a reference.
 - Respond in the user's language when practical.

@@ -7,6 +7,9 @@ import httpx
 from langchain_core.tools import tool
 
 from app.observability import trace_log
+from app.youtube.store import load_video_cache, save_video_cache
+from app.youtube.summarizer import summarize_recipe_video
+from app.youtube.transcript_provider import fetch_video_transcript
 from app.settings import YOUTUBE_API_KEY, YOUTUBE_PLAYLIST_ID, YOUTUBE_PLAYLIST_MAX_ITEMS
 
 
@@ -43,6 +46,16 @@ def _score_video_match(query: str, title: str, description: str) -> int:
         if token in description_tokens:
             score += 2
 
+    return score
+
+
+def _score_summary_match(query: str, summary: str) -> int:
+    summary_tokens = set(_tokenize(summary))
+    query_tokens = _tokenize(query)
+    score = 0
+    for token in query_tokens:
+        if token in summary_tokens:
+            score += 5
     return score
 
 
@@ -169,6 +182,40 @@ def _search_youtube_videos(query: str, max_results: int) -> list[dict[str, Any]]
     return rows
 
 
+def _enrich_video_row(row: dict[str, Any]) -> dict[str, Any]:
+    cached = load_video_cache(row["video_id"])
+    if cached:
+        enriched = dict(row)
+        enriched["summary"] = cached.get("summary") or ""
+        enriched["summary_source"] = cached.get("summary_source") or "cache"
+        enriched["transcript_available"] = bool(cached.get("transcript_available"))
+        return enriched
+
+    transcript_result = fetch_video_transcript(row["video_id"])
+    transcript_segments = transcript_result.get("segments", []) if transcript_result.get("ok") else []
+    summary_payload = summarize_recipe_video(
+        title=row["title"],
+        description=row["description"],
+        transcript_segments=transcript_segments,
+    )
+    payload = {
+        "video_id": row["video_id"],
+        "title": row["title"],
+        "url": row["url"],
+        "description": row["description"],
+        "summary": summary_payload["summary"],
+        "summary_source": summary_payload["summary_source"],
+        "transcript_available": bool(transcript_segments),
+    }
+    save_video_cache(row["video_id"], payload)
+
+    enriched = dict(row)
+    enriched["summary"] = payload["summary"]
+    enriched["summary_source"] = payload["summary_source"]
+    enriched["transcript_available"] = payload["transcript_available"]
+    return enriched
+
+
 @tool(
     description=(
         "Search the configured YouTube recipe playlist for meal ideas, recipe inspiration, and meal-prep videos. "
@@ -228,29 +275,42 @@ def search_youtube_playlist_recipes(query: str, max_results: int = 3) -> dict[st
                     break
                 limited.append(row)
 
+    enriched_results = []
+    for row in limited:
+        enriched = _enrich_video_row(row)
+        enriched["match_score"] = int(enriched.get("match_score", 0)) + _score_summary_match(
+            query,
+            enriched.get("summary", ""),
+        )
+        enriched_results.append(enriched)
+
+    enriched_results.sort(key=lambda row: (row["match_score"], row["source_kind"] == "playlist"), reverse=True)
+
     trace_log(
         "ToolResult",
         "search_youtube_playlist_recipes returned",
         {
             "query": query,
-            "count": len(limited),
+            "count": len(enriched_results),
             "preview": [
                 {
                     "title": row["title"],
                     "url": row["url"],
                     "match_score": row["match_score"],
                     "source_kind": row["source_kind"],
+                    "summary_source": row.get("summary_source"),
+                    "transcript_available": row.get("transcript_available"),
                 }
-                for row in limited
+                for row in enriched_results
             ],
         },
     )
 
     return {
-        "results": limited,
-        "count": len(limited),
+        "results": enriched_results,
+        "count": len(enriched_results),
         "source": "youtube_playlist_with_search_fallback",
         "playlist_id": YOUTUBE_PLAYLIST_ID,
         "playlist_count": len(playlist_results),
-        "used_general_search_fallback": any(row["source_kind"] == "youtube_search" for row in limited),
+        "used_general_search_fallback": any(row["source_kind"] == "youtube_search" for row in enriched_results),
     }

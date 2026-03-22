@@ -419,3 +419,77 @@ def test_telegram_invalid_draft_does_not_suppress_agent_clarification(monkeypatc
     assert sent["chat_id"] == 555111
     assert sent["text"] == "请告诉我大致分量，我再帮你估算。"
     assert sent["reply_to"] == 89
+
+
+def test_split_telegram_youtube_messages_splits_body_and_urls():
+    raw = (
+        "Here are some high-protein lunch ideas.\n\n"
+        "Video 1: Chicken rice bowl meal prep.\n"
+        "Quick, high-protein lunch for weekdays.\n"
+        "https://www.youtube.com/watch?v=abc123\n\n"
+        "Video 2: Greek yogurt chicken salad.\n"
+        "Easy cold lunch option.\n"
+        "https://www.youtube.com/watch?v=def456"
+    )
+
+    messages = main._split_telegram_youtube_messages(raw)
+
+    assert len(messages) == 2
+    assert "Here are some high-protein lunch ideas." in messages[0]
+    assert "Video 1: Chicken rice bowl meal prep." in messages[0]
+    assert messages[0].endswith("https://www.youtube.com/watch?v=abc123")
+    assert "Video 2: Greek yogurt chicken salad." in messages[1]
+    assert messages[1].endswith("https://www.youtube.com/watch?v=def456")
+
+
+def test_telegram_send_text_sends_split_youtube_messages(monkeypatch):
+    captured = {"payloads": []}
+
+    class _FakeResponse:
+        status_code = 200
+        text = "ok"
+
+    class _FakeAsyncClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def post(self, url, json=None):
+            captured["url"] = url
+            captured["payloads"].append(json)
+            return _FakeResponse()
+
+    monkeypatch.setattr(main, "TELEGRAM_BOT_TOKEN", "bot-token")
+    monkeypatch.setattr(main.httpx, "AsyncClient", _FakeAsyncClient)
+
+    import asyncio
+
+    asyncio.run(
+        main._telegram_send_text(
+            555111,
+            (
+                "Here are some high-protein lunch ideas.\n\n"
+                "Video 1 summary.\n"
+                "https://www.youtube.com/watch?v=abc123\n\n"
+                "Video 2 summary.\n"
+                "https://www.youtube.com/watch?v=def456"
+            ),
+            34,
+        )
+    )
+
+    assert len(captured["payloads"]) == 2
+    assert "Here are some high-protein lunch ideas." in captured["payloads"][0]["text"]
+    assert "Video 1 summary." in captured["payloads"][0]["text"]
+    assert captured["payloads"][0]["reply_to_message_id"] == 34
+    assert captured["payloads"][0]["text"].endswith("https://www.youtube.com/watch?v=abc123")
+    assert captured["payloads"][0]["link_preview_options"]["url"] == "https://www.youtube.com/watch?v=abc123"
+    assert "Video 2 summary." in captured["payloads"][1]["text"]
+    assert "reply_to_message_id" not in captured["payloads"][1]
+    assert captured["payloads"][1]["text"].endswith("https://www.youtube.com/watch?v=def456")
+    assert captured["payloads"][1]["link_preview_options"]["url"] == "https://www.youtube.com/watch?v=def456"

@@ -123,23 +123,81 @@ def _prune_tg_cache(now_ts: float) -> None:
         _tg_update_cache.pop(update_id, None)
 
 
+_YOUTUBE_URL_RE = re.compile(r"https?://(?:www\.)?(?:youtube\.com/watch\?v=[^\s]+|youtu\.be/[^\s]+)")
+
+
+def _extract_first_youtube_url(text: str) -> str | None:
+    match = _YOUTUBE_URL_RE.search(text or "")
+    return match.group(0) if match else None
+
+
+def _extract_all_youtube_urls(text: str) -> list[str]:
+    seen: set[str] = set()
+    results: list[str] = []
+    for match in _YOUTUBE_URL_RE.finditer(text or ""):
+        url = match.group(0)
+        if url in seen:
+            continue
+        seen.add(url)
+        results.append(url)
+    return results
+
+
+def _split_telegram_youtube_messages(text: str) -> list[str]:
+    if not text:
+        return [text]
+
+    matches = list(_YOUTUBE_URL_RE.finditer(text or ""))
+    if not matches:
+        return [text]
+
+    messages: list[str] = []
+    previous_end = 0
+
+    for match in matches:
+        url = match.group(0)
+        preceding = text[previous_end:match.start()]
+        cleaned_preceding = preceding.strip()
+        chunk = cleaned_preceding.strip()
+        if chunk in {"链接：", "链接:", "Link:", "Link："}:
+            chunk = ""
+        if chunk:
+            messages.append(f"{chunk}\n\n{url}")
+        else:
+            messages.append(url)
+
+        previous_end = match.end()
+
+    return [message for message in messages if message.strip()] or [text]
+
+
 async def _telegram_send_text(chat_id: int, text: str, reply_to_message_id: int | None = None) -> None:
     if not TELEGRAM_BOT_TOKEN:
         logging.error("[Telegram] TELEGRAM_BOT_TOKEN is not configured.")
         return
 
+    messages = _split_telegram_youtube_messages(text)
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload: dict[str, Any] = {
-        "chat_id": chat_id,
-        "text": text,
-    }
-    if reply_to_message_id:
-        payload["reply_to_message_id"] = reply_to_message_id
 
     async with httpx.AsyncClient(timeout=20.0) as client:
-        resp = await client.post(url, json=payload)
-        if resp.status_code >= 400:
-            logging.error("[Telegram] sendMessage failed: %s - %s", resp.status_code, resp.text)
+        for index, message_text in enumerate(messages):
+            preview_url = _extract_first_youtube_url(message_text)
+            payload: dict[str, Any] = {
+                "chat_id": chat_id,
+                "text": message_text,
+            }
+            if preview_url:
+                payload["link_preview_options"] = {
+                    "is_disabled": False,
+                    "url": preview_url,
+                    "prefer_large_media": True,
+                }
+            if reply_to_message_id and index == 0:
+                payload["reply_to_message_id"] = reply_to_message_id
+
+            resp = await client.post(url, json=payload)
+            if resp.status_code >= 400:
+                logging.error("[Telegram] sendMessage failed: %s - %s", resp.status_code, resp.text)
 
 
 async def _telegram_send_confirmation_prompt(

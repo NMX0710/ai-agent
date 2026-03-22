@@ -113,6 +113,7 @@ OPENFOODFACTS_USER_AGENT="ai-agent-nutrition/0.1 (contact: team@example.com)"
 YOUTUBE_API_KEY=your_youtube_data_api_key
 YOUTUBE_PLAYLIST_ID=your_playlist_id
 YOUTUBE_PLAYLIST_MAX_ITEMS=100
+YOUTUBE_SUMMARY_MODEL=gpt-5.4-mini
 
 # Telegram channel
 TELEGRAM_BOT_TOKEN=your_bot_token
