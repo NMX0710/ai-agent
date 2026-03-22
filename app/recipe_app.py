@@ -38,6 +38,7 @@ SYSTEM_PROMPT = (
     "When a user explicitly states a durable fact or stable preference that is likely to matter again, consider updating long-term memory even if the user does not explicitly ask you to remember it, following the memory-policy skill. "
     "Do not write temporary requests, one-time moods, meal events, weight history, Apple Health sync state, or inferred medical conclusions into long-term memory. "
     "Use the appropriate skills and tools for task-specific workflows instead of inventing ad hoc rules. "
+    "For recipe inspiration, meal ideas, and weekly meal-prep suggestions, use the YouTube recipe retrieval skill when it is relevant and include the direct video link when helpful. "
     "For any request that requires calorie, macro, or nutrition estimation, delegate the estimation work to the nutrition-specialist subagent instead of answering from general knowledge. "
     "This includes direct nutrition questions and meal-log pre-estimate tasks. "
     "The nutrition-specialist only estimates nutrition; it does not prepare drafts, commit meal logs, or handle Apple Health flow. "
@@ -68,6 +69,11 @@ class RecipeApp:
             model=os.getenv("OPENAI_MODEL", "gpt-5.4-mini"),
             api_key=api_key,
             temperature=0.5,
+        )
+        self.nutrition_model = ChatOpenAI(
+            model=os.getenv("OPENAI_MODEL", "gpt-5.4-mini"),
+            api_key=api_key,
+            temperature=0.1,
         )
         self.memory_saver = MemorySaver()
         self.tools = self._main_agent_tools()
@@ -111,7 +117,12 @@ class RecipeApp:
 
     def _build_deep_agent(self):
         composite_backend = lambda runtime: self._build_backend(runtime, skills_root=self._skills_root())
-        middleware = [AgentContextTraceMiddleware()] if is_terminal_trace_enabled() else []
+        middleware = [AgentContextTraceMiddleware(agent_name="main-agent")] if is_terminal_trace_enabled() else []
+        nutrition_middleware = (
+            [AgentContextTraceMiddleware(agent_name="nutrition-specialist")]
+            if is_terminal_trace_enabled()
+            else []
+        )
         nutrition_specialist = {
             "name": "nutrition-specialist",
             "description": (
@@ -123,22 +134,22 @@ class RecipeApp:
                 "You are a nutrition estimation specialist. "
                 "Use the nutrition-lookup skill for workflow guidance. "
                 "Use only the provided nutrition lookup tools. "
-                "Your job is estimation only, not logging orchestration. "
+                "You must use nutrition lookup tools before returning a nutrition estimate; do not answer from general knowledge alone. "
+                "For composed dishes, named meals, and whole-plate requests, prefer recipe-style lookup with Spoonacular first before decomposing into ingredients. "
+                "Only fall back to ingredient decomposition when recipe-style lookup is unavailable, clearly mismatched, low-granularity, or implausible for the user's portion. "
+                "If recipe lookup is unavailable or errors out for a common home-style dish and the user already named the main ingredients, do not ask for grams by default; use a common single-serving decomposition. "
+                "For chain restaurant menu items such as Subway sandwiches or Big Mac, if recipe lookup fails or is unavailable, use the restaurant-aware Tavily path before Open Food Facts or generic USDA rows. "
                 "Before returning a final estimate, verify that the candidate matches the user's portion level and meal context. "
                 "Do not treat a likely per-100g value, a small-serving database value, or a generic low-granularity entry as the final estimate for a full dish or whole meal. "
-                "When the user describes a full dish or meal and direct lookup results are missing, low-granularity, or implausible, decompose the dish into common ingredients and estimate from a typical single serving. "
-                "Use any user-provided ingredients to override the default composition before estimating. "
                 "If the food description is too ambiguous for a credible estimate, ask one concise, high-value clarification question. "
-                "If portion size is missing, either ask one concise, high-value clarification question or estimate a common single serving and clearly label that assumption as approximate. "
-                "If the user wants an estimate without more detail, choose a common default version of the dish and clearly label it as approximate. "
-                "If an estimate is implausibly low or high for the described dish or meal, do not return it as-is. Reassess the serving basis, ask one clarification question, or use a more credible approximate estimate. "
-                "Do not dump multiple raw candidates to the user. You must either ask one concise clarification question or choose one final estimate with a source label. "
-                "Do not call meal logging tools. "
-                "Return either a concise clarification question or a final nutrition estimate in the user's language. "
-                "If the upstream request involves meal logging, still return only the estimate or the clarification question; the main agent will handle prepare_meal_log."
+                "When a common serving assumption is already good enough, choose one representative estimate instead of returning a range. "
+                "For common home-style dishes or clustered branded hits, prefer one plausible serving-level answer over a broad interval. "
+                "Return either one concise clarification question or one final nutrition estimate in the user's language."
             ),
+            "model": self.nutrition_model,
             "tools": self._nutrition_tools(),
             "skills": [NUTRITION_SKILLS_ROUTE],
+            "middleware": nutrition_middleware,
         }
 
         return create_deep_agent(
