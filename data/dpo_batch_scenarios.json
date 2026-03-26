@@ -1,0 +1,40 @@
+[
+  {
+    "sample_id": "fat-loss-dinner-chicken",
+    "user_input": "推荐一个适合减脂的晚餐，主要食材是鸡胸肉。",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "ingredients": ["鸡胸肉"]
+    }
+  },
+  {
+    "sample_id": "tomato-quick-meal",
+    "user_input": "番茄可以做什么快手晚餐？我只有二十分钟。",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "ingredients": ["番茄"],
+      "time_limit_minutes": 20
+    }
+  },
+  {
+    "sample_id": "high-protein-fish",
+    "user_input": "我最近在控制热量，想吃高蛋白低脂的鱼类菜谱，有什么建议？",
+    "metadata": {
+      "scenario_type": "high_protein"
+    }
+  },
+  {
+    "sample_id": "family-everyday-meal",
+    "user_input": "帮我推荐一个适合工作日晚上的家常菜，做法不要太复杂。",
+    "metadata": {
+      "scenario_type": "family_meal"
+    }
+  },
+  {
+    "sample_id": "low-calorie-side-dish",
+    "user_input": "有没有低热量又爽口的配菜推荐？",
+    "metadata": {
+      "scenario_type": "side_dish"
+    }
+  }
+]

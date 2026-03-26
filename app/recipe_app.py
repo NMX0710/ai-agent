@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from typing import Dict, List, Optional, TypedDict, Any
@@ -33,12 +34,6 @@ class RecipeReport(BaseModel):
 
 class RecipeApp:
     def __init__(self):
-        # 验证并初始化模型
-        api_key = os.getenv("DASHSCOPE_API_KEY")
-
-        if not api_key:
-            raise RuntimeError("缺少环境变量 DASHSCOPE_API_KEY，请设置后重试")
-
         self.rag_template = ChatPromptTemplate.from_messages([
             ("system",
              "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
@@ -50,8 +45,7 @@ class RecipeApp:
 
         ])
 
-        # 初始化 LLM
-        self.model = ChatTongyi(model="qwen-plus", api_key=api_key)
+        self.model, embedding_model, self.model_provider = self._build_model_and_embeddings()
 
         # 初始化解析器
         self.parser = PydanticOutputParser(pydantic_object=RecipeReport)
@@ -63,12 +57,6 @@ class RecipeApp:
         self.agent_executor = create_react_agent(
             self.model, ALL_TOOLS,
             checkpointer=self.memory_saver,
-        )
-
-        # 初始化 embeddings
-        embedding_model = DashScopeEmbeddings(
-            model="text-embedding-v1",  # 阿里目前推荐的基础 embedding 模型
-            dashscope_api_key=api_key
         )
 
         # 准备 Prompt Templates
@@ -94,6 +82,35 @@ class RecipeApp:
 
         # 构建对话图
         self.graph = self._build_graph()
+
+    def _build_model_and_embeddings(self):
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        dashscope_api_key = os.getenv("DASHSCOPE_API_KEY")
+        if openai_api_key:
+            from langchain_openai import ChatOpenAI
+
+            model = ChatOpenAI(
+                model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
+                api_key=openai_api_key,
+                temperature=float(os.getenv("OPENAI_TEMPERATURE", "0.2")),
+            )
+            if not dashscope_api_key:
+                raise RuntimeError("使用 OPENAI_API_KEY 时也需要 DASHSCOPE_API_KEY 来构建现有 RAG 索引。")
+            embeddings = DashScopeEmbeddings(
+                model="text-embedding-v1",
+                dashscope_api_key=dashscope_api_key
+            )
+            return model, embeddings, "openai"
+
+        if not dashscope_api_key:
+            raise RuntimeError("缺少环境变量 OPENAI_API_KEY 或 DASHSCOPE_API_KEY，请设置后重试")
+
+        model = ChatTongyi(model="qwen-plus", api_key=dashscope_api_key)
+        embeddings = DashScopeEmbeddings(
+            model="text-embedding-v1",
+            dashscope_api_key=dashscope_api_key
+        )
+        return model, embeddings, "dashscope"
 
     def _build_graph(self) -> StateGraph:
         """
@@ -124,26 +141,8 @@ class RecipeApp:
         """
         messages = state.get("messages", [])
         context = state.get("context", [])
-        rag_context = "\n\n".join(d.page_content for d in context) if context else "暂无相关菜谱信息"
+        messages_with_ctx, _ = self._build_agent_messages(messages, context)
 
-        # # 使用 RAG template
-        # prompt = self.rag_template.invoke({
-        #     "messages": messages,
-        #     "context": docs_content
-        # })
-
-        # 关键：把 RAG 上下文变成系统消息，合并到 messages 里
-        system_with_ctx = SystemMessage(
-            content=(
-                    "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
-                    "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
-                    "如果用户是减脂人群，推荐低热量高蛋白；若提到特定食材，请结合特点给做法。"
-                    "\n\n以下是检索到的菜谱信息（可能为空）：\n" + rag_context
-            )
-        )
-        messages_with_ctx: list[BaseMessage] = [system_with_ctx] + messages
-
-        # response = self.model.invoke(prompt)
         response = self.agent_executor.invoke(
             {"messages": messages_with_ctx},
             config=config  # 关键：把 thread_id 等透传，以启用 checkpointer
@@ -161,6 +160,130 @@ class RecipeApp:
         answer = last_ai.content if last_ai else ""
 
         return {"messages": returned_messages, "answer": answer}
+
+    def _build_agent_messages(
+        self,
+        messages: List[BaseMessage],
+        context: List[Document],
+    ) -> tuple[List[BaseMessage], str]:
+        rag_context = "\n\n".join(d.page_content for d in context) if context else "暂无相关菜谱信息"
+
+        system_with_ctx = SystemMessage(
+            content=(
+                "你是一位擅长中餐和西餐的厨师专家，拥有丰富的烹饪经验和营养知识。"
+                "你的任务是根据用户提供的饮食偏好、口味、食材、健康需求等信息，推荐合适的菜谱或建议。"
+                "如果用户是减脂人群，推荐低热量高蛋白；若提到特定食材，请结合特点给做法。"
+                "\n\n以下是检索到的菜谱信息（可能为空）：\n" + rag_context
+            )
+        )
+        return [system_with_ctx, *messages], rag_context
+
+    @staticmethod
+    def _jsonable(value: Any) -> Any:
+        if value is None or isinstance(value, (str, int, float, bool)):
+            return value
+        if isinstance(value, list):
+            return [RecipeApp._jsonable(item) for item in value]
+        if isinstance(value, dict):
+            return {str(key): RecipeApp._jsonable(item) for key, item in value.items()}
+        return str(value)
+
+    @classmethod
+    def _message_to_dict(cls, message: BaseMessage) -> Dict[str, Any]:
+        role = message.type
+        if role == "human":
+            role = "user"
+        elif role == "ai":
+            role = "assistant"
+
+        payload = {
+            "role": role,
+            "content": cls._jsonable(message.content),
+        }
+
+        tool_calls = getattr(message, "tool_calls", None)
+        if tool_calls:
+            payload["tool_calls"] = cls._jsonable(tool_calls)
+
+        name = getattr(message, "name", None)
+        if name:
+            payload["name"] = name
+
+        return payload
+
+    @staticmethod
+    def _document_to_dict(document: Document) -> Dict[str, Any]:
+        return {
+            "page_content": document.page_content,
+            "metadata": RecipeApp._jsonable(document.metadata),
+        }
+
+    @staticmethod
+    def _coerce_history_messages(history: Optional[List[Dict[str, Any]]]) -> List[BaseMessage]:
+        if not history:
+            return []
+
+        messages: List[BaseMessage] = []
+        for item in history:
+            role = item.get("role")
+            content = item.get("content", "")
+            if role == "user":
+                messages.append(HumanMessage(content=content))
+            elif role == "assistant":
+                messages.append(AIMessage(content=content))
+            elif role == "system":
+                messages.append(SystemMessage(content=content))
+            else:
+                raise ValueError(f"Unsupported history role: {role}")
+        return messages
+
+    def generate_dpo_record(
+        self,
+        sample_id: str,
+        user_input: str,
+        conversation_history: Optional[List[Dict[str, Any]]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        chat_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        history_messages = self._coerce_history_messages(conversation_history)
+        messages = [*history_messages, HumanMessage(content=user_input)]
+
+        state: RecipeAppState = {
+            "question": user_input,
+            "messages": messages,
+            "context": [],
+            "answer": None,
+        }
+        retrieved_state = self.rag_pipeline.retrieve(state, top_k=4)
+        context = retrieved_state.get("context", [])
+        messages_with_ctx, rag_context = self._build_agent_messages(messages, context)
+
+        response = self.agent_executor.invoke(
+            {"messages": messages_with_ctx},
+            config={"configurable": {"thread_id": chat_id or sample_id}},
+        )
+        returned_messages: List[BaseMessage] = response["messages"]
+        last_ai = next((m for m in reversed(returned_messages) if isinstance(m, AIMessage)), None)
+
+        return {
+            "sample_id": sample_id,
+            "user_input": user_input,
+            "retrieved_context": [self._document_to_dict(doc) for doc in context],
+            "retrieved_context_text": rag_context,
+            "agent_input": {
+                "messages": [self._message_to_dict(message) for message in messages_with_ctx],
+            },
+            "messages_before_agent_call": [
+                self._message_to_dict(message) for message in messages_with_ctx
+            ],
+            "returned_messages": [
+                self._message_to_dict(message) for message in returned_messages
+            ],
+            "chosen": last_ai.content if last_ai else "",
+            "metadata": metadata or {},
+            "model_provider": self.model_provider,
+            "tool_names": [getattr(tool, "name", str(tool)) for tool in ALL_TOOLS],
+        }
 
     async def chat(self, chat_id: str, message: str) -> str:
         """

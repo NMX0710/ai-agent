@@ -9,7 +9,6 @@ from langchain_core.embeddings import Embeddings
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.vectorstores import InMemoryVectorStore
-from langchain import hub
 
 class RecipeAppState(TypedDict):
     question: str
@@ -81,4 +80,3 @@ class RecipeAppRAGPipeline:
         except Exception as e:
             logging.error(f"[RAG Retrieve] 检索失败: {e}")
             return {"context": []}  # 返回空列表而不是 None
-
