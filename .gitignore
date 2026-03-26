@@ -2,3 +2,6 @@ tmp
 __pycache__/
 *.pyc
 outputs/
+.DS_Store
+.idea/
+.env

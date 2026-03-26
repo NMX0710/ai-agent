@@ -1,0 +1,41 @@
+[
+  {
+    "sample_id": "fat_loss-001",
+    "user_input": "Recommend a dinner for fat loss built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-002",
+    "user_input": "Recommend a dinner for fat loss built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-003",
+    "user_input": "Recommend a dinner for fat loss built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  }
+]

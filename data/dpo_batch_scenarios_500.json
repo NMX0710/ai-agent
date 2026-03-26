@@ -1,0 +1,6502 @@
+[
+  {
+    "sample_id": "fat_loss-001",
+    "user_input": "Recommend a dinner for fat loss built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-002",
+    "user_input": "Recommend a dinner for fat loss built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-003",
+    "user_input": "Recommend a dinner for fat loss built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-004",
+    "user_input": "Recommend a dinner for fat loss built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-005",
+    "user_input": "Recommend a dinner for fat loss built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-006",
+    "user_input": "Recommend a dinner for fat loss built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-007",
+    "user_input": "Recommend a dinner for fat loss built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-008",
+    "user_input": "Recommend a dinner for fat loss built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-009",
+    "user_input": "Recommend a dinner for fat loss built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-010",
+    "user_input": "Recommend a dinner for fat loss built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-011",
+    "user_input": "Recommend a dinner for fat loss built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-012",
+    "user_input": "Recommend a dinner for fat loss built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-013",
+    "user_input": "Recommend a dinner for fat loss built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-014",
+    "user_input": "Recommend a dinner for fat loss built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-015",
+    "user_input": "Recommend a dinner for fat loss built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-016",
+    "user_input": "Recommend a dinner for fat loss built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-017",
+    "user_input": "Recommend a dinner for fat loss built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-018",
+    "user_input": "Recommend a dinner for fat loss built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-019",
+    "user_input": "Recommend a dinner for fat loss built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-020",
+    "user_input": "Recommend a dinner for fat loss built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-021",
+    "user_input": "Recommend a dinner for fat loss built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-022",
+    "user_input": "Recommend a dinner for fat loss built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-023",
+    "user_input": "Recommend a dinner for fat loss built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-024",
+    "user_input": "Recommend a dinner for fat loss built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-025",
+    "user_input": "Recommend a dinner for fat loss built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-026",
+    "user_input": "Recommend a lunch for fat loss built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-027",
+    "user_input": "Recommend a lunch for fat loss built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-028",
+    "user_input": "Recommend a lunch for fat loss built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-029",
+    "user_input": "Recommend a lunch for fat loss built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-030",
+    "user_input": "Recommend a lunch for fat loss built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-031",
+    "user_input": "Recommend a lunch for fat loss built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-032",
+    "user_input": "Recommend a lunch for fat loss built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-033",
+    "user_input": "Recommend a lunch for fat loss built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-034",
+    "user_input": "Recommend a lunch for fat loss built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-035",
+    "user_input": "Recommend a lunch for fat loss built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-036",
+    "user_input": "Recommend a lunch for fat loss built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-037",
+    "user_input": "Recommend a lunch for fat loss built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-038",
+    "user_input": "Recommend a lunch for fat loss built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-039",
+    "user_input": "Recommend a lunch for fat loss built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-040",
+    "user_input": "Recommend a lunch for fat loss built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-041",
+    "user_input": "Recommend a lunch for fat loss built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-042",
+    "user_input": "Recommend a lunch for fat loss built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-043",
+    "user_input": "Recommend a lunch for fat loss built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-044",
+    "user_input": "Recommend a lunch for fat loss built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-045",
+    "user_input": "Recommend a lunch for fat loss built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-046",
+    "user_input": "Recommend a lunch for fat loss built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-047",
+    "user_input": "Recommend a lunch for fat loss built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-048",
+    "user_input": "Recommend a lunch for fat loss built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-049",
+    "user_input": "Recommend a lunch for fat loss built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-050",
+    "user_input": "Recommend a lunch for fat loss built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-051",
+    "user_input": "Recommend a meal-prep box for fat loss built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-052",
+    "user_input": "Recommend a meal-prep box for fat loss built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-053",
+    "user_input": "Recommend a meal-prep box for fat loss built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-054",
+    "user_input": "Recommend a meal-prep box for fat loss built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-055",
+    "user_input": "Recommend a meal-prep box for fat loss built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-056",
+    "user_input": "Recommend a meal-prep box for fat loss built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-057",
+    "user_input": "Recommend a meal-prep box for fat loss built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-058",
+    "user_input": "Recommend a meal-prep box for fat loss built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-059",
+    "user_input": "Recommend a meal-prep box for fat loss built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-060",
+    "user_input": "Recommend a meal-prep box for fat loss built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-061",
+    "user_input": "Recommend a meal-prep box for fat loss built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-062",
+    "user_input": "Recommend a meal-prep box for fat loss built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-063",
+    "user_input": "Recommend a meal-prep box for fat loss built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-064",
+    "user_input": "Recommend a meal-prep box for fat loss built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-065",
+    "user_input": "Recommend a meal-prep box for fat loss built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-066",
+    "user_input": "Recommend a meal-prep box for fat loss built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-067",
+    "user_input": "Recommend a meal-prep box for fat loss built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-068",
+    "user_input": "Recommend a meal-prep box for fat loss built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-069",
+    "user_input": "Recommend a meal-prep box for fat loss built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-070",
+    "user_input": "Recommend a meal-prep box for fat loss built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-071",
+    "user_input": "Recommend a meal-prep box for fat loss built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-072",
+    "user_input": "Recommend a meal-prep box for fat loss built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-073",
+    "user_input": "Recommend a meal-prep box for fat loss built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-074",
+    "user_input": "Recommend a meal-prep box for fat loss built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-075",
+    "user_input": "Recommend a meal-prep box for fat loss built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-076",
+    "user_input": "Recommend a post-workout meal for fat loss built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-077",
+    "user_input": "Recommend a post-workout meal for fat loss built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-078",
+    "user_input": "Recommend a post-workout meal for fat loss built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-079",
+    "user_input": "Recommend a post-workout meal for fat loss built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-080",
+    "user_input": "Recommend a post-workout meal for fat loss built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-081",
+    "user_input": "Recommend a post-workout meal for fat loss built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-082",
+    "user_input": "Recommend a post-workout meal for fat loss built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-083",
+    "user_input": "Recommend a post-workout meal for fat loss built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-084",
+    "user_input": "Recommend a post-workout meal for fat loss built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-085",
+    "user_input": "Recommend a post-workout meal for fat loss built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-086",
+    "user_input": "Recommend a post-workout meal for fat loss built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-087",
+    "user_input": "Recommend a post-workout meal for fat loss built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-088",
+    "user_input": "Recommend a post-workout meal for fat loss built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-089",
+    "user_input": "Recommend a post-workout meal for fat loss built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-090",
+    "user_input": "Recommend a post-workout meal for fat loss built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-091",
+    "user_input": "Recommend a post-workout meal for fat loss built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-092",
+    "user_input": "Recommend a post-workout meal for fat loss built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-093",
+    "user_input": "Recommend a post-workout meal for fat loss built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-094",
+    "user_input": "Recommend a post-workout meal for fat loss built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-095",
+    "user_input": "Recommend a post-workout meal for fat loss built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-096",
+    "user_input": "Recommend a post-workout meal for fat loss built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-097",
+    "user_input": "Recommend a post-workout meal for fat loss built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-098",
+    "user_input": "Recommend a post-workout meal for fat loss built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-099",
+    "user_input": "Recommend a post-workout meal for fat loss built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-100",
+    "user_input": "Recommend a post-workout meal for fat loss built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "fat loss",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-101",
+    "user_input": "Recommend a dinner for calorie control built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-102",
+    "user_input": "Recommend a dinner for calorie control built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-103",
+    "user_input": "Recommend a dinner for calorie control built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-104",
+    "user_input": "Recommend a dinner for calorie control built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-105",
+    "user_input": "Recommend a dinner for calorie control built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-106",
+    "user_input": "Recommend a dinner for calorie control built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-107",
+    "user_input": "Recommend a dinner for calorie control built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-108",
+    "user_input": "Recommend a dinner for calorie control built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-109",
+    "user_input": "Recommend a dinner for calorie control built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-110",
+    "user_input": "Recommend a dinner for calorie control built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-111",
+    "user_input": "Recommend a dinner for calorie control built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-112",
+    "user_input": "Recommend a dinner for calorie control built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-113",
+    "user_input": "Recommend a dinner for calorie control built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-114",
+    "user_input": "Recommend a dinner for calorie control built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-115",
+    "user_input": "Recommend a dinner for calorie control built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-116",
+    "user_input": "Recommend a dinner for calorie control built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-117",
+    "user_input": "Recommend a dinner for calorie control built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-118",
+    "user_input": "Recommend a dinner for calorie control built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-119",
+    "user_input": "Recommend a dinner for calorie control built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-120",
+    "user_input": "Recommend a dinner for calorie control built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-121",
+    "user_input": "Recommend a dinner for calorie control built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-122",
+    "user_input": "Recommend a dinner for calorie control built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-123",
+    "user_input": "Recommend a dinner for calorie control built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-124",
+    "user_input": "Recommend a dinner for calorie control built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-125",
+    "user_input": "Recommend a dinner for calorie control built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-126",
+    "user_input": "Recommend a lunch for calorie control built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-127",
+    "user_input": "Recommend a lunch for calorie control built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-128",
+    "user_input": "Recommend a lunch for calorie control built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-129",
+    "user_input": "Recommend a lunch for calorie control built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-130",
+    "user_input": "Recommend a lunch for calorie control built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-131",
+    "user_input": "Recommend a lunch for calorie control built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-132",
+    "user_input": "Recommend a lunch for calorie control built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-133",
+    "user_input": "Recommend a lunch for calorie control built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-134",
+    "user_input": "Recommend a lunch for calorie control built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-135",
+    "user_input": "Recommend a lunch for calorie control built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-136",
+    "user_input": "Recommend a lunch for calorie control built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-137",
+    "user_input": "Recommend a lunch for calorie control built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-138",
+    "user_input": "Recommend a lunch for calorie control built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-139",
+    "user_input": "Recommend a lunch for calorie control built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-140",
+    "user_input": "Recommend a lunch for calorie control built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-141",
+    "user_input": "Recommend a lunch for calorie control built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-142",
+    "user_input": "Recommend a lunch for calorie control built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-143",
+    "user_input": "Recommend a lunch for calorie control built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-144",
+    "user_input": "Recommend a lunch for calorie control built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-145",
+    "user_input": "Recommend a lunch for calorie control built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-146",
+    "user_input": "Recommend a lunch for calorie control built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-147",
+    "user_input": "Recommend a lunch for calorie control built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-148",
+    "user_input": "Recommend a lunch for calorie control built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-149",
+    "user_input": "Recommend a lunch for calorie control built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-150",
+    "user_input": "Recommend a lunch for calorie control built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-151",
+    "user_input": "Recommend a meal-prep box for calorie control built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-152",
+    "user_input": "Recommend a meal-prep box for calorie control built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-153",
+    "user_input": "Recommend a meal-prep box for calorie control built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-154",
+    "user_input": "Recommend a meal-prep box for calorie control built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-155",
+    "user_input": "Recommend a meal-prep box for calorie control built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-156",
+    "user_input": "Recommend a meal-prep box for calorie control built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-157",
+    "user_input": "Recommend a meal-prep box for calorie control built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-158",
+    "user_input": "Recommend a meal-prep box for calorie control built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-159",
+    "user_input": "Recommend a meal-prep box for calorie control built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-160",
+    "user_input": "Recommend a meal-prep box for calorie control built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-161",
+    "user_input": "Recommend a meal-prep box for calorie control built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-162",
+    "user_input": "Recommend a meal-prep box for calorie control built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-163",
+    "user_input": "Recommend a meal-prep box for calorie control built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-164",
+    "user_input": "Recommend a meal-prep box for calorie control built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-165",
+    "user_input": "Recommend a meal-prep box for calorie control built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-166",
+    "user_input": "Recommend a meal-prep box for calorie control built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-167",
+    "user_input": "Recommend a meal-prep box for calorie control built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-168",
+    "user_input": "Recommend a meal-prep box for calorie control built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-169",
+    "user_input": "Recommend a meal-prep box for calorie control built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-170",
+    "user_input": "Recommend a meal-prep box for calorie control built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-171",
+    "user_input": "Recommend a meal-prep box for calorie control built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-172",
+    "user_input": "Recommend a meal-prep box for calorie control built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-173",
+    "user_input": "Recommend a meal-prep box for calorie control built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-174",
+    "user_input": "Recommend a meal-prep box for calorie control built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-175",
+    "user_input": "Recommend a meal-prep box for calorie control built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-176",
+    "user_input": "Recommend a post-workout meal for calorie control built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-177",
+    "user_input": "Recommend a post-workout meal for calorie control built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-178",
+    "user_input": "Recommend a post-workout meal for calorie control built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-179",
+    "user_input": "Recommend a post-workout meal for calorie control built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-180",
+    "user_input": "Recommend a post-workout meal for calorie control built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-181",
+    "user_input": "Recommend a post-workout meal for calorie control built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-182",
+    "user_input": "Recommend a post-workout meal for calorie control built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-183",
+    "user_input": "Recommend a post-workout meal for calorie control built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-184",
+    "user_input": "Recommend a post-workout meal for calorie control built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-185",
+    "user_input": "Recommend a post-workout meal for calorie control built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-186",
+    "user_input": "Recommend a post-workout meal for calorie control built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-187",
+    "user_input": "Recommend a post-workout meal for calorie control built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-188",
+    "user_input": "Recommend a post-workout meal for calorie control built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-189",
+    "user_input": "Recommend a post-workout meal for calorie control built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-190",
+    "user_input": "Recommend a post-workout meal for calorie control built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-191",
+    "user_input": "Recommend a post-workout meal for calorie control built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-192",
+    "user_input": "Recommend a post-workout meal for calorie control built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-193",
+    "user_input": "Recommend a post-workout meal for calorie control built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-194",
+    "user_input": "Recommend a post-workout meal for calorie control built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-195",
+    "user_input": "Recommend a post-workout meal for calorie control built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-196",
+    "user_input": "Recommend a post-workout meal for calorie control built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-197",
+    "user_input": "Recommend a post-workout meal for calorie control built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-198",
+    "user_input": "Recommend a post-workout meal for calorie control built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-199",
+    "user_input": "Recommend a post-workout meal for calorie control built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-200",
+    "user_input": "Recommend a post-workout meal for calorie control built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "calorie control",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-201",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-202",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-203",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-204",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-205",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-206",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-207",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-208",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-209",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-210",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-211",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-212",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-213",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-214",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-215",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-216",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-217",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-218",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-219",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-220",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-221",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-222",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-223",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-224",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-225",
+    "user_input": "Recommend a dinner for high-protein and lower-calorie built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-226",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-227",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-228",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-229",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-230",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-231",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-232",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-233",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-234",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-235",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-236",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-237",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-238",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-239",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-240",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-241",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-242",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-243",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-244",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-245",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-246",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-247",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-248",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-249",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-250",
+    "user_input": "Recommend a lunch for high-protein and lower-calorie built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-251",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-252",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-253",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-254",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-255",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-256",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-257",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-258",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-259",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-260",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-261",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-262",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-263",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-264",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-265",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-266",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-267",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-268",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-269",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-270",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-271",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-272",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-273",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-274",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-275",
+    "user_input": "Recommend a meal-prep box for high-protein and lower-calorie built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-276",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-277",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-278",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-279",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-280",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-281",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-282",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-283",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-284",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-285",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-286",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-287",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-288",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-289",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-290",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-291",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-292",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-293",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-294",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-295",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-296",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-297",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-298",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-299",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-300",
+    "user_input": "Recommend a post-workout meal for high-protein and lower-calorie built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "high-protein and lower-calorie",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-301",
+    "user_input": "Recommend a dinner for lean meal prep built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-302",
+    "user_input": "Recommend a dinner for lean meal prep built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-303",
+    "user_input": "Recommend a dinner for lean meal prep built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-304",
+    "user_input": "Recommend a dinner for lean meal prep built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-305",
+    "user_input": "Recommend a dinner for lean meal prep built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-306",
+    "user_input": "Recommend a dinner for lean meal prep built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-307",
+    "user_input": "Recommend a dinner for lean meal prep built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-308",
+    "user_input": "Recommend a dinner for lean meal prep built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-309",
+    "user_input": "Recommend a dinner for lean meal prep built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-310",
+    "user_input": "Recommend a dinner for lean meal prep built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-311",
+    "user_input": "Recommend a dinner for lean meal prep built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-312",
+    "user_input": "Recommend a dinner for lean meal prep built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-313",
+    "user_input": "Recommend a dinner for lean meal prep built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-314",
+    "user_input": "Recommend a dinner for lean meal prep built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-315",
+    "user_input": "Recommend a dinner for lean meal prep built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-316",
+    "user_input": "Recommend a dinner for lean meal prep built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-317",
+    "user_input": "Recommend a dinner for lean meal prep built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-318",
+    "user_input": "Recommend a dinner for lean meal prep built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-319",
+    "user_input": "Recommend a dinner for lean meal prep built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-320",
+    "user_input": "Recommend a dinner for lean meal prep built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-321",
+    "user_input": "Recommend a dinner for lean meal prep built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-322",
+    "user_input": "Recommend a dinner for lean meal prep built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-323",
+    "user_input": "Recommend a dinner for lean meal prep built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-324",
+    "user_input": "Recommend a dinner for lean meal prep built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-325",
+    "user_input": "Recommend a dinner for lean meal prep built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "dinner",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-326",
+    "user_input": "Recommend a lunch for lean meal prep built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-327",
+    "user_input": "Recommend a lunch for lean meal prep built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-328",
+    "user_input": "Recommend a lunch for lean meal prep built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-329",
+    "user_input": "Recommend a lunch for lean meal prep built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-330",
+    "user_input": "Recommend a lunch for lean meal prep built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-331",
+    "user_input": "Recommend a lunch for lean meal prep built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-332",
+    "user_input": "Recommend a lunch for lean meal prep built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-333",
+    "user_input": "Recommend a lunch for lean meal prep built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-334",
+    "user_input": "Recommend a lunch for lean meal prep built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-335",
+    "user_input": "Recommend a lunch for lean meal prep built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-336",
+    "user_input": "Recommend a lunch for lean meal prep built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-337",
+    "user_input": "Recommend a lunch for lean meal prep built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-338",
+    "user_input": "Recommend a lunch for lean meal prep built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-339",
+    "user_input": "Recommend a lunch for lean meal prep built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-340",
+    "user_input": "Recommend a lunch for lean meal prep built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-341",
+    "user_input": "Recommend a lunch for lean meal prep built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-342",
+    "user_input": "Recommend a lunch for lean meal prep built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-343",
+    "user_input": "Recommend a lunch for lean meal prep built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-344",
+    "user_input": "Recommend a lunch for lean meal prep built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-345",
+    "user_input": "Recommend a lunch for lean meal prep built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-346",
+    "user_input": "Recommend a lunch for lean meal prep built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-347",
+    "user_input": "Recommend a lunch for lean meal prep built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-348",
+    "user_input": "Recommend a lunch for lean meal prep built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-349",
+    "user_input": "Recommend a lunch for lean meal prep built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-350",
+    "user_input": "Recommend a lunch for lean meal prep built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "lunch",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-351",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-352",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-353",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-354",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-355",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-356",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-357",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-358",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-359",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-360",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-361",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-362",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-363",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-364",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-365",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-366",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-367",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-368",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-369",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-370",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-371",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-372",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-373",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-374",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-375",
+    "user_input": "Recommend a meal-prep box for lean meal prep built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "meal-prep box",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-376",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around chicken breast, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-377",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around chicken breast, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-378",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around chicken breast, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-379",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around chicken breast, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-380",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around chicken breast, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "chicken breast"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-381",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around shrimp, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-382",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around shrimp, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-383",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around shrimp, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-384",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around shrimp, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-385",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around shrimp, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "shrimp"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-386",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around lean beef, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-387",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around lean beef, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-388",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around lean beef, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-389",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around lean beef, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-390",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around lean beef, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "lean beef"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-391",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around tofu, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-392",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around tofu, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-393",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around tofu, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-394",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around tofu, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-395",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around tofu, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "tofu"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "fat_loss-396",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around cod, and keep the method simple.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "keep the method simple"
+    }
+  },
+  {
+    "sample_id": "fat_loss-397",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around cod, and do not make it too oily.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "do not make it too oily"
+    }
+  },
+  {
+    "sample_id": "fat_loss-398",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around cod, and finish it within twenty minutes.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "finish it within twenty minutes"
+    }
+  },
+  {
+    "sample_id": "fat_loss-399",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around cod, and make it suitable for a weekday.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it suitable for a weekday"
+    }
+  },
+  {
+    "sample_id": "fat_loss-400",
+    "user_input": "Recommend a post-workout meal for lean meal prep built around cod, and make it filling.",
+    "metadata": {
+      "scenario_type": "fat_loss",
+      "goal": "lean meal prep",
+      "meal_type": "post-workout meal",
+      "ingredients": [
+        "cod"
+      ],
+      "constraint": "make it filling"
+    }
+  },
+  {
+    "sample_id": "quick_meal-001",
+    "user_input": "What quick dinner can I make with tomatoes? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-002",
+    "user_input": "What quick dinner can I make with tomatoes? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-003",
+    "user_input": "What quick dinner can I make with tomatoes? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-004",
+    "user_input": "What quick dinner can I make with tomatoes? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-005",
+    "user_input": "What quick dinner can I make with tomatoes? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-006",
+    "user_input": "What quick dinner can I make with eggs? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-007",
+    "user_input": "What quick dinner can I make with eggs? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-008",
+    "user_input": "What quick dinner can I make with eggs? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-009",
+    "user_input": "What quick dinner can I make with eggs? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-010",
+    "user_input": "What quick dinner can I make with eggs? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-011",
+    "user_input": "What quick dinner can I make with potatoes? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-012",
+    "user_input": "What quick dinner can I make with potatoes? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-013",
+    "user_input": "What quick dinner can I make with potatoes? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-014",
+    "user_input": "What quick dinner can I make with potatoes? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-015",
+    "user_input": "What quick dinner can I make with potatoes? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-016",
+    "user_input": "What quick dinner can I make with pasta? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-017",
+    "user_input": "What quick dinner can I make with pasta? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-018",
+    "user_input": "What quick dinner can I make with pasta? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-019",
+    "user_input": "What quick dinner can I make with pasta? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-020",
+    "user_input": "What quick dinner can I make with pasta? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-021",
+    "user_input": "What quick dinner can I make with rice? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-022",
+    "user_input": "What quick dinner can I make with rice? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-023",
+    "user_input": "What quick dinner can I make with rice? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-024",
+    "user_input": "What quick dinner can I make with rice? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-025",
+    "user_input": "What quick dinner can I make with rice? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "dinner",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-026",
+    "user_input": "What quick lunch can I make with tomatoes? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-027",
+    "user_input": "What quick lunch can I make with tomatoes? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-028",
+    "user_input": "What quick lunch can I make with tomatoes? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-029",
+    "user_input": "What quick lunch can I make with tomatoes? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-030",
+    "user_input": "What quick lunch can I make with tomatoes? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-031",
+    "user_input": "What quick lunch can I make with eggs? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-032",
+    "user_input": "What quick lunch can I make with eggs? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-033",
+    "user_input": "What quick lunch can I make with eggs? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-034",
+    "user_input": "What quick lunch can I make with eggs? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-035",
+    "user_input": "What quick lunch can I make with eggs? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-036",
+    "user_input": "What quick lunch can I make with potatoes? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-037",
+    "user_input": "What quick lunch can I make with potatoes? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-038",
+    "user_input": "What quick lunch can I make with potatoes? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-039",
+    "user_input": "What quick lunch can I make with potatoes? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-040",
+    "user_input": "What quick lunch can I make with potatoes? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-041",
+    "user_input": "What quick lunch can I make with pasta? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-042",
+    "user_input": "What quick lunch can I make with pasta? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-043",
+    "user_input": "What quick lunch can I make with pasta? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-044",
+    "user_input": "What quick lunch can I make with pasta? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-045",
+    "user_input": "What quick lunch can I make with pasta? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-046",
+    "user_input": "What quick lunch can I make with rice? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-047",
+    "user_input": "What quick lunch can I make with rice? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-048",
+    "user_input": "What quick lunch can I make with rice? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-049",
+    "user_input": "What quick lunch can I make with rice? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-050",
+    "user_input": "What quick lunch can I make with rice? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "lunch",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-051",
+    "user_input": "What quick solo meal can I make with tomatoes? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-052",
+    "user_input": "What quick solo meal can I make with tomatoes? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-053",
+    "user_input": "What quick solo meal can I make with tomatoes? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-054",
+    "user_input": "What quick solo meal can I make with tomatoes? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-055",
+    "user_input": "What quick solo meal can I make with tomatoes? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-056",
+    "user_input": "What quick solo meal can I make with eggs? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-057",
+    "user_input": "What quick solo meal can I make with eggs? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-058",
+    "user_input": "What quick solo meal can I make with eggs? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-059",
+    "user_input": "What quick solo meal can I make with eggs? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-060",
+    "user_input": "What quick solo meal can I make with eggs? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-061",
+    "user_input": "What quick solo meal can I make with potatoes? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-062",
+    "user_input": "What quick solo meal can I make with potatoes? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-063",
+    "user_input": "What quick solo meal can I make with potatoes? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-064",
+    "user_input": "What quick solo meal can I make with potatoes? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-065",
+    "user_input": "What quick solo meal can I make with potatoes? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-066",
+    "user_input": "What quick solo meal can I make with pasta? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-067",
+    "user_input": "What quick solo meal can I make with pasta? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-068",
+    "user_input": "What quick solo meal can I make with pasta? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-069",
+    "user_input": "What quick solo meal can I make with pasta? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-070",
+    "user_input": "What quick solo meal can I make with pasta? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-071",
+    "user_input": "What quick solo meal can I make with rice? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-072",
+    "user_input": "What quick solo meal can I make with rice? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-073",
+    "user_input": "What quick solo meal can I make with rice? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-074",
+    "user_input": "What quick solo meal can I make with rice? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-075",
+    "user_input": "What quick solo meal can I make with rice? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "solo meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-076",
+    "user_input": "What quick late-night meal can I make with tomatoes? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-077",
+    "user_input": "What quick late-night meal can I make with tomatoes? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-078",
+    "user_input": "What quick late-night meal can I make with tomatoes? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-079",
+    "user_input": "What quick late-night meal can I make with tomatoes? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-080",
+    "user_input": "What quick late-night meal can I make with tomatoes? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "tomatoes"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-081",
+    "user_input": "What quick late-night meal can I make with eggs? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-082",
+    "user_input": "What quick late-night meal can I make with eggs? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-083",
+    "user_input": "What quick late-night meal can I make with eggs? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-084",
+    "user_input": "What quick late-night meal can I make with eggs? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-085",
+    "user_input": "What quick late-night meal can I make with eggs? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "eggs"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-086",
+    "user_input": "What quick late-night meal can I make with potatoes? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-087",
+    "user_input": "What quick late-night meal can I make with potatoes? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-088",
+    "user_input": "What quick late-night meal can I make with potatoes? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-089",
+    "user_input": "What quick late-night meal can I make with potatoes? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-090",
+    "user_input": "What quick late-night meal can I make with potatoes? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "potatoes"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-091",
+    "user_input": "What quick late-night meal can I make with pasta? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-092",
+    "user_input": "What quick late-night meal can I make with pasta? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-093",
+    "user_input": "What quick late-night meal can I make with pasta? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-094",
+    "user_input": "What quick late-night meal can I make with pasta? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-095",
+    "user_input": "What quick late-night meal can I make with pasta? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "pasta"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  },
+  {
+    "sample_id": "quick_meal-096",
+    "user_input": "What quick late-night meal can I make with rice? I only have fifteen minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I only have fifteen minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-097",
+    "user_input": "What quick late-night meal can I make with rice? I only have twenty minutes.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I only have twenty minutes"
+    }
+  },
+  {
+    "sample_id": "quick_meal-098",
+    "user_input": "What quick late-night meal can I make with rice? please keep cleanup minimal.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "please keep cleanup minimal"
+    }
+  },
+  {
+    "sample_id": "quick_meal-099",
+    "user_input": "What quick late-night meal can I make with rice? do not make the steps too complicated.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "do not make the steps too complicated"
+    }
+  },
+  {
+    "sample_id": "quick_meal-100",
+    "user_input": "What quick late-night meal can I make with rice? I do not have many seasonings at home.",
+    "metadata": {
+      "scenario_type": "quick_meal",
+      "goal": "quick",
+      "meal_type": "late-night meal",
+      "ingredients": [
+        "rice"
+      ],
+      "constraint": "I do not have many seasonings at home"
+    }
+  }
+]

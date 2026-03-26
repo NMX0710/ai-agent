@@ -1,9 +1,14 @@
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
+from typing import Iterable
 
-from app.recipe_app import RecipeApp
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 
 
 def load_env_file(path: str | None) -> None:
@@ -19,7 +24,10 @@ def load_env_file(path: str | None) -> None:
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, value = line.split("=", 1)
-        os.environ.setdefault(key.strip(), value.strip().strip("'\""))
+        key = key.strip()
+        value = value.strip().strip("'\"")
+        if not os.environ.get(key):
+            os.environ[key] = value
 
 
 def load_scenarios(path: str):
@@ -41,6 +49,35 @@ def append_jsonl(path: Path, record: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+
+def load_existing_sample_ids(path: Path) -> set[str]:
+    if not path.exists():
+        return set()
+
+    sample_ids: set[str] = set()
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            sample_id = record.get("sample_id")
+            if sample_id is not None:
+                sample_ids.add(str(sample_id))
+    return sample_ids
+
+
+def maybe_reset_outputs(paths: Iterable[Path], overwrite: bool) -> None:
+    if not overwrite:
+        return
+
+    for path in paths:
+        if path.exists():
+            path.unlink()
 
 
 def main():
@@ -73,17 +110,32 @@ def main():
         default=1,
         help="Print progress after this many processed samples.",
     )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Delete existing output and failure files before starting.",
+    )
+    parser.add_argument(
+        "--retry-failures",
+        action="store_true",
+        help="Retry sample_ids already present in the failure log.",
+    )
     args = parser.parse_args()
 
     load_env_file(args.env_file)
+
+    from app.recipe_app import RecipeApp
+
     scenarios = load_scenarios(args.input)
 
     output_path = Path(args.output)
     failure_path = Path(args.failures)
-    if output_path.exists():
-        output_path.unlink()
-    if failure_path.exists():
-        failure_path.unlink()
+    maybe_reset_outputs((output_path, failure_path), overwrite=args.overwrite)
+
+    completed_ids = load_existing_sample_ids(output_path)
+    failed_ids = load_existing_sample_ids(failure_path)
+    skipped_existing = 0
+    retried_failures = 0
 
     app = RecipeApp()
     success_count = 0
@@ -92,6 +144,30 @@ def main():
     for index, scenario in enumerate(scenarios, start=1):
         sample_id = str(scenario.get("sample_id", index))
         user_input = scenario["user_input"]
+
+        if sample_id in completed_ids:
+            skipped_existing += 1
+            if index % max(args.progress_every, 1) == 0:
+                print(
+                    f"[progress] processed={index}/{len(scenarios)} "
+                    f"succeeded={success_count} failed={failure_count} "
+                    f"skipped_existing={skipped_existing} retried_failures={retried_failures}"
+                )
+            continue
+
+        if sample_id in failed_ids and not args.retry_failures:
+            skipped_existing += 1
+            if index % max(args.progress_every, 1) == 0:
+                print(
+                    f"[progress] processed={index}/{len(scenarios)} "
+                    f"succeeded={success_count} failed={failure_count} "
+                    f"skipped_existing={skipped_existing} retried_failures={retried_failures}"
+                )
+            continue
+
+        if sample_id in failed_ids and args.retry_failures:
+            retried_failures += 1
+
         try:
             record = app.generate_dpo_record(
                 sample_id=sample_id,
@@ -101,6 +177,7 @@ def main():
                 chat_id=scenario.get("chat_id"),
             )
             append_jsonl(output_path, record)
+            completed_ids.add(sample_id)
             success_count += 1
         except Exception as exc:
             append_jsonl(
@@ -109,19 +186,23 @@ def main():
                     "sample_id": sample_id,
                     "user_input": user_input,
                     "metadata": scenario.get("metadata", {}),
+                    "error_type": type(exc).__name__,
                     "error": str(exc),
                 },
             )
+            failed_ids.add(sample_id)
             failure_count += 1
 
         if index % max(args.progress_every, 1) == 0:
             print(
                 f"[progress] processed={index}/{len(scenarios)} "
-                f"succeeded={success_count} failed={failure_count}"
+                f"succeeded={success_count} failed={failure_count} "
+                f"skipped_existing={skipped_existing} retried_failures={retried_failures}"
             )
 
     print(
         f"[done] succeeded={success_count} failed={failure_count} "
+        f"skipped_existing={skipped_existing} retried_failures={retried_failures} "
         f"output={output_path} failures={failure_path}"
     )
 

@@ -1,35 +1,37 @@
-import sys
 import asyncio
+import sys
 from pathlib import Path
 
-# 添加项目路径
 project_root = Path(__file__).parent.parent if Path(__file__).parent.name == "tests" else Path(__file__).parent
 sys.path.append(str(project_root))
 
 from app.recipe_app import RecipeApp
+
+
 async def main():
     app = RecipeApp()
-    chat_id = "mem-test-runner"
+    chat_id = "memory-smoke-test"
 
     print("== Round 1 ==")
-    r1 = await app.chat(chat_id, "My name is Alice. Please remember it.")
-    print("A1:", r1)
+    response_one = await app.chat(chat_id, "My name is Alice. Please remember it.")
+    print("A1:", response_one)
 
     config = {"configurable": {"thread_id": chat_id}}
-    snap1 = app.agent_executor.get_state(config)
-    msgs1 = snap1.values.get("messages", []) if hasattr(snap1, "values") else snap1.get("messages", [])
-    print("Messages after round 1:", len(msgs1))
+    snapshot_one = app.agent_executor.get_state(config)
+    messages_one = snapshot_one.values.get("messages", []) if hasattr(snapshot_one, "values") else snapshot_one.get("messages", [])
+    print("Messages after round 1:", len(messages_one))
 
     print("\n== Round 2 ==")
-    r2 = await app.chat(chat_id, "What is my name?")
+    response_two = await app.chat(chat_id, "What is my name?")
     print("Q2: What is my name?")
-    print("A2:", r2)
+    print("A2:", response_two)
 
-    snap2 = app.agent_executor.get_state(config)
-    msgs2 = snap2.values.get("messages", []) if hasattr(snap2, "values") else snap2.get("messages", [])
-    print("Messages after round 2:", len(msgs2))
+    snapshot_two = app.agent_executor.get_state(config)
+    messages_two = snapshot_two.values.get("messages", []) if hasattr(snapshot_two, "values") else snapshot_two.get("messages", [])
+    print("Messages after round 2:", len(messages_two))
 
-    print("\n✅ Persisted:", len(msgs2) > len(msgs1))
+    print("\nPersisted:", len(messages_two) > len(messages_one))
+
 
 if __name__ == "__main__":
     asyncio.run(main())
