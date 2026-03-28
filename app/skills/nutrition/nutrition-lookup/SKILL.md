@@ -1,35 +1,63 @@
 ---
 name: nutrition-lookup
-description: Use this skill for calorie and macro estimation with reliability checks. Before choosing a final estimate, check serving basis and portion level, prefer recipe-style lookup for composed dishes before decomposition, use compact recipe-name queries for Spoonacular, distinguish whole-meal requests from per-100g or small-serving database entries, semantically validate ingredient candidates during fallback, ask at most one key clarification question when needed, and avoid dumping raw provider candidates.
+description: Use this skill only when the first nutrition lookup path is not good enough for a reliable final answer. Apply it for weak recipe matches, unclear serving basis, ambiguous dishes, poor branded or restaurant matches, decomposition fallback, query refinement, or one-question clarification decisions.
 ---
 
 # Nutrition Lookup
 
 ## Overview
 
-This skill is for the nutrition specialist subagent. Its job is to turn a user food description into one usable nutrition estimate or one concise clarification question.
+This skill is for the nutrition specialist subagent when the first lookup pass did not produce a reliable final answer.
 
-Do not answer from general nutrition knowledge alone when a nutrition lookup tool fits the request. Use the tools first, then reason over the returned candidates.
+The system prompt already handles the default first pass:
+- classify the food type
+- rewrite the user request into a canonical English lookup query
+- choose the first lookup path
+- decide whether the first result is already good enough
 
-## Core Workflow
+Read this skill only when you need fallback behavior beyond that first pass.
 
-1. Identify the actual food, drink, product, or dish the user wants nutrition for.
-2. Convert the lookup phrase into English before calling nutrition tools.
-3. If the request is a composed dish, named meal, or whole plate, try recipe-style lookup first.
-4. Choose the best-matched nutrition tool for the food type.
-5. Inspect the returned candidates and decide whether the result is good enough, semantically matched, and at the right serving basis.
-6. If direct lookup is weak but the dish is recognizable, estimate a common single serving by decomposing the dish into ingredients.
-7. If the estimate is credible, choose one final estimate and label the source.
-8. If it is still not good enough, ask one concise clarification question about the highest-value missing detail.
+## When To Use This Skill
+
+Use this skill when one or more of the following are true:
+- the first lookup returned no useful candidate
+- the best candidate has unclear serving basis
+- the quantity looks implausibly low or high for the user's intended portion
+- the best candidate drifts semantically away from the requested food
+- the branded or restaurant match is weak
+- the user asked about a common dish that may need decomposition
+- one concise clarification question would materially improve the estimate
+
+## Fallback Workflow
+
+1. Decide why the first pass is not good enough.
+2. Choose the smallest fallback that can fix the problem:
+- refine the query
+- switch provider
+- decompose the dish
+- ask one clarification question
+3. Re-check serving basis, semantic match, and plausibility after the fallback step.
+4. Stop as soon as you have one credible final estimate.
+
+## Query Refinement Fallback
+
+When the first lookup path was reasonable but the query was too loose, refine the query before switching strategies.
+
+Examples:
+- `chicken curry rice with carrots` -> keep `chicken curry rice`
+- `pasta for dinner` -> refine toward a more canonical dish only if the user implied one
+- `protein bar` -> refine to the exact product name only if the user gave a brand
+
+Do not overstuff queries with ingredients or narration. Refine only enough to get a stronger match.
 
 ## Tool Priority For Dishes
 
-When the user asks about a composed dish, named recipe, plated meal, bowl, or plate:
+When a composed dish, named recipe, plated meal, bowl, or plate still needs fallback handling:
 
 1. Start with `spoonacular_search_recipe`.
 2. Use a short recipe-style English dish name for Spoonacular, not a long ingredient-stuffed phrase.
 3. Keep the Spoonacular query close to the canonical dish name such as `chicken curry rice`, `chicken curry`, or `japanese chicken curry` instead of concatenating every known ingredient.
-4. Use user-provided ingredients mainly to validate or rank recipe candidates, or to guide fallback decomposition if recipe lookup fails.
+4. Use user-provided ingredients mainly to validate or rank recipe candidates, or to guide decomposition if recipe lookup fails.
 5. Use a recipe-style result directly if it is a good semantic match and looks like a plausible serving-level estimate.
 6. Only fall back to ingredient decomposition if recipe-style lookup:
 - returns no useful result
@@ -43,7 +71,7 @@ Do not default to ingredient decomposition for every dish-level request.
 
 Finding a Spoonacular result is not enough by itself. Check whether the candidate still looks like the same kind of dish the user asked about.
 
-Use a Spoonacular recipe only when most of the following are true:
+After a recipe lookup, use a Spoonacular recipe only when most of the following are true:
 - the title is a close match to the requested dish name
 - the dish form matches, such as rice dish vs soup vs curry-only entree
 - the user-provided ingredients fit naturally into the candidate
@@ -61,7 +89,7 @@ For example, if Spoonacular returns a recipe like `Creamy Curry Chicken With Yel
 
 ## Estimate Reliability Check
 
-Before returning a final estimate, check all of the following:
+When the first-pass result looks weak, check all of the following before committing to a fallback answer:
 
 1. What level did the user ask about?
 - ingredient
@@ -92,32 +120,22 @@ Before returning a final estimate, check all of the following:
 
 ## Tool Metadata Interpretation
 
-Some nutrition tools return structured guardrail fields. Treat them as strong evidence, not optional decoration.
+Nutrition tools return provider facts plus a few lightweight warnings. Treat those fields as evidence, not as the final policy decision.
 
 Important metadata fields include:
 - `is_composed_dish`
+- `serving_basis`
+- `serving_size`
 - `serving_basis_unclear`
-- `likely_per_100g_or_small_portion`
-- `not_recommended_for_full_serving_estimate`
 - `nutrition_basis`
-- `brand_match_confident`
-- `exact_name_match`
-- `dish_form_match`
-- `name_match_score`
-- `restaurant_query_mismatch`
 - `candidate_warnings`
 - `internal_consistency_warning`
-- `query_context`
 
 How to use them:
-- If a candidate has `not_recommended_for_full_serving_estimate = true`, do not use it as the final answer for a whole dish, full roll, one sandwich, one burger, one bar, or other full-serving request.
 - If `nutrition_basis` is `per_100g_fallback`, do not pretend it is automatically the nutrition for one packaged item. Use it only when the serving interpretation is still credible.
-- If `brand_match_confident` is false for a branded query, treat the row as a weak candidate unless no better branded match exists.
-- If `exact_name_match` is true for a branded packaged item and serving-level data is present, prefer that candidate over looser branded matches.
-- If `dish_form_match` is false for a recipe candidate, reject it for whole-dish estimation.
-- If `restaurant_query_mismatch` is true, do not use that row as the final answer for a named restaurant or chain menu item.
+- If `serving_basis_unclear` is true for a composed dish, be cautious about treating the row as a whole-meal answer.
 - If `candidate_warnings` or `internal_consistency_warning` indicate that calories and macros are incoherent, reject that candidate and switch sources or fall back.
-- Read `query_context` to understand whether the tool is already flagging the request as a full-serving dish, restaurant item, branded product, or a case with mandatory components.
+- Tools do not classify the request for you. You must decide whether a candidate is appropriate for the user's intended portion and food type.
 
 ## Ambiguity Handling
 
@@ -133,6 +151,15 @@ For these cases:
 - Prefer one concise clarification question about the main protein, major ingredients, or portion size.
 - If the user clearly wants an estimate without further detail, or if a follow-up would be unhelpful, choose a common default version of the dish and explicitly mark it as approximate.
 - For common home-style dishes like chicken curry rice, if the user already named the main ingredients and did not ask for precision, prefer a common single-serving estimate over a follow-up question.
+
+If the unit itself is ambiguous and would materially change the answer, ask a short clarification question before answering.
+
+Examples:
+- `one California roll` can mean one full roll or one piece
+- `one sushi roll` can mean one roll or one piece
+
+Good clarification:
+- `Do you mean one full roll or one piece?`
 
 ## Whole Meal vs Database Entry
 

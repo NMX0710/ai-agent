@@ -97,19 +97,14 @@ def test_usda_search_foods_flags_unclear_basis_for_composed_dish_rows(monkeypatc
 
     assert result["count"] == 1
     assert "Serving basis is unclear" in result["foods"][0]["basis_warning"]
-    assert result["query_context"]["food_form"] == "sushi_roll"
-    assert result["query_context"]["likely_full_serving_request"] is True
+    assert "query_context" not in result
     assert result["foods"][0]["is_composed_dish"] is True
     assert result["foods"][0]["serving_basis_unclear"] is True
-    assert result["foods"][0]["likely_per_100g_or_small_portion"] is True
-    assert result["foods"][0]["not_recommended_for_full_serving_estimate"] is True
-    assert any(
-        "Do not use this USDA row as the final answer" in warning
-        for warning in result["foods"][0]["candidate_warnings"]
-    )
+    assert result["foods"][0]["calories_kcal"] == 94
+    assert result["foods"][0]["protein_g"] == 2.92
 
 
-def test_openfoodfacts_search_products_reports_basis_and_brand_match(monkeypatch):
+def test_openfoodfacts_search_products_reports_provider_facts_and_basis(monkeypatch):
     class _FakeResponse:
         def raise_for_status(self):
             return None
@@ -149,16 +144,14 @@ def test_openfoodfacts_search_products_reports_basis_and_brand_match(monkeypatch
 
     result = openfoodfacts_search_products.func(query="Quest Chocolate Chip Cookie Dough protein bar", page_size=3)
 
-    assert result["query_context"]["food_form"] == "protein_bar"
-    assert result["query_context"]["likely_branded_packaged_food"] is True
+    assert "query_context" not in result
     assert result["products"][0]["nutrition_basis"] == "serving"
-    assert result["products"][0]["brand_match_confident"] is True
-    assert "quest" in result["products"][0]["brand_match_tokens"]
-    assert result["products"][0]["exact_name_match"] is True
-    assert result["products"][0]["not_recommended_for_full_serving_estimate"] is False
+    assert result["products"][0]["product_name"] == "Quest Chocolate Chip Cookie Dough Protein Bar"
+    assert result["products"][0]["brands"] == "Quest"
+    assert result["products"][0]["calories_kcal"] == 200
 
 
-def test_spoonacular_search_recipe_marks_weak_curry_candidate_not_recommended(monkeypatch):
+def test_spoonacular_search_recipe_returns_recipe_facts_and_consistency_warnings(monkeypatch):
     class _FakeResponse:
         def raise_for_status(self):
             return None
@@ -200,16 +193,14 @@ def test_spoonacular_search_recipe_marks_weak_curry_candidate_not_recommended(mo
 
     result = spoonacular_search_recipe.func(query="chicken curry rice", number=3)
 
-    assert result["query_context"]["food_form"] == "curry_rice"
-    assert result["results"][0]["dish_form_match"] is True
-    assert result["results"][0]["not_recommended_for_full_serving_estimate"] is True
-    assert any(
-        "too small or unbalanced for a typical full-serving curry rice" in warning
-        for warning in result["results"][0]["candidate_warnings"]
-    )
+    assert "query_context" not in result
+    assert result["results"][0]["title"] == "Creamy Curry Chicken With Yellow Rice"
+    assert result["results"][0]["serving_basis"] == "recipe_serving"
+    assert result["results"][0]["candidate_warnings"] == []
+    assert result["results"][0]["internal_consistency_warning"] is None
 
 
-def test_usda_search_foods_marks_generic_candidate_as_bad_for_restaurant_query(monkeypatch):
+def test_usda_search_foods_returns_unfiltered_provider_row_for_restaurant_named_query(monkeypatch):
     class _FakeResponse:
         def raise_for_status(self):
             return None
@@ -253,9 +244,7 @@ def test_usda_search_foods_marks_generic_candidate_as_bad_for_restaurant_query(m
 
     result = usda_search_foods.func(query="Subway 6-inch turkey sandwich", page_size=3)
 
-    assert result["query_context"]["likely_restaurant_or_menu_item"] is True
-    assert result["foods"][0]["brand_match_confident"] is False
-    assert result["foods"][0]["restaurant_query_mismatch"] is True
-    assert result["foods"][0]["not_recommended_for_full_serving_estimate"] is True
-    assert result["foods"][0]["calories_kcal"] is None
-    assert result["foods"][0]["generic_reference_nutrition"]["calories_kcal"] == 147
+    assert "query_context" not in result
+    assert result["foods"][0]["description"] == "Turkey sandwich with lettuce and tomato"
+    assert result["foods"][0]["calories_kcal"] == 147
+    assert result["foods"][0]["protein_g"] == 9.1

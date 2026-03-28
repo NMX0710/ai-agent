@@ -12,13 +12,17 @@ def test_nutrition_specialist_prompt_includes_reliability_and_decomposition_rule
     recipe_app_path = Path(project_root) / "app/recipe_app.py"
     content = recipe_app_path.read_text()
 
+    assert "rewrite the user's food description into the shortest English query" in content
+    assert "Decide yourself whether the user is describing an ingredient, packaged product, restaurant menu item, composed dish, or whole meal." in content
     assert "prefer recipe-style lookup with Spoonacular first" in content
-    assert "Only fall back to ingredient decomposition" in content
+    assert "Do not pass the raw user sentence into lookup tools" in content
     assert "matches the user's portion level and meal context" in content
+    assert "Do not rely on tool-side request classification" in content
+    assert "If the first lookup path is not good enough for a reliable final answer, read and follow the nutrition-lookup skill for fallback strategy." in content
+    assert "If the user's unit is genuinely ambiguous and could materially change the answer, ask one short clarification question instead of guessing." in content
     assert "Do not treat a likely per-100g value" in content
     assert "ask one concise, high-value clarification question" in content
     assert "must use nutrition lookup tools before returning a nutrition estimate" in content
-    assert "do not ask for grams by default; use a common single-serving decomposition" in content
     assert "use the restaurant-aware Tavily path before Open Food Facts or generic USDA rows" in content
     assert "choose one representative estimate instead of returning a range" in content
     assert "Return either one concise clarification question or one final nutrition estimate" in content
@@ -28,10 +32,13 @@ def test_nutrition_lookup_skill_metadata_and_body_cover_reliability_checks():
     skill_path = Path(project_root) / "app/skills/nutrition/nutrition-lookup/SKILL.md"
     content = skill_path.read_text()
 
-    assert "serving basis and portion level" in content
-    assert "Do not answer from general nutrition knowledge alone" in content
-    assert "prefer recipe-style lookup for composed dishes before decomposition" in content
-    assert "use compact recipe-name queries for Spoonacular" in content
+    assert "Use this skill only when the first nutrition lookup path is not good enough" in content
+    assert "The system prompt already handles the default first pass" in content
+    assert "When To Use This Skill" in content
+    assert "Fallback Workflow" in content
+    assert "Query Refinement Fallback" in content
+    assert "Start with `spoonacular_search_recipe`." in content
+    assert "Use a short recipe-style English dish name for Spoonacular" in content
     assert "Estimate Reliability Check" in content
     assert "Tool Priority For Dishes" in content
     assert "Recipe Candidate Matching" in content
@@ -48,16 +55,16 @@ def test_nutrition_lookup_skill_metadata_and_body_cover_reliability_checks():
     assert "Restaurant And Brand Policy" in content
     assert "Prefer a brand-aware or restaurant-aware lookup path" in content
     assert "Tool Metadata Interpretation" in content
-    assert "`not_recommended_for_full_serving_estimate`" in content
+    assert "`serving_basis`" in content
+    assert "`serving_size`" in content
+    assert "`serving_basis_unclear`" in content
     assert "`nutrition_basis`" in content
-    assert "`brand_match_confident`" in content
-    assert "`exact_name_match`" in content
-    assert "`dish_form_match`" in content
-    assert "`name_match_score`" in content
-    assert "`restaurant_query_mismatch`" in content
+    assert "Tools do not classify the request for you." in content
     assert "Dish Decomposition Fallback" in content
     assert "Ingredient Candidate Matching" in content
     assert "Mandatory Component Sanity Checks" in content
+    assert "one California roll` can mean one full roll or one piece" in content
+    assert "Do you mean one full roll or one piece?" in content
     assert "Sandwich: include bread by default." in content
     assert "Sushi roll: treat `one roll`, `一卷`, or `一份加州卷` as a full roll" in content
     assert "Do not default to ingredient decomposition for every dish-level request." in content
