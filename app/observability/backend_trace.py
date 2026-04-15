@@ -26,6 +26,30 @@ def _should_log_paths(paths: list[str] | None) -> bool:
     return any(_should_log_path(path) for path in (paths or []))
 
 
+def _download_result_summary(paths: list[str], result: Any) -> list[dict[str, Any]]:
+    if not isinstance(result, list):
+        return []
+
+    summary: list[dict[str, Any]] = []
+    for idx, item in enumerate(result):
+        path = paths[idx] if idx < len(paths) else None
+        payload: dict[str, Any] = {"path": path}
+        error = getattr(item, "error", None)
+        if error is not None:
+            payload["error"] = str(error)
+            summary.append(payload)
+            continue
+
+        content = getattr(item, "content", None)
+        if isinstance(content, bytes):
+            preview = content.decode("utf-8", errors="replace")
+            payload["content_preview"] = _preview_text(preview, limit=180)
+        elif content is not None:
+            payload["content_preview"] = _preview_text(content, limit=180)
+        summary.append(payload)
+    return summary
+
+
 class TracingBackend(SandboxBackendProtocol):
     """Delegating backend wrapper that traces backend-level file operations."""
 
@@ -142,26 +166,28 @@ class TracingBackend(SandboxBackendProtocol):
         return result
 
     def download_files(self, paths: list[str]):
-        if _should_log_paths(paths):
-            trace_log("AgentBackend", "Downloading files", {"paths": paths})
         result = self._backend.download_files(paths)
         if _should_log_paths(paths):
             trace_log(
                 "AgentBackend",
-                "Download files result",
-                {"count": len(result), "paths": paths},
+                "Downloaded files",
+                {
+                    "count": len(result),
+                    "files": _download_result_summary(paths, result),
+                },
             )
         return result
 
     async def adownload_files(self, paths: list[str]):
-        if _should_log_paths(paths):
-            trace_log("AgentBackend", "Downloading files", {"paths": paths})
         result = await self._backend.adownload_files(paths)
         if _should_log_paths(paths):
             trace_log(
                 "AgentBackend",
-                "Download files result",
-                {"count": len(result), "paths": paths},
+                "Downloaded files",
+                {
+                    "count": len(result),
+                    "files": _download_result_summary(paths, result),
+                },
             )
         return result
 
@@ -192,19 +218,15 @@ class TracingBackend(SandboxBackendProtocol):
         return result
 
     def ls_info(self, path: str):
-        if _should_log_path(path):
-            trace_log("AgentBackend", "Listing path", {"path": path})
         result = self._backend.ls_info(path)
         if _should_log_path(path):
-            trace_log("AgentBackend", "List path result", {"path": path, "count": len(result)})
+            trace_log("AgentBackend", "Listed path", {"path": path, "count": len(result)})
         return result
 
     async def als_info(self, path: str):
-        if _should_log_path(path):
-            trace_log("AgentBackend", "Listing path", {"path": path})
         result = await self._backend.als_info(path)
         if _should_log_path(path):
-            trace_log("AgentBackend", "List path result", {"path": path, "count": len(result)})
+            trace_log("AgentBackend", "Listed path", {"path": path, "count": len(result)})
         return result
 
     def glob_info(self, pattern: str, path: str = "/"):

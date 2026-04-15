@@ -5,6 +5,7 @@ from typing import Any
 from langchain.agents.middleware.types import AgentMiddleware, ExtendedModelResponse, ModelRequest, ModelResponse
 from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
 from langgraph.prebuilt.tool_node import ToolCallRequest
+from langgraph.types import Command
 
 from app.observability.tracing import is_terminal_trace_enabled, trace_log
 
@@ -46,6 +47,26 @@ def _preview_text(text: str, limit: int = 1600) -> str:
     return f"{text[:limit]}...<truncated {len(text) - limit} chars>"
 
 
+def _normalize_message(message: Any) -> dict[str, Any]:
+    if isinstance(message, dict):
+        return {
+            "role": message.get("role"),
+            "content": message.get("content", ""),
+        }
+    return {
+        "role": getattr(message, "type", None) or getattr(message, "role", None),
+        "content": getattr(message, "content", ""),
+    }
+
+
+def _message_preview(message: Any) -> dict[str, Any]:
+    normalized = _normalize_message(message)
+    return {
+        "role": normalized.get("role"),
+        "content_preview": _preview_text(_message_text(message)),
+    }
+
+
 def _skills_summary(skills_metadata: Any) -> list[dict[str, Any]]:
     if not isinstance(skills_metadata, list):
         return []
@@ -75,6 +96,10 @@ def _extract_model_response(response: Any) -> ModelResponse[Any] | None:
 
 
 class AgentContextTraceMiddleware(AgentMiddleware):
+    def __init__(self, agent_name: str = "agent"):
+        super().__init__()
+        self.agent_name = agent_name
+
     def _log_model_request(self, request: ModelRequest[Any]) -> None:
         if not is_terminal_trace_enabled():
             return
@@ -87,6 +112,7 @@ class AgentContextTraceMiddleware(AgentMiddleware):
                 "model": getattr(request.model, "model_name", None)
                 or getattr(request.model, "model", None)
                 or type(request.model).__name__,
+                "agent_name": self.agent_name,
                 "message_count": len(request.messages),
                 "tool_count": len(request.tools),
                 "tools": [_tool_name(tool) for tool in request.tools],
@@ -118,6 +144,7 @@ class AgentContextTraceMiddleware(AgentMiddleware):
             "AgentContext",
             "Model response received",
             {
+                "agent_name": self.agent_name,
                 "result_message_count": len(model_response.result),
                 "ai_message_count": len(ai_messages),
                 "tool_calls": [
@@ -142,6 +169,7 @@ class AgentContextTraceMiddleware(AgentMiddleware):
             "AgentTool",
             "Starting tool execution",
             {
+                "agent_name": self.agent_name,
                 "tool_name": request.tool_call.get("name"),
                 "tool_args": request.tool_call.get("args"),
                 "tool_registered": request.tool is not None,
@@ -154,14 +182,29 @@ class AgentContextTraceMiddleware(AgentMiddleware):
 
         if isinstance(result, ToolMessage):
             payload = {
+                "agent_name": self.agent_name,
                 "tool_name": request.tool_call.get("name"),
                 "status": getattr(result, "status", None),
                 "content_preview": _preview_text(_message_text(result)),
             }
-        else:
+        elif isinstance(result, Command):
+            update = result.update if isinstance(result.update, dict) else {}
+            messages = update.get("messages") if isinstance(update, dict) else None
             payload = {
+                "agent_name": self.agent_name,
                 "tool_name": request.tool_call.get("name"),
                 "result_type": type(result).__name__,
+                "command_update_keys": sorted(update.keys()) if isinstance(update, dict) else [],
+                "command_messages_count": len(messages) if isinstance(messages, list) else 0,
+                "command_last_message": _message_preview(messages[-1]) if isinstance(messages, list) and messages else None,
+                "command_goto": str(result.goto) if result.goto else None,
+            }
+        else:
+            payload = {
+                "agent_name": self.agent_name,
+                "tool_name": request.tool_call.get("name"),
+                "result_type": type(result).__name__,
+                "result_preview": _preview_text(str(result)),
             }
         trace_log("AgentTool", "Finished tool execution", payload)
 
